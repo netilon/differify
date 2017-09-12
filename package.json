@@ -1,0 +1,25 @@
+{
+  "name": "@netilon/differify",
+  "version": "1.0.3",
+  "description": "return the difference between two entities (objects, arrays, variables, etc).",
+  "main": "index.js",
+  "scripts": {
+    "test": "./node_modules/jasmine/bin/jasmine.js"
+  },
+  "keywords": [
+    "differify",
+    "diff",
+    "compare",
+    "netilon"
+  ],
+  "author": "Fabian Roberto Orue <fabianorue@gmail.com> (https://www.netilon.com)",
+  "bugs": {
+    "url": "https://github.com/netilon/differify/issues",
+    "email": "fabianorue@gmail.com"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "jasmine": "^2.7.0",
+    "jasmine-node": "^1.14.5"
+  }
+}
