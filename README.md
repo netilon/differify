@@ -250,7 +250,7 @@ The first two, are the arrays to compare. The last one, indicates if the method 
 ## License
 
 Copyright 2017 Netilon (Fabian Orue)
-https://netilon.com
+http://netilon.com
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
