@@ -1,4 +1,4 @@
-#Differify
+## Differify
 
 ## Synopsis
 
@@ -13,12 +13,11 @@ Return the difference between two entities (objects, arrays, variables, etc) in 
 
 npm install @netilon/differify --save
 
-
 ## Tests
 
 npm test
 
-##Config
+## Config
 
 You can pass a config to the getDiff method to customize the response.
 
@@ -251,7 +250,7 @@ The first two, are the arrays to compare. The last one, indicates if the method 
 ## License
 
 Copyright 2017 Netilon (Fabian Orue)
-https://netilon.com
+http://netilon.com
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
