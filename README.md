@@ -43,7 +43,7 @@ if you not specify any configuration, the default is:
 		returnType: 'json'
 	}
 
-##Methods
+## Methods
 
 **Method:**
 getDiff(*object|array|int|float|string|function*, *object|array|int|float|string|function*,  *object* );
