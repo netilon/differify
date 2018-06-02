@@ -24,7 +24,7 @@ You can pass a config to the getDiff method to customize the response.
 key | values | description
 --- | --- | ---
 *deep* | int | indicates quantity of nested objects that should be checked.
-*scan.array* | boolean | if true, it will check for differences in each array elements. If false, only check the array length and will do a toString() comparation.
+*scan.arrays* | boolean | if true, it will check for differences in each array elements. If false, only check the array length and will do a toString() comparation.
 *returnType* | string | indicates the response format. Accepted values are the strings 'array' or 'json'.
 
 Configuration example: 

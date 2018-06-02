@@ -1,17 +1,14 @@
 /*!
- * Differify v1.1.2
+ * Differify v1.1.3
  * http://netilon.com/
  *
  * Copyright 2018 Netilon (Fabian Orue)
  * Released under the MIT license
  *
- * Date: 2018-06-02 03:00 GMT-0300 (ART)
+ * Date: 2018-06-02 20:35 GMT-0300 (ART)
  */
 
 'use strict';
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
 
 var returnTypes = {
     ARRAY: 'array',
@@ -48,7 +45,7 @@ function isArray(value) {
 }
 
 function isObject(value) {
-    if (!isArray(value) && (typeof value === 'undefined' ? 'undefined' : _typeof(value)) == 'object') {
+    if (!isArray(value) && (typeof value) == 'object') {
         return true;
     }
     return false;
@@ -85,7 +82,7 @@ function isDefined(value) {
 }
 
 function ifNotDefinedGetDefault(object, property, defaultValue) {
-    return (object !== undefined && isDefined(object[property]) ? object[property] : defaultValue);
+    return object !== undefined && isDefined(object[property]) ? object[property] : defaultValue;
 }
 
 function getTypes() {
@@ -120,7 +117,7 @@ function getTypeOf(value) {
 }
 
 function clone(obj) {
-    if (null == obj || "object" != (typeof obj === 'undefined' ? 'undefined' : _typeof(obj))) {
+    if (null == obj || "object" != (typeof obj)) {
         return obj;
     }
     var copy = obj.constructor();
@@ -132,8 +129,6 @@ function clone(obj) {
 
 function arrayDiff(arrayA, arrayB, compareEachElement) {
     compareEachElement = compareEachElement || false;
-    var map = {};
-    var key;
     var ret = [];
 
     if (!compareEachElement) {
@@ -151,41 +146,33 @@ function arrayDiff(arrayA, arrayB, compareEachElement) {
         return ret;
     }
 
-    function convertToKey(value) {
-        return isObject(value) ? JSON.stringify(value) : isArray(value) ? value.toString() : value + '';
-    }
+    var AisMajorThanB = arrayA.length - arrayB.length;
+    var loop = AisMajorThanB < 0 ? arrayA.length : arrayB.length;
 
-    for (var index in arrayA) {
-        ret[index] = new valueData(arrayA[index], null, valueStatus.DELETED);
-        key = convertToKey(arrayA[index]);
-        if (map[key] === undefined) {
-            map[key] = { index: index, count: 0 };
-        } else {
-            ++map[key].count;
-        }
-    }
+    for (var i = 0; i < loop; ++i) {
 
-    index = 0;
-    var mappedValue;
-    for (index in arrayB) {
-        key = convertToKey(arrayB[index]);
-        mappedValue = map[key];
-        if (mappedValue === undefined) {
-            ret.push(new valueData(null, arrayB[index], valueStatus.ADDED));
-        } else if (mappedValue.count === 0) {
-            if (ret[mappedValue.index] !== undefined) {
-                ret.splice(mappedValue.index, 1);
-                delete map[key];
+        if (isObject(arrayA[i]) && isObject(arrayB[i])) {
+            var _a = JSON.stringify(arrayA[i]);
+            var _b = JSON.stringify(arrayB[i]);
+            if (_a !== _b) {
+                ret.push(valueData(_a, _b, valueStatus.MODIFIED));
             }
-        } else if (mappedValue.count > 0) {
-            ret.push(new valueData(null, arrayB[index], valueStatus.ADDED));
-            --mappedValue.count;
+        } else if (arrayA[i] !== arrayB[i]) {
+            ret.push(valueData(arrayA[i], arrayB[i], valueStatus.MODIFIED));
         }
     }
 
+    if (AisMajorThanB > 0) {
+        for (i = i; i < arrayA.length; ++i) {
+            ret.push(valueData(arrayA[i], null, valueStatus.DELETED));
+        }
+    } else if (AisMajorThanB < 0) {
+        for (i = i; i < arrayB.length; ++i) {
+            ret.push(valueData(null, arrayB[i], valueStatus.ADDED));
+        }
+    }
     return ret;
 };
-
 
 function _getDiff(objectA, objectB, config, parent, diffResponse) {
     if (config.deep === 0) {
@@ -240,13 +227,13 @@ function _getDiff(objectA, objectB, config, parent, diffResponse) {
                             diffResponse.data = diffResponse.data.concat(diff);
                         }
                         continue;
-                    }else if(typeA === types.FUNCTION && typeB === types.FUNCTION){
+                    } else if (typeA === types.FUNCTION && typeB === types.FUNCTION) {
                         var _A = objectA[property].toString();
                         var _B = objectB[property].toString();
-                        if(_A !== _B){
+                        if (_A !== _B) {
                             diffResponse.aggregator(new propertyData(parent, property, _A, _B, valueStatus.MODIFIED));
                         }
-                    }else if (objectA[property] !== objectB[property]) {
+                    } else if (objectA[property] !== objectB[property]) {
                         diffResponse.aggregator(new propertyData(parent, property, objectA[property], objectB[property], valueStatus.MODIFIED));
                     }
                 } else {
@@ -278,21 +265,20 @@ function _getDiff(objectA, objectB, config, parent, diffResponse) {
     return diffResponse.data;
 }
 
-function Configuration(_config){
+function Configuration(_config) {
     this.deep = ifNotDefinedGetDefault(_config, 'deep', 3);
     this.scan = ifNotDefinedGetDefault(_config, 'scan', { arrays: true });
     this.returnType = ifNotDefinedGetDefault(_config, 'returnType', returnTypes.JSON_OBJECT);
 }
 
-function DiffResponseFactory (diffResponse) {
-    
+function DiffResponseFactory(diffResponse) {
+
     return {
         data: ifNotDefinedGetDefault(diffResponse, 'data', null),
         aggregator: ifNotDefinedGetDefault(diffResponse, 'aggregator', null),
         caller: ifNotDefinedGetDefault(diffResponse, 'caller', null),
         clearData: ifNotDefinedGetDefault(diffResponse, 'clearData', null)
     };
-    
 }
 
 function getDiff(objectA, objectB, config) {
@@ -307,34 +293,36 @@ function getDiff(objectA, objectB, config) {
     diffResponse.caller = this;
 
     if (config.returnType === returnTypes.JSON_OBJECT) {
-        
-        function aggregator(data) {
+        var aggregator = function aggregator(data) {
             if (data.property !== null) {
                 this.data[data.property] = data;
             } else {
                 this.data = data;
             }
         };
-        
-        function clearData(){
+
+        var clearData = function clearData() {
             this.data = {};
-        }
-        
+        };
+
+        ;
+
         diffResponse.aggregator = aggregator;
         diffResponse.clearData = clearData;
         diffResponse.clearData();
     } else {
-        
-        function aggregator(data) {
+        var _aggregator = function _aggregator(data) {
             this.data.push(data);
         };
-        
-        function clearData(){
+
+        var _clearData = function _clearData() {
             this.data = [];
-        }
-        
-        diffResponse.aggregator = aggregator;
-        diffResponse.clearData = clearData;
+        };
+
+        ;
+
+        diffResponse.aggregator = _aggregator;
+        diffResponse.clearData = _clearData;
         diffResponse.clearData();
     }
 

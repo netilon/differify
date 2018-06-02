@@ -65,11 +65,23 @@ describe('Testing differify module: ', function(){
     });
     
     it('array conversion', function(){
+        
         var testDiff = differify.getDiff(a, b, {deep: 2,scan: {dateObjects: false,arrays: true}, returnType: 'array'});
         //the result mas be an array.
         expect(Object.prototype.toString.call(testDiff)=== '[object Array]').toBeTruthy();
         //should be 4 differences.
         expect(testDiff.length === 4).toBeTruthy();
+        
+        var _a = [1,2,3,7,9,10];
+        var _b = [1,0,3,5,9];
+        
+        var diff = differify.arrayDiff(_a, _b, true);
+        
+        expect(diff.length==3).toBeTruthy();
+        expect(diff[0].original === 2 && diff[0].diff === 0 && diff[0].status === 'modified').toBeTruthy();
+        expect(diff[1].original === 7 && diff[1].diff === 5 && diff[1].status === 'modified').toBeTruthy();
+        expect(diff[2].original === 10 && diff[2].diff === null && diff[2].status === 'deleted').toBeTruthy();
+        
     });
     
     it('deep config', function(){
