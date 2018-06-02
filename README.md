@@ -4,6 +4,11 @@
 
 Return the difference between two entities (objects, arrays, variables, etc) in json or array format.
 
+## Your contribution is appreciated (thanks!)
+[![alt text](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif "thanks for contribute!")](https://paypal.me/netilon)
+
+-------------
+
 ## Installation
 
 npm install @netilon/differify --save
