@@ -1,11 +1,11 @@
 /*!
- * Differify v1.1.1
+ * Differify v1.1.2
  * http://netilon.com/
  *
  * Copyright 2018 Netilon (Fabian Orue)
  * Released under the MIT license
  *
- * Date: 2018-06-02 02:40 GMT-0300 (ART)
+ * Date: 2018-06-02 03:00 GMT-0300 (ART)
  */
 
 'use strict';
@@ -244,7 +244,7 @@ function _getDiff(objectA, objectB, config, parent, diffResponse) {
                         var _A = objectA[property].toString();
                         var _B = objectB[property].toString();
                         if(_A !== _B){
-                            diffResponse.aggregator(new propertyData(parent, null, objectA[property].toString(), objectB[property].toString(), valueStatus.MODIFIED));
+                            diffResponse.aggregator(new propertyData(parent, property, _A, _B, valueStatus.MODIFIED));
                         }
                     }else if (objectA[property] !== objectB[property]) {
                         diffResponse.aggregator(new propertyData(parent, property, objectA[property], objectB[property], valueStatus.MODIFIED));

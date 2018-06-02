@@ -1,6 +1,6 @@
 describe('Testing differify module: ', function(){
     
-    var differify = require('../src/differify');
+    var differify = require('../src/differify.min');
     
     var model = function () {
         return{
@@ -41,6 +41,17 @@ describe('Testing differify module: ', function(){
         //Now, the date property in both objects are equal, therefore the date
         //Property would not exists.
         expect((testDiff['date'] === undefined)).toBeTruthy();
+    });
+    
+    it('Object comparation', function(){
+        var _a = {age: 1, name: function(){}, extra: 'hola'};
+        var _b = {age: 1, name: function(){return;}, extra: 'holo'};
+        
+        var testDiff = differify.getDiff(_a, _b, {deep: 3,scan: {arrays: true}, returnType: 'json'});
+        //at this point, the status of date property value must be different in a 
+        //and b objects.
+        expect((testDiff.name.value.status === 'modified')).toBeTruthy();
+        expect((testDiff.extra.value.status === 'modified')).toBeTruthy();
     });
     
     it('Native types comparation', function(){
