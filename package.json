@@ -1,8 +1,8 @@
 {
   "name": "@netilon/differify",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "return the difference between two entities (objects, arrays, variables, etc).",
-  "main": "index.js",
+  "main": "./index.js",
   "scripts": {
     "test": "./node_modules/jasmine/bin/jasmine.js"
   },

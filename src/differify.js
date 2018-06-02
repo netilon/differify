@@ -1,13 +1,12 @@
 /*!
- * Differify v1.1.0
+ * Differify v1.1.1
  * http://netilon.com/
  *
  * Copyright 2018 Netilon (Fabian Orue)
  * Released under the MIT license
  *
- * Date: 2018-06-02 01:52 GMT-0300 (ART)
+ * Date: 2018-06-02 02:40 GMT-0300 (ART)
  */
-
 
 'use strict';
 
@@ -241,6 +240,14 @@ function _getDiff(objectA, objectB, config, parent, diffResponse) {
                             diffResponse.data = diffResponse.data.concat(diff);
                         }
                         continue;
+                    }else if(typeA === types.FUNCTION && typeB === types.FUNCTION){
+                        var _A = objectA[property].toString();
+                        var _B = objectB[property].toString();
+                        if(_A !== _B){
+                            diffResponse.aggregator(new propertyData(parent, null, objectA[property].toString(), objectB[property].toString(), valueStatus.MODIFIED));
+                        }
+                    }else if (objectA[property] !== objectB[property]) {
+                        diffResponse.aggregator(new propertyData(parent, property, objectA[property], objectB[property], valueStatus.MODIFIED));
                     }
                 } else {
                     diffResponse.aggregator(new propertyData(parent, property, objectA[property], null, valueStatus.DELETED));

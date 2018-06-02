@@ -28,6 +28,8 @@ key | values | description
 *returnType* | string | indicates the response format. Accepted values are the strings 'array' or 'json'.
 
 Configuration example: 
+    
+    const differify = require('./node_modules/@netilon/differify/src/differify.min');
 
     var diff = differify.getDiff(a, b, {deep: 3,scan: {arrays: true}, returnType: 'json'});
 
@@ -61,6 +63,8 @@ arrayDiff(*array* ,  *array*,  *boolean* );
 The first two, are the arrays to compare. The last one, indicates if the method should check each element in the arrays or if only do a simple check of the length and a toString() comparation.
 
 ## Code Example
+        
+        const differify = require('./node_modules/@netilon/differify/src/differify.min');
 
         var model = function () {
             return{
@@ -249,7 +253,7 @@ The first two, are the arrays to compare. The last one, indicates if the method 
 
 ## License
 
-Copyright 2017 Netilon (Fabian Orue)
+Copyright 2018 Netilon (Fabian Orue)
 http://netilon.com
 
 Permission is hereby granted, free of charge, to any person obtaining

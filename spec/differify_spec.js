@@ -1,6 +1,6 @@
 describe('Testing differify module: ', function(){
     
-    var differify = require('../src/differify.min');
+    var differify = require('../src/differify');
     
     var model = function () {
         return{
