@@ -1,0 +1,101 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/bin/node',
+1 verbose cli   '/usr/bin/npm',
+1 verbose cli   'publish',
+1 verbose cli   '/home/fabian/Proyectos/javascript/differify/',
+1 verbose cli   '--access',
+1 verbose cli   'public' ]
+2 info using npm@3.5.2
+3 info using node@v8.10.0
+4 verbose publish [ '/home/fabian/Proyectos/javascript/differify/' ]
+5 silly cache add args [ '/home/fabian/Proyectos/javascript/differify/', null ]
+6 verbose cache add spec /home/fabian/Proyectos/javascript/differify/
+7 silly cache add parsed spec Result {
+7 silly cache add   raw: '/home/fabian/Proyectos/javascript/differify/',
+7 silly cache add   scope: null,
+7 silly cache add   name: null,
+7 silly cache add   rawSpec: '/home/fabian/Proyectos/javascript/differify/',
+7 silly cache add   spec: '/home/fabian/Proyectos/javascript/differify',
+7 silly cache add   type: 'directory' }
+8 verbose addLocalDirectory /home/fabian/.npm/@netilon/differify/1.1.1/package.tgz not in flight; packing
+9 info lifecycle @netilon/differify@1.1.1~prepublish: @netilon/differify@1.1.1
+10 silly lifecycle @netilon/differify@1.1.1~prepublish: no script for prepublish, continuing
+11 verbose tar pack [ '/home/fabian/.npm/@netilon/differify/1.1.1/package.tgz',
+11 verbose tar pack   '/home/fabian/Proyectos/javascript/differify' ]
+12 verbose tarball /home/fabian/.npm/@netilon/differify/1.1.1/package.tgz
+13 verbose folder /home/fabian/Proyectos/javascript/differify
+14 verbose addLocalTarball adding from inside cache /home/fabian/.npm/@netilon/differify/1.1.1/package.tgz
+15 silly cache afterAdd @netilon/differify@1.1.1
+16 verbose afterAdd /home/fabian/.npm/@netilon/differify/1.1.1/package/package.json not in flight; writing
+17 verbose afterAdd /home/fabian/.npm/@netilon/differify/1.1.1/package/package.json written
+18 silly publish { name: '@netilon/differify',
+18 silly publish   version: '1.1.1',
+18 silly publish   description: 'return the difference between two entities (objects, arrays, variables, etc).',
+18 silly publish   main: './index.js',
+18 silly publish   scripts: { test: './node_modules/jasmine/bin/jasmine.js' },
+18 silly publish   keywords: [ 'differify', 'diff', 'compare', 'netilon' ],
+18 silly publish   author:
+18 silly publish    { name: 'Fabian Roberto Orue',
+18 silly publish      email: 'fabianorue@gmail.com',
+18 silly publish      url: 'https://www.netilon.com' },
+18 silly publish   bugs:
+18 silly publish    { url: 'https://github.com/netilon/differify/issues',
+18 silly publish      email: 'fabianorue@gmail.com' },
+18 silly publish   license: 'MIT',
+18 silly publish   devDependencies: { jasmine: '^2.7.0', 'jasmine-node': '^1.14.5' },
+18 silly publish   readme: '## Differify\n\n## Synopsis\n\nReturn the difference between two entities (objects, arrays, variables, etc) in json or array format.\n\n## Your contribution is appreciated (thanks!)\n[![alt text](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif "thanks for contribute!")](https://paypal.me/netilon)\n\n-------------\n\n## Installation\n\nnpm install @netilon/differify --save\n\n## Tests\n\nnpm test\n\n## Config\n\nYou can pass a config to the getDiff method to customize the response.\n\nkey | values | description\n--- | --- | ---\n*deep* | int | indicates quantity of nested objects that should be checked.\n*scan.array* | boolean | if true, it will check for differences in each array elements. If false, only check the array length and will do a toString() comparation.\n*returnType* | string | indicates the response format. Accepted values are the strings \'array\' or \'json\'.\n\nConfiguration example: \n    \n    const differify = require(\'./node_modules/@netilon/differify/src/differify.min\');\n\n    var diff = differify.getDiff(a, b, {deep: 3,scan: {arrays: true}, returnType: \'json\'});\n\nif you not specify any configuration, the default is:\n\n    {\n\t    deep: 3,\n\t    scan: {\n\t\t    arrays: true\n\t\t},\n\t\treturnType: \'json\'\n\t}\n\n##Methods\n\n**Method:**\ngetDiff(*object|array|int|float|string|function*, *object|array|int|float|string|function*,  *object* );\n\n**Description:** Return the difference between two entities (Objects, native data types, etc).\n\n**Params:**\nThe first two, indicates the entities to compare. The last one, is the configuration (see *Config* section).\n\n----------\n**Method:**\narrayDiff(*array* ,  *array*,  *boolean* );\n\n**Description:** Return the difference between two entities (Objects, native data types, etc).\n\n**Params:**\nThe first two, are the arrays to compare. The last one, indicates if the method should check each element in the arrays or if only do a simple check of the length and a toString() comparation.\n\n## Code Example\n        \n        const differify = require(\'./node_modules/@netilon/differify/src/differify.min\');\n\n        var model = function () {\n            return{\n                name: \'\',\n                age: 0,\n                friends: [],\n                extras: {\n                    hobbies: []\n                },\n                date: null\n            };\n        };\n    \n        //given two objects or values\n    \n        //Object A\n        var a = new model();\n        a.name = \'Fabian\';\n        a.age = 33;\n        a.friends = [\'pepe\', \'rodolfo\'];\n        a.extras.hobbies = [{color: \'Red\'}, {color: \'Green\'}];\n        a.date = new Date();\n    \n        //Object B\n        var b = new model();\n        b.name = function(){ return \'hello\';};\n        b.age = new Date();\n        b.friends = [\'carlos\',\'pepe\'];\n        b.extras.hobbies = [\'Walk\'];\n        b.date = new Date(\'12/15/1983 12:00:00\');\n    \n        //we can get de difference simply doing that.\n        var diff = differify.getDiff(a, b);\n    \n    \n        //OUTPUT (if returnType config prop is \'json\')\n        {\n    \t"name": {\n    \t\t"path": "$root.name",\n    \t\t"property": "name",\n    \t\t"value": {\n    \t\t\t"original": "Fabian",\n    \t\t\t"diff": "function (){ return \'hello\';}",\n    \t\t\t"status": "modified"\n    \t\t}\n    \t},\n    \t"age": {\n    \t\t"path": "$root.age",\n    \t\t"property": "age",\n    \t\t"value": {\n    \t\t\t"original": 33,\n    \t\t\t"diff": "2017-08-29T19:26:27.245Z",\n    \t\t\t"status": "modified"\n    \t\t}\n    \t},\n    \t"friends": {\n    \t\t"path": "$root.friends",\n    \t\t"property": "friends",\n    \t\t"value": {\n    \t\t\t"original": ["pepe", "rodolfo"],\n    \t\t\t"diff": [{\n    \t\t\t\t"original": "rodolfo",\n    \t\t\t\t"diff": null,\n    \t\t\t\t"status": "deleted"\n    \t\t\t}, {\n    \t\t\t\t"original": null,\n    \t\t\t\t"diff": "carlos",\n    \t\t\t\t"status": "added"\n    \t\t\t}],\n    \t\t\t"status": "modified"\n    \t\t}\n    \t},\n    \t"extras": {\n    \t\t"hobbies": {\n    \t\t\t"path": "$root.hobbies",\n    \t\t\t"property": "hobbies",\n    \t\t\t"value": {\n    \t\t\t\t"original": [{\n    \t\t\t\t\t"color": "Red"\n    \t\t\t\t}, {\n    \t\t\t\t\t"color": "Green"\n    \t\t\t\t}],\n    \t\t\t\t"diff": [{\n    \t\t\t\t\t"original": {\n    \t\t\t\t\t\t"color": "Red"\n    \t\t\t\t\t},\n    \t\t\t\t\t"diff": null,\n    \t\t\t\t\t"status": "deleted"\n    \t\t\t\t}, {\n    \t\t\t\t\t"original": {\n    \t\t\t\t\t\t"color": "Green"\n    \t\t\t\t\t},\n    \t\t\t\t\t"diff": null,\n    \t\t\t\t\t"status": "deleted"\n    \t\t\t\t}, {\n    \t\t\t\t\t"original": null,\n    \t\t\t\t\t"diff": "Walk",\n    \t\t\t\t\t"status": "added"\n    \t\t\t\t}],\n    \t\t\t\t"status": "modified"\n    \t\t\t}\n    \t\t}\n    \t},\n    \t"date": {\n    \t\t"path": "$root.date",\n    \t\t"property": "date",\n    \t\t"value": {\n    \t\t\t"original": "2017-08-29T19:26:27.245Z",\n    \t\t\t"diff": "1983-12-15T15:00:00.000Z",\n    \t\t\t"status": "modified"\n    \t\t}\n    \t}\n    }\n    \n    //OUTPUT (if returnType config prop is \'array\')\n    \n    [{\n    \t"path": "$root.name",\n    \t"property": "name",\n    \t"value": {\n    \t\t"original": "Fabian",\n    \t\t"diff": "function (){ return \'hello\';}",\n    \t\t"status": "modified"\n    \t}\n    }, {\n    \t"path": "$root.age",\n    \t"property": "age",\n    \t"value": {\n    \t\t"original": 33,\n    \t\t"diff": "2017-08-29T19:31:04.414Z",\n    \t\t"status": "modified"\n    \t}\n    }, {\n    \t"path": "$root.friends",\n    \t"property": "friends",\n    \t"value": {\n    \t\t"original": ["pepe", "rodolfo"],\n    \t\t"diff": [{\n    \t\t\t"original": "rodolfo",\n    \t\t\t"diff": null,\n    \t\t\t"status": "deleted"\n    \t\t}, {\n    \t\t\t"original": null,\n    \t\t\t"diff": "carlos",\n    \t\t\t"status": "added"\n    \t\t}],\n    \t\t"status": "modified"\n    \t}\n    }, {\n    \t"path": "$root.hobbies",\n    \t"property": "hobbies",\n    \t"value": {\n    \t\t"original": [{\n    \t\t\t"color": "Red"\n    \t\t}, {\n    \t\t\t"color": "Green"\n    \t\t}],\n    \t\t"diff": [{\n    \t\t\t"original": {\n    \t\t\t\t"color": "Red"\n    \t\t\t},\n    \t\t\t"diff": null,\n    \t\t\t"status": "deleted"\n    \t\t}, {\n    \t\t\t"original": {\n    \t\t\t\t"color": "Green"\n    \t\t\t},\n    \t\t\t"diff": null,\n    \t\t\t"status": "deleted"\n    \t\t}, {\n    \t\t\t"original": null,\n    \t\t\t"diff": "Walk",\n    \t\t\t"status": "added"\n    \t\t}],\n    \t\t"status": "modified"\n    \t}\n    }, {\n    \t"path": "$root.date",\n    \t"property": "date",\n    \t"value": {\n    \t\t"original": "2017-08-29T19:31:04.414Z",\n    \t\t"diff": "1983-12-15T15:00:00.000Z",\n    \t\t"status": "modified"\n    \t}\n    }]\n\n## License\n\nCopyright 2018 Netilon (Fabian Orue)\nhttp://netilon.com\n\nPermission is hereby granted, free of charge, to any person obtaining\na copy of this software and associated documentation files (the\n"Software"), to deal in the Software without restriction, including\nwithout limitation the rights to use, copy, modify, merge, publish,\ndistribute, sublicense, and/or sell copies of the Software, and to\npermit persons to whom the Software is furnished to do so, subject to\nthe following conditions:\n\nThe above copyright notice and this permission notice shall be\nincluded in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,\nEXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF\nMERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND\nNONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE\nLIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION\nOF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION\nWITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.\n\n\n***\n\n\n',
+18 silly publish   readmeFilename: 'README.md',
+18 silly publish   gitHead: 'f2191081f3664f9c8d3f0847d6e45340d3affca6',
+18 silly publish   _id: '@netilon/differify@1.1.1',
+18 silly publish   _shasum: 'c5633db26d5fa148e32997165d2483b86c1a255a',
+18 silly publish   _from: '.' }
+19 verbose getPublishConfig undefined
+20 silly mapToRegistry name @netilon/differify
+21 silly mapToRegistry scope (from package name) @netilon
+22 verbose mapToRegistry no registry URL found in name for scope @netilon
+23 silly mapToRegistry using default registry
+24 silly mapToRegistry registry https://registry.npmjs.org/
+25 silly mapToRegistry uri https://registry.npmjs.org/@netilon%2fdifferify
+26 verbose publish registryBase https://registry.npmjs.org/
+27 silly publish uploading /home/fabian/.npm/@netilon/differify/1.1.1/package.tgz
+28 verbose request uri https://registry.npmjs.org/@netilon%2fdifferify
+29 verbose request sending authorization for write operation
+30 info attempt registry request try #1 at 02:58:39
+31 verbose request using bearer token for auth
+32 verbose request id a6de700bb9e26728
+33 http request PUT https://registry.npmjs.org/@netilon%2fdifferify
+34 http 403 https://registry.npmjs.org/@netilon%2fdifferify
+35 verbose headers { date: 'Sat, 02 Jun 2018 05:58:41 GMT',
+35 verbose headers   'content-type': 'application/json',
+35 verbose headers   'transfer-encoding': 'chunked',
+35 verbose headers   connection: 'keep-alive',
+35 verbose headers   'set-cookie':
+35 verbose headers    [ '__cfduid=d0fa036cce18970d3f01ddd0a7c873acb1527919120; expires=Sun, 02-Jun-19 05:58:40 GMT; path=/; domain=.registry.npmjs.org; HttpOnly' ],
+35 verbose headers   'cf-ray': '4247b0838de567fd-EZE',
+35 verbose headers   'expect-ct': 'max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"',
+35 verbose headers   server: 'cloudflare',
+35 verbose headers   'content-encoding': 'gzip' }
+36 verbose request invalidating /home/fabian/.npm/registry.npmjs.org/_40netilon_252fdifferify on PUT
+37 error publish Failed PUT 403
+38 verbose stack Error: You cannot publish over the previously published versions: 1.1.1. : @netilon/differify
+38 verbose stack     at makeError (/usr/share/npm/node_modules/npm-registry-client/lib/request.js:264:12)
+38 verbose stack     at CachingRegistryClient.<anonymous> (/usr/share/npm/node_modules/npm-registry-client/lib/request.js:252:14)
+38 verbose stack     at /usr/share/npm/node_modules/npm-registry-client/lib/request.js:178:7
+38 verbose stack     at Gunzip.onEnd (zlib.js:131:5)
+38 verbose stack     at emitNone (events.js:111:20)
+38 verbose stack     at Gunzip.emit (events.js:208:7)
+38 verbose stack     at endReadableNT (_stream_readable.js:1064:12)
+38 verbose stack     at _combinedTickCallback (internal/process/next_tick.js:138:11)
+38 verbose stack     at process._tickCallback (internal/process/next_tick.js:180:9)
+39 verbose statusCode 403
+40 verbose pkgid @netilon/differify
+41 verbose cwd /home/fabian/Proyectos/javascript/differify
+42 error Linux 4.15.0-22-generic
+43 error argv "/usr/bin/node" "/usr/bin/npm" "publish" "/home/fabian/Proyectos/javascript/differify/" "--access" "public"
+44 error node v8.10.0
+45 error npm  v3.5.2
+46 error code E403
+47 error You cannot publish over the previously published versions: 1.1.1. : @netilon/differify
+48 error If you need help, you may report this error at:
+48 error     <https://github.com/npm/npm/issues>
+49 verbose exit [ 1, true ]
