@@ -2,7 +2,7 @@
 
 ## Synopsis
 
-Return the difference between two entities (objects, arrays, variables, etc) in json or array format.
+Differify allow you to get the difference between two entities (objects, arrays, variables, functions, native types, etc) in a friendly JSON or Array format.
 
 ## Your contribution is appreciated (thanks!)
 [![alt text](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif "thanks for contribute!")](https://paypal.me/netilon)
@@ -15,43 +15,59 @@ npm install @netilon/differify --save
 
 ## Tests
 
-npm test
+npm run test
 
 ## Config
 
-You can pass a config to the getDiff method to customize the response.
+You can pass a config to the setConfig() method to customize the response.
 
 key | values | description
 --- | --- | ---
-*deep* | int | indicates quantity of nested objects that should be checked.
-*scan.arrays* | boolean | if true, it will check for differences in each array elements. If false, only check the array length and will do a toString() comparation.
-*returnType* | string | indicates the response format. Accepted values are the strings 'array' or 'json'.
+*deep* | int | is the quantity of nested objects that will be checked  by Differify when you call getDiff() method.
+*scan.arrays* | boolean | if true, Differify will check for differences in each array element. If false, only will check the array length and will do a toString() comparission.
+*returnType* | string | is the getDiff() method response format. Accepted options are the strings 'array' or 'json'.
 
 Configuration example: 
     
     const differify = require('./node_modules/@netilon/differify/src/differify.min');
+    
+    //You can set the config once and use getDiff() method every time you want.
+    //If you need to change some options, just call setConfig() method again after
+    //the getDiff() method call.
 
-    var diff = differify.getDiff(a, b, {deep: 3,scan: {arrays: true}, returnType: 'json'});
+    differify.setConfig({deep: 3,scan: {arrays: true}, returnType: 'json'});
+    
+    //Here we get the result of this comparission in JSON format.
+    var diff = differify.getDiff(a, b);
 
-if you not specify any configuration, the default is:
+if you dont specify any configuration, the default options are the following:
 
     {
-	    deep: 3,
-	    scan: {
-		    arrays: true
-		},
-		returnType: 'json'
-	}
+        deep: 3,
+        scan: {
+                arrays: true
+        },
+        returnType: 'json'
+    }
 
-##Methods
+## Methods
 
 **Method:**
-getDiff(*object|array|int|float|string|function*, *object|array|int|float|string|function*,  *object* );
+setConfig(*object*);
 
-**Description:** Return the difference between two entities (Objects, native data types, etc).
+**Description:** Set the configuration options that will be applied when getDiff() method is called.
 
 **Params:**
-The first two, indicates the entities to compare. The last one, is the configuration (see *Config* section).
+Configuration Object (se above in Config section).
+
+----------
+**Method:**
+getDiff(*object|array|int|float|string|function*, *object|array|int|float|string|function*);
+
+**Description:** Return the difference between two entities (Objects, native data types, Array, etc).
+
+**Params:**
+Both parameters indicate the entities to be compared.
 
 ----------
 **Method:**
@@ -60,196 +76,167 @@ arrayDiff(*array* ,  *array*,  *boolean* );
 **Description:** Return the difference between two entities (Objects, native data types, etc).
 
 **Params:**
-The first two, are the arrays to compare. The last one, indicates if the method should check each element in the arrays or if only do a simple check of the length and a toString() comparation.
+The first two parameters are the arrays to compare. The last one, indicates if the method should check each element in the arrays or if only do a simple check of the length and a toString() comparission.
 
 ## Code Example
+Check how Differify compare the entities in a simple way and in the format that you preffer.
         
         const differify = require('./node_modules/@netilon/differify/src/differify.min');
-
+        
         var model = function () {
-            return{
-                name: '',
-                age: 0,
-                friends: [],
-                extras: {
-                    hobbies: []
-                },
-                date: null
+        return{
+            name: '',
+            age: 0,
+            friends: [],
+            extras: {
+                hobbies: []
+            },
+            date: null
             };
         };
-    
-        //given two objects or values
-    
-        //Object A
-        var a = new model();
+
+        var a = model();
         a.name = 'Fabian';
-        a.age = 33;
+        a.age = 34;
         a.friends = ['pepe', 'rodolfo'];
-        a.extras.hobbies = [{color: 'Red'}, {color: 'Green'}];
-        a.date = new Date();
+        a.extras.hobbies = ['Futbol', 'Programming'];
+        a.date = new Date('12/15/1983 12:00:00');
+
+        var b = model();
+        b.name = 'Judith';
+        b.age = 31;
+        b.friends = ['flor','cecilia'];
+        b.extras.hobbies = ['Gym'];
+        b.date = new Date('11/27/1986 12:00:00');
+        
+        console.log(JSON.stringify(differify.getDiff(a,b)));
     
-        //Object B
-        var b = new model();
-        b.name = function(){ return 'hello';};
-        b.age = new Date();
-        b.friends = ['carlos','pepe'];
-        b.extras.hobbies = ['Walk'];
-        b.date = new Date('12/15/1983 12:00:00');
-    
-        //we can get de difference simply doing that.
-        var diff = differify.getDiff(a, b);
-    
-    
-        //OUTPUT (if returnType config prop is 'json')
+        //OUTPUT (if returnType config property is set to 'json')
         {
-    	"name": {
-    		"path": "$root.name",
-    		"property": "name",
-    		"value": {
-    			"original": "Fabian",
-    			"diff": "function (){ return 'hello';}",
-    			"status": "modified"
-    		}
-    	},
-    	"age": {
-    		"path": "$root.age",
-    		"property": "age",
-    		"value": {
-    			"original": 33,
-    			"diff": "2017-08-29T19:26:27.245Z",
-    			"status": "modified"
-    		}
-    	},
-    	"friends": {
-    		"path": "$root.friends",
-    		"property": "friends",
-    		"value": {
-    			"original": ["pepe", "rodolfo"],
-    			"diff": [{
-    				"original": "rodolfo",
-    				"diff": null,
-    				"status": "deleted"
-    			}, {
-    				"original": null,
-    				"diff": "carlos",
-    				"status": "added"
-    			}],
-    			"status": "modified"
-    		}
-    	},
-    	"extras": {
-    		"hobbies": {
-    			"path": "$root.hobbies",
-    			"property": "hobbies",
-    			"value": {
-    				"original": [{
-    					"color": "Red"
-    				}, {
-    					"color": "Green"
-    				}],
-    				"diff": [{
-    					"original": {
-    						"color": "Red"
-    					},
-    					"diff": null,
-    					"status": "deleted"
-    				}, {
-    					"original": {
-    						"color": "Green"
-    					},
-    					"diff": null,
-    					"status": "deleted"
-    				}, {
-    					"original": null,
-    					"diff": "Walk",
-    					"status": "added"
-    				}],
-    				"status": "modified"
-    			}
-    		}
-    	},
-    	"date": {
-    		"path": "$root.date",
-    		"property": "date",
-    		"value": {
-    			"original": "2017-08-29T19:26:27.245Z",
-    			"diff": "1983-12-15T15:00:00.000Z",
-    			"status": "modified"
-    		}
-    	}
-    }
+            "name": {
+                "path": "$root.name",
+                "property": "name",
+                "value": {
+                    "original": "Fabian",
+                    "diff": "Judith",
+                    "status": "modified"
+                }
+            },
+            "age": {
+                "path": "$root.age",
+                "property": "age",
+                "value": {
+                    "original": 34,
+                    "diff": 31,
+                    "status": "modified"
+                }
+            },
+            "friends": {
+                "path": "$root.friends",
+                "property": "friends",
+                "value": {
+                    "original": ["pepe", "rodolfo"],
+                    "diff": [{
+                        "original": "pepe",
+                        "diff": "flor",
+                        "status": "modified"
+                    }, {
+                        "original": "rodolfo",
+                        "diff": "cecilia",
+                        "status": "modified"
+                    }],
+                    "status": "modified"
+                }
+            },
+            "extras": {
+                "hobbies": {
+                    "path": "$root.extras.hobbies",
+                    "property": "hobbies",
+                    "value": {
+                        "original": ["Futbol", "Programming"],
+                        "diff": [{
+                            "original": "Futbol",
+                            "diff": "Gym",
+                            "status": "modified"
+                        }, {
+                            "original": "Programming",
+                            "diff": null,
+                            "status": "deleted"
+                        }],
+                        "status": "modified"
+                    }
+                }
+            },
+            "date": {
+                "path": "$root.date",
+                "property": "date",
+                "value": {
+                    "original": "1983-12-15T15:00:00.000Z",
+                    "diff": "1986-11-27T15:00:00.000Z",
+                    "status": "modified"
+                }
+            }
+        }
     
-    //OUTPUT (if returnType config prop is 'array')
+    //OUTPUT (if returnType config property is set to 'array')
     
     [{
-    	"path": "$root.name",
-    	"property": "name",
-    	"value": {
-    		"original": "Fabian",
-    		"diff": "function (){ return 'hello';}",
-    		"status": "modified"
-    	}
+	"path": "$root.name",
+	"property": "name",
+	"value": {
+		"original": "Fabian",
+		"diff": "Judith",
+		"status": "modified"
+	}
     }, {
-    	"path": "$root.age",
-    	"property": "age",
-    	"value": {
-    		"original": 33,
-    		"diff": "2017-08-29T19:31:04.414Z",
-    		"status": "modified"
-    	}
+            "path": "$root.age",
+            "property": "age",
+            "value": {
+                    "original": 34,
+                    "diff": 31,
+                    "status": "modified"
+            }
     }, {
-    	"path": "$root.friends",
-    	"property": "friends",
-    	"value": {
-    		"original": ["pepe", "rodolfo"],
-    		"diff": [{
-    			"original": "rodolfo",
-    			"diff": null,
-    			"status": "deleted"
-    		}, {
-    			"original": null,
-    			"diff": "carlos",
-    			"status": "added"
-    		}],
-    		"status": "modified"
-    	}
-    }, {
-    	"path": "$root.hobbies",
-    	"property": "hobbies",
-    	"value": {
-    		"original": [{
-    			"color": "Red"
-    		}, {
-    			"color": "Green"
-    		}],
-    		"diff": [{
-    			"original": {
-    				"color": "Red"
-    			},
-    			"diff": null,
-    			"status": "deleted"
-    		}, {
-    			"original": {
-    				"color": "Green"
-    			},
-    			"diff": null,
-    			"status": "deleted"
-    		}, {
-    			"original": null,
-    			"diff": "Walk",
-    			"status": "added"
-    		}],
-    		"status": "modified"
-    	}
-    }, {
-    	"path": "$root.date",
-    	"property": "date",
-    	"value": {
-    		"original": "2017-08-29T19:31:04.414Z",
-    		"diff": "1983-12-15T15:00:00.000Z",
-    		"status": "modified"
-    	}
-    }]
+	"path": "$root.friends",
+	"property": "friends",
+	"value": {
+		"original": ["pepe", "rodolfo"],
+		"diff": [{
+			"original": "pepe",
+			"diff": "flor",
+			"status": "modified"
+		}, {
+			"original": "rodolfo",
+			"diff": "cecilia",
+			"status": "modified"
+		}],
+		"status": "modified"
+	}
+        }, {
+                "path": "$root.extras.hobbies",
+                "property": "hobbies",
+                "value": {
+                        "original": ["Futbol", "Programming"],
+                        "diff": [{
+                                "original": "Futbol",
+                                "diff": "Gym",
+                                "status": "modified"
+                        }, {
+                                "original": "Programming",
+                                "diff": null,
+                                "status": "deleted"
+                        }],
+                        "status": "modified"
+                }
+        }, {
+                "path": "$root.date",
+                "property": "date",
+                "value": {
+                        "original": "1983-12-15T15:00:00.000Z",
+                        "diff": "1986-11-27T15:00:00.000Z",
+                        "status": "modified"
+                }
+        }]
 
 ## License
 
