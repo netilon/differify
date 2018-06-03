@@ -1,4 +1,4 @@
-var differify = require('./src/differify2.0');
+var differify = require('./src/differify.min');
     
     var model = function () {
         return{

@@ -111,7 +111,7 @@ Check how Differify compare the entities in a simple way and in the format that 
         
         console.log(JSON.stringify(differify.getDiff(a,b)));
     
-        //OUTPUT (if returnType config property is set to 'json')
+        //OUTPUT (if the returnType config property is set to 'json')
         {
             "name": {
                 "path": "$root.name",
@@ -178,7 +178,7 @@ Check how Differify compare the entities in a simple way and in the format that 
             }
         }
     
-    //OUTPUT (if returnType config property is set to 'array')
+    //OUTPUT (if the returnType config property is set to 'array')
     
     [{
 	"path": "$root.name",
