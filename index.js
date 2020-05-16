@@ -1,3 +1,4 @@
+
 const Differify = require('./src/differify');
 
 const differify = new Differify({ mode: { object: 'DIFF', array: 'STRING', function: 'REFERENCE' } });

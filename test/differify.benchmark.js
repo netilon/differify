@@ -1,3 +1,4 @@
+
 const Bencharmk = require('benchmark');
 const Differify = require('../src/differify');
 
