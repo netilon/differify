@@ -1,371 +1,323 @@
 /*!
- * Differify v2.0.0
+ * Differify v3.0.0
  * http://netilon.com/
  *
- * Copyright 2018 Netilon (Fabian Orue)
+ * Copyright 2020 Netilon (Fabian Orue)
  * Released under the MIT license
  *
- * Date: 2018-06-03 02:49 GMT-0300 (ART)
+ * Date: 2020-05-16 20:00 GMT-0300 (ART)
  */
 
-'use strict';
-
 function isArray(value) {
-    if (Object.prototype.toString.call(value) === '[object Array]') {
-        return true;
-    }
-    return false;
+  return value && Object.prototype.toString.call(value) === '[object Array]';
 }
 
 function isObject(value) {
-    if (!isArray(value) && (typeof value) === 'object') {
-        return true;
-    }
-    return false;
+  return value && !isArray(value) && typeof value === 'object';
 }
 
-function isString(value) {
-    if (typeof value === 'string') {
-        return true;
-    }
-    return false;
+function isValidString(val) {
+  return val && typeof val === 'string' && val.length > 0;
 }
 
-function isFunction(value) {
-    if (typeof value === 'function') {
-        return true;
-    }
-    return false;
+function has(obj, prop) {
+  return obj.hasOwnProperty
+    ? obj.hasOwnProperty(prop)
+    : obj[prop] !== undefined;
 }
 
-function isDate(value) {
-    if (Object.prototype.toString.call(value) === '[object Date]') {
-        return true;
-    }
-
-    return false;
-}
-
-function isDefined(value) {
-    if (value !== undefined && value !== null) {
-        return true;
-    }
-
-    return false;
-}
-
-function ifNotDefinedGetDefault(object, property, defaultValue) {
-    return object !== undefined && isDefined(object[property]) ? object[property] : defaultValue;
-}
-
-
-function clone(obj) {
-    if (null == obj || "object" != (typeof obj)) {
-        return obj;
-    }
-    var copy = obj.constructor();
-    for (var attr in obj) {
-        if (obj.hasOwnProperty(attr))
-            copy[attr] = obj[attr];
-    }
-    return copy;
-}
-
-var returnTypes = {
-    ARRAY: 'array',
-    JSON_OBJECT: 'json'
+const COMPARISSION_MODE = {
+  REFERENCE: 'REFERENCE',
+  DIFF: 'DIFF',
+  STRING: 'STRING',
 };
 
-function Configuration(_config) {
-    this.deep = ifNotDefinedGetDefault(_config, 'deep', 3);
-    this.scan = ifNotDefinedGetDefault(_config, 'scan', {arrays: true});
-    this.returnType = ifNotDefinedGetDefault(_config, 'returnType', returnTypes.JSON_OBJECT);
+function Configuration(config) {
+  this.mode = {
+    array: COMPARISSION_MODE.REFERENCE,
+    object: COMPARISSION_MODE.REFERENCE,
+    function: COMPARISSION_MODE.REFERENCE,
+  };
+
+  if (isObject(config) && isObject(config.mode)) {
+    const allowedComparissions = Object.values(COMPARISSION_MODE);
+
+    if (isValidString(config.mode.array)) {
+      const comparission = config.mode.array.toUpperCase();
+      if (allowedComparissions.indexOf(comparission) !== -1) {
+        this.mode.array = config.mode.array;
+      }
+    }
+
+    if (isValidString(config.mode.object)) {
+      const comparission = config.mode.object.toUpperCase();
+      if (allowedComparissions.indexOf(comparission) !== -1) {
+        this.mode.object = config.mode.object;
+      }
+    }
+    if (isValidString(config.mode.function)) {
+      const comparission = config.mode.function.toUpperCase();
+      if (
+        comparission === COMPARISSION_MODE.REFERENCE ||
+        comparission === COMPARISSION_MODE.STRING
+      ) {
+        this.mode.function = config.mode.function;
+      }
+    }
+  }
 }
 
-var Differify = function () {
-    var config = new Configuration();
-    var deepDataCounter = 0;
+const PROPERTY_STATUS = {
+  ADDED: 'ADDED',
+  DELETED: 'DELETED',
+  MODIFIED: 'MODIFIED',
+  EQUAL: 'EQUAL',
+};
 
-    var valueStatus = {
-        'ADDED': 'added',
-        'DELETED': 'deleted',
-        'MODIFIED': 'modified'
-    };
-
-    var dataTypes = {
-        UNDEFINED: 0,
-        OBJECT: 1,
-        ARRAY: 2,
-        STRING: 3,
-        NUMBER: 4,
-        FUNCTION: 5,
-        DATE: 6
-    };
-
-    this.setConfig = function (_config) {
-        config = new Configuration(_config);
-    };
-
-
-    this.objectDiff = function(a, b, path) {
-        var ret = new Response(config.returnType);
-        
-        if (deepDataCounter <= 0) {
-            return ret.getData();
-        }
-        
-        path = getParentPath(path);
-
-        var bCopy = clone(b);
-        var typeA = null;
-        var typeB = null;
-
-        for (var property in a) {
-            if (a.hasOwnProperty(property)) {
-                if (b.hasOwnProperty(property) && b[property] !== undefined) {
-
-                    delete bCopy[property];
-
-                    typeA = getTypeOf(a[property]);
-                    typeB = getTypeOf(b[property]);
-
-                    if (typeA !== typeB) {
-                        //if data types are different.
-                        ret.push(propertyData(path, property, typeA === dataTypes.FUNCTION ? a[property].toString() : a[property], typeB === dataTypes.FUNCTION ? b[property].toString() : b[property], valueStatus.MODIFIED), property);
-                        
-                    } else if (typeA === dataTypes.UNDEFINED && typeB === dataTypes.UNDEFINED) {
-                        continue;
-                        
-                    } else if (typeA === dataTypes.DATE && typeB === dataTypes.DATE) {
-                        
-                        if (areDateObjectsDifferent(a[property], b[property])) {
-                            ret.push(propertyData(path, property, a[property], b[property], valueStatus.MODIFIED), property);
-                        }
-                        continue;
-                        
-                    } else if (typeA === dataTypes.ARRAY && typeB === dataTypes.ARRAY) {
-
-                        var arrayCompareResult = this.arrayDiff(a[property], b[property], config.scan.arrays);
-                        if (arrayCompareResult.length > 0) {
-                            ret.push(propertyData(path, property, a[property], arrayCompareResult, valueStatus.MODIFIED), property);
-                        }
-                        continue;
-                        
-                    } else if (typeA === dataTypes.OBJECT && typeB === dataTypes.OBJECT) {
-                        
-                        --deepDataCounter;
-                        ret.concat(this.objectDiff(a[property], b[property], path + '.' + property), property);
-                        continue;
-                        
-                    } else if (typeA === dataTypes.FUNCTION && typeB === dataTypes.FUNCTION) {
-                        
-                        if (areFunctionsDifferent(a[property], b[property])) {
-                            ret.push(propertyData(path, property, a[property].toString(), b[property].toString(), valueStatus.MODIFIED), property);
-                        }
-                    } else if (a[property] !== b[property]) {
-                        //native type evaluation.
-                        ret.push(propertyData(path, property, a[property], b[property], valueStatus.MODIFIED), property);
-                    }
-                } else {
-                    ret.push(propertyData(path, property, a[property], null, valueStatus.DELETED), property);
-                }
-            }
-        }
-        property = null;
-        for (property in bCopy) {
-            if (b.hasOwnProperty(property)) {
-                ret.push(propertyData(path, property, null, bCopy[property], valueStatus.ADDED), property);
-            }
-        }
-
-        return ret.getData();
-    }
-
-    this.arrayDiff = function (arrayA, arrayB, compareEachElement) {
-        compareEachElement = compareEachElement || false;
-        var ret = [];
-
-        if (!compareEachElement) {
-
-            if (arrayA.length !== arrayB.length) {
-                ret.push(valueData(arrayA, arrayB, valueStatus.MODIFIED));
-            } else {
-                var a = arrayA.toString();
-                var b = arrayB.toString();
-                if (a !== b) {
-                    ret.push(valueData(arrayA, arrayB, valueStatus.MODIFIED));
-                }
-            }
-
-            return ret;
-        }
-
-        var AisMajorThanB = arrayA.length - arrayB.length;
-        var loop = AisMajorThanB < 0 ? arrayA.length : arrayB.length;
-
-        for (var i = 0; i < loop; ++i) {
-
-            if (isObject(arrayA[i]) && isObject(arrayB[i])) {
-                var _a = JSON.stringify(arrayA[i]);
-                var _b = JSON.stringify(arrayB[i]);
-                if (_a !== _b) {
-                    ret.push(valueData(_a, _b, valueStatus.MODIFIED));
-                }
-            } else if (arrayA[i] !== arrayB[i]) {
-                ret.push(valueData(arrayA[i], arrayB[i], valueStatus.MODIFIED));
-            }
-        }
-
-        if (AisMajorThanB > 0) {
-            for (i = i; i < arrayA.length; ++i) {
-                ret.push(valueData(arrayA[i], null, valueStatus.DELETED));
-            }
-        } else if (AisMajorThanB < 0) {
-            for (i = i; i < arrayB.length; ++i) {
-                ret.push(valueData(null, arrayB[i], valueStatus.ADDED));
-            }
-        }
-        return ret;
-    }
-
-    function areDateObjectsDifferent(a, b) {
-        if (a.getTime() !== b.getTime()) {
-            return true;
-        }
-        return false;
-    }
-
-    function areFunctionsDifferent(a, b) {
-        a = a.toString();
-        b = b.toString();
-        if (a !== b) {
-            return true;
-        }
-        return false;
-    }
-    
-
-    this.getDiff = function (a, b) {
-        
-        var ret = new Response(config.returnType);
-        deepDataCounter = config.deep;
-        
-
-        var typeA = getTypeOf(a);
-        var typeB = getTypeOf(b);
-
-        var path = '$root';
-        
-        if (typeA !== typeB) {
-            ret.push(propertyData(path, null, typeA === types.FUNCTION ? a.toString() : a, typeB === types.FUNCTION ? b.toString() : b, valueStatus.MODIFIED), path);
-            return ret;
-        } else if (typeA === dataTypes.OBJECT && typeB === dataTypes.OBJECT) {
-            ret.concat(this.objectDiff(a,b,path));
-        } else if (typeA === dataTypes.DATE && typeB === dataTypes.DATE) {
-            if (areDateObjectsDifferent(a, b)) {
-                ret.push(propertyData(path, property, a, b, valueStatus.MODIFIED), path);
-            }
-        } else if (typeA === dataTypes.ARRAY && typeB === dataTypes.ARRAY) {
-            var arrayCompareResult = this.arrayDiff(a, b, config.scan.arrays);
-            if (arrayCompareResult.length > 0) {
-                ret.push(propertyData(path, null, a, arrayCompareResult, valueStatus.MODIFIED), path);
-            }
-        } else {
-            if ((a = a.toString()) !== (b = b.toString())) {
-                ret.push(propertyData(path, null, a, b, valueStatus.MODIFIED), path);
-            }
-        }
-        
-        return ret.getData();
-    }
-
-
-    //Helpers
-
-    function getParentPath(parent) {
-        return ((typeof parent === 'string' && parent.trim() !== '') ? parent : '$root');
-    }
-
-    function getTypeOf(value) {
-
-        if (!isDefined(value)) {
-            return dataTypes.UNDEFINED;
-        } else if (isString(value)) {
-            return dataTypes.STRING;
-        } else if (isArray(value)) {
-            return dataTypes.ARRAY;
-        } else if (isDate(value)) {
-            return dataTypes.DATE;
-        } else if (isObject(value)) {
-            return dataTypes.OBJECT;
-        } else if (isFunction(value)) {
-            return dataTypes.FUNCTION;
-        }
-
-        return dataTypes.NUMBER;
-    }
-    
-    function Response(format){
-        var data = null;
-        this.push = null;
-        this.clear = null;
-        this.concat = null;
-        
-        if(format === returnTypes.JSON_OBJECT){
-            data = {};
-            this.push = function push(_data, propertyName){
-                data[propertyName] = _data;
-            };
-            this.clear = function clear(){
-                data = {};
-            };
-            
-            this.concat = function concat(response, property){
-                if(property===undefined){
-                    data = Object.assign(data, response);
-                }else{
-                    data[property] = response;
-                }
-            };
-        }else{
-            
-            data = [];
-            this.push = function push(_data, propertyName){
-                data.push(_data);
-            };
-            this.clear = function clear(){
-                data = [];
-            };
-            
-            this.concat = function concat(response, property){
-                data = data.concat(response);
-            };
-        }
-        
-        this.clear();
-        
-        this.getData = function(){
-            return data;
-        }
-    }
-
-    function valueData(valueA, valueB, status) {
-        return {
-            original: valueA,
-            diff: valueB,
-            status: status
-        };
-    };
-
-    function propertyData(path, property, valueA, valueB, status) {
-        return {
-            path: path !== '' && property !== null ? path + '.' + property : path,
-            property: property,
-            value: valueData(valueA, valueB, status)
-        };
-    };
+function buildDiff(original, current, status, changes = 0) {
+  return {
+    original,
+    current,
+    status,
+    changes,
+  };
 }
 
+function buildDeepDiff(data, status, changes = 0) {
+  return {
+    _: data,
+    status,
+    changes,
+  };
+}
 
+//types
 
-module.exports = new Differify();
+const typeMap = {
+  string: null,
+  number: null,
+  function: null,
+  object: null,
+};
+
+const deepTypeMap = {};
+
+//comparators
+
+function nativeEqualityComparator(a, b) {
+  if (a === b) {
+    return buildDiff(a, b, PROPERTY_STATUS.EQUAL);
+  }
+
+  return buildDiff(a, b, PROPERTY_STATUS.MODIFIED, 1);
+}
+
+function diff(a, b) {
+  //here, we avoid comparing by reference because of the nested objects can be changed
+  const aType = typeof a;
+  const bType = typeof b;
+
+  if (aType !== bType) {
+    return buildDiff(a, b, PROPERTY_STATUS.MODIFIED, 1);
+  }
+  const comparator = typeMap[aType];
+  return comparator ? comparator(a, b) : nativeEqualityComparator(a, b);
+}
+
+function multipleComparator(a, b) {
+  if (a === b) {
+    return buildDiff(a, b, PROPERTY_STATUS.EQUAL);
+  }
+
+  const aType = typeof a;
+  const bType = typeof b;
+
+  if (aType !== bType) {
+    return buildDiff(a, b, PROPERTY_STATUS.MODIFIED, 1);
+  }
+  const comparator = typeMap[aType];
+  return comparator ? comparator(a, b) : nativeEqualityComparator(a, b);
+}
+
+function dateComparator(aDate, bDate) {
+  if (aDate.getTime() === bDate.getTime()) {
+    return buildDiff(aDate, bDate, PROPERTY_STATUS.EQUAL);
+  }
+
+  return buildDiff(aDate, bDate, PROPERTY_STATUS.MODIFIED, 1);
+}
+
+function arraySimpleComparator(aArr, bArr) {
+  if (aArr.length === bArr.length) {
+    if (JSON.stringify(aArr) === JSON.stringify(bArr)) {
+      return buildDiff(aArr, bArr, PROPERTY_STATUS.EQUAL);
+    }
+  }
+  return buildDiff(aArr, bArr, PROPERTY_STATUS.MODIFIED, 1);
+}
+
+function deepArrayComparator(aArr, bArr) {
+  let maxArr;
+  let minArr;
+  let listALargerThanB = 0; // 0 equal \ -1 a major | 1 b major
+  if (aArr.length > bArr.length || aArr.length === bArr.length) {
+    maxArr = aArr;
+    minArr = bArr;
+    listALargerThanB = -1;
+  } else {
+    maxArr = bArr;
+    minArr = aArr;
+    listALargerThanB = 1;
+  }
+
+  const ret = [];
+  let changes = 0;
+  let i;
+  for (i = 0; i < minArr.length; ++i) {
+    ret.push(multipleComparator(aArr[i], bArr[i]));
+    changes += ret[i].changes || 0;
+  }
+  if (listALargerThanB === -1) {
+    for (i; i < maxArr.length; ++i) {
+      ret.push(buildDiff(aArr[i], null, PROPERTY_STATUS.DELETED, 1));
+      ++changes;
+    }
+  } else if (listALargerThanB === 1) {
+    for (i; i < maxArr.length; ++i) {
+      ret.push(buildDiff(null, bArr[i], PROPERTY_STATUS.ADDED, 1));
+      ++changes;
+    }
+  }
+
+  return buildDeepDiff(
+    ret,
+    changes > 0 ? PROPERTY_STATUS.MODIFIED : PROPERTY_STATUS.EQUAL,
+    changes
+  );
+}
+
+function toStringComparator(a, b) {
+  const aStringified = a.toString();
+  const bStringified = b.toString();
+  if (aStringified === bStringified) {
+    return buildDiff(aStringified, bStringified, PROPERTY_STATUS.EQUAL);
+  }
+
+  return buildDiff(aStringified, bStringified, PROPERTY_STATUS.MODIFIED, 1);
+}
+
+function deepObjectComparator(a, b) {
+  const ret = {};
+  let aLength = 0;
+  let bLength = 0;
+  let changes = 0;
+  for (let propA in a) {
+    if (has(a, propA)) {
+      ++aLength;
+      if (has(b, propA)) {
+        ret[propA] = multipleComparator(a[propA], b[propA]);
+      } else {
+        ret[propA] = buildDiff(a[propA], null, PROPERTY_STATUS.DELETED, 1);
+      }
+      changes += ret[propA].changes;
+    }
+  }
+
+  for (let propB in b) {
+    if (has(b, propB)) {
+      ++bLength;
+      if (!has(a, propB)) {
+        //TODO: avoid multiple indirections.
+        ret[propB] = buildDiff(null, b[propB], PROPERTY_STATUS.ADDED, 1);
+        changes += ret[propB].changes;
+      }
+    }
+  }
+
+  return aLength === 0 && bLength === 0
+    ? buildDeepDiff(null, PROPERTY_STATUS.EQUAL, changes)
+    : buildDeepDiff(
+        ret,
+        changes > 0 ? PROPERTY_STATUS.MODIFIED : PROPERTY_STATUS.EQUAL,
+        changes
+      );
+}
+
+function JSONStringComparator(a, b) {
+  const aStringified = JSON.stringify(a);
+  const bStringified = JSON.stringify(b);
+  if (aStringified === bStringified) {
+    return buildDiff(aStringified, bStringified, PROPERTY_STATUS.EQUAL);
+  }
+
+  return buildDiff(aStringified, bStringified, PROPERTY_STATUS.MODIFIED, 1);
+}
+
+function deepComparator(a, b) {
+  // check array => date => object
+  const aType = Object.prototype.toString.call(a);
+  const bType = Object.prototype.toString.call(b);
+
+  if (aType === bType) {
+    const comparator = deepTypeMap[aType];
+    return comparator ? comparator(a, b) : nativeEqualityComparator(a, b);
+  }
+
+  return buildDiff(a, b, PROPERTY_STATUS.MODIFIED);
+}
+
+const configureComparators = (config) => {
+  const objectComp = {};
+  objectComp[COMPARISSION_MODE.DIFF] = deepObjectComparator;
+  objectComp[COMPARISSION_MODE.REFERENCE] = (a, b) => {
+    const pDiff = nativeEqualityComparator(a, b);
+    return buildDeepDiff(null, pDiff.status, pDiff.changes);
+  };
+  objectComp[COMPARISSION_MODE.STRING] = (a, b) => {
+    const pDiff = JSONStringComparator(a, b);
+    return buildDeepDiff(null, pDiff.status, pDiff.changes);
+  };
+  const arrayComp = {};
+  arrayComp[COMPARISSION_MODE.DIFF] = deepArrayComparator;
+  arrayComp[COMPARISSION_MODE.REFERENCE] = (a, b) => {
+    const pDiff = nativeEqualityComparator(a, b);
+    return buildDeepDiff(null, pDiff.status, pDiff.changes);
+  };
+  arrayComp[COMPARISSION_MODE.STRING] = (a, b) => {
+    const pDiff = arraySimpleComparator(a, b);
+    return buildDeepDiff(null, pDiff.status, pDiff.changes);
+  };
+  const functionComp = {};
+  functionComp[COMPARISSION_MODE.REFERENCE] = nativeEqualityComparator;
+  functionComp[COMPARISSION_MODE.STRING] = toStringComparator;
+
+  typeMap.string = nativeEqualityComparator;
+  typeMap.number = nativeEqualityComparator;
+  typeMap.boolean = nativeEqualityComparator;
+  typeMap.function = functionComp[config.mode.function];
+  typeMap.object = deepComparator;
+
+  deepTypeMap['[object Array]'] = arrayComp[config.mode.array];
+  deepTypeMap['[object Date]'] = dateComparator;
+  deepTypeMap['[object Object]'] = objectComp[config.mode.object];
+};
+
+function Differify(_config) {
+  this.config = new Configuration(_config);
+  configureComparators(this.config);
+}
+
+Differify.prototype.setConfig = function setConfig(_config) {
+  this.config = new Configuration(_config);
+  configureComparators(this.config);
+};
+
+Differify.prototype.getConfig = function getConfig() {
+  return { mode: { ...this.config.mode } };
+};
+
+Differify.prototype.compare = function compare(a, b) {
+  return diff(a, b);
+};
+
+module.exports = Differify;
