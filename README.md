@@ -1,19 +1,20 @@
 
 
 
-![](assets/logo.svg)
+![Differify](assets/logo.svg)
  
  - Completely rewritten
- - The new version 3.x is <font size="3"> **x2 faster**</font> than the older one (version <= 2.x)
+ - The new version 3.x is <font size="3"> **x2 faster**</font> than the older versions (version <= 2.x)
  - Support for **Node.js** and **Browsers** (it works on both)
- - just **8,0K** weight
- - **no dependencies**
+ - Just **5.9K** weight (import)
+ - **No dependencies**
+
 
 ## Synopsis
 
   
 
-Differify allows you to get the difference between two entities (objects, arrays, dates, functions, numbers, etc) very easily, quickly and in a friendly way.
+Differify allows you to get the diff between two entities (objects diff, arrays diff, date diff, functions diff, number diff, etc) very easily, quickly and in a friendly way.
 
 <img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/netilon/differify/Differify CI"><img alt="GitHub package.json version" src="https://img.shields.io/github/package-json/v/netilon/differify"><img alt="GitHub" src="https://img.shields.io/github/license/netilon/differify">
 
@@ -51,6 +52,10 @@ Comparing things with differify is **very simple**!
 ### **> object diff output**
 
 ![](assets/differify-object-output.png)
+
+### **> easy access and use**
+
+![](assets/basic-use.png)
 
 ### **> Compare arrays**
 
@@ -99,9 +104,18 @@ As you can see, there are two different kinds of structures that you can get fro
 
 **Params:**
 
-Configuration Object (see the Config section).
+Configuration Object (see the Configuration section).
+
+---
+  
+**Method:**
+
+*getConfig();*
 
   
+
+**Description:** It returns a copy of the current configuration object.
+
 
 ---
 
@@ -156,8 +170,8 @@ if you dont specify any configuration, the default options are the following:
 
     {
 	    mode: {
-	    array: 'REFERENCE',
-	    object: 'REFERENCE',
+	    array: 'DIFF',
+	    object: 'DIFF',
 	    function: 'REFERENCE',
     }
 

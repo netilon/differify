@@ -1,7 +1,7 @@
 /**
  * MIT License
  *
- * Copyright (c) 2020 netilon.com (Fabian Roberto Orue)
+ * Copyright (c) 2020 Netilon - netilon.com (Fabian Roberto Orue)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -40,7 +40,7 @@ function has(obj, prop) {
     : obj[prop] !== undefined;
 }
 
-const COMPARISSION_MODE = {
+const COMPARISON_MODE = {
   REFERENCE: 'REFERENCE',
   DIFF: 'DIFF',
   STRING: 'STRING',
@@ -48,34 +48,34 @@ const COMPARISSION_MODE = {
 
 function Configuration(config) {
   this.mode = {
-    array: COMPARISSION_MODE.REFERENCE,
-    object: COMPARISSION_MODE.REFERENCE,
-    function: COMPARISSION_MODE.REFERENCE,
+    array: COMPARISON_MODE.DIFF,
+    object: COMPARISON_MODE.DIFF,
+    function: COMPARISON_MODE.REFERENCE,
   };
 
   if (isObject(config) && isObject(config.mode)) {
-    const allowedComparissions = Object.values(COMPARISSION_MODE);
+    const allowedComparissions = Object.values(COMPARISON_MODE);
 
     if (isValidString(config.mode.array)) {
-      const comparission = config.mode.array.toUpperCase();
-      if (allowedComparissions.indexOf(comparission) !== -1) {
-        this.mode.array = config.mode.array;
+      const comparison = config.mode.array.toUpperCase();
+      if (allowedComparissions.indexOf(comparison) !== -1) {
+        this.mode.array = comparison;
       }
     }
 
     if (isValidString(config.mode.object)) {
-      const comparission = config.mode.object.toUpperCase();
-      if (allowedComparissions.indexOf(comparission) !== -1) {
-        this.mode.object = config.mode.object;
+      const comparison = config.mode.object.toUpperCase();
+      if (allowedComparissions.indexOf(comparison) !== -1) {
+        this.mode.object = comparison;
       }
     }
     if (isValidString(config.mode.function)) {
-      const comparission = config.mode.function.toUpperCase();
+      const comparison = config.mode.function.toUpperCase();
       if (
-        comparission === COMPARISSION_MODE.REFERENCE ||
-        comparission === COMPARISSION_MODE.STRING
+        comparison === COMPARISON_MODE.REFERENCE ||
+        comparison === COMPARISON_MODE.STRING
       ) {
-        this.mode.function = config.mode.function;
+        this.mode.function = comparison;
       }
     }
   }
@@ -282,28 +282,28 @@ function deepComparator(a, b) {
 
 const configureComparators = (config) => {
   const objectComp = {};
-  objectComp[COMPARISSION_MODE.DIFF] = deepObjectComparator;
-  objectComp[COMPARISSION_MODE.REFERENCE] = (a, b) => {
+  objectComp[COMPARISON_MODE.DIFF] = deepObjectComparator;
+  objectComp[COMPARISON_MODE.REFERENCE] = (a, b) => {
     const pDiff = nativeEqualityComparator(a, b);
     return buildDeepDiff(null, pDiff.status, pDiff.changes);
   };
-  objectComp[COMPARISSION_MODE.STRING] = (a, b) => {
+  objectComp[COMPARISON_MODE.STRING] = (a, b) => {
     const pDiff = JSONStringComparator(a, b);
     return buildDeepDiff(null, pDiff.status, pDiff.changes);
   };
   const arrayComp = {};
-  arrayComp[COMPARISSION_MODE.DIFF] = deepArrayComparator;
-  arrayComp[COMPARISSION_MODE.REFERENCE] = (a, b) => {
+  arrayComp[COMPARISON_MODE.DIFF] = deepArrayComparator;
+  arrayComp[COMPARISON_MODE.REFERENCE] = (a, b) => {
     const pDiff = nativeEqualityComparator(a, b);
     return buildDeepDiff(null, pDiff.status, pDiff.changes);
   };
-  arrayComp[COMPARISSION_MODE.STRING] = (a, b) => {
+  arrayComp[COMPARISON_MODE.STRING] = (a, b) => {
     const pDiff = arraySimpleComparator(a, b);
     return buildDeepDiff(null, pDiff.status, pDiff.changes);
   };
   const functionComp = {};
-  functionComp[COMPARISSION_MODE.REFERENCE] = nativeEqualityComparator;
-  functionComp[COMPARISSION_MODE.STRING] = toStringComparator;
+  functionComp[COMPARISON_MODE.REFERENCE] = nativeEqualityComparator;
+  functionComp[COMPARISON_MODE.STRING] = toStringComparator;
 
   typeMap.string = nativeEqualityComparator;
   typeMap.number = nativeEqualityComparator;

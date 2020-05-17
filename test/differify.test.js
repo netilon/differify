@@ -29,15 +29,26 @@ describe('Testing differify lib: ', () => {
       mode: { array: null, object: true },
     });
     let config = differify.getConfig();
-    expect(config.mode.array).toEqual('REFERENCE');
-    expect(config.mode.object).toEqual('REFERENCE');
+    expect(config.mode.array).toEqual('DIFF');
+    expect(config.mode.object).toEqual('DIFF');
     expect(config.mode.function).toEqual('REFERENCE');
   });
+
+  test('testing case insensitive config arguments', () => {
+    differify.setConfig({
+      mode: { array: 'diff', object: 'string', function: 'string' },
+    });
+    const config = differify.getConfig();
+    expect(config.mode.array).toEqual('DIFF');
+    expect(config.mode.object).toEqual('STRING');
+    expect(config.mode.function).toEqual('STRING');
+  });
+
   test('testing empty config', () => {
     differify.setConfig();
     let config = differify.getConfig();
-    expect(config.mode.array).toEqual('REFERENCE');
-    expect(config.mode.object).toEqual('REFERENCE');
+    expect(config.mode.array).toEqual('DIFF');
+    expect(config.mode.object).toEqual('DIFF');
     expect(config.mode.function).toEqual('REFERENCE');
   });
 
@@ -46,8 +57,8 @@ describe('Testing differify lib: ', () => {
       mode: {},
     });
     let config = differify.getConfig();
-    expect(config.mode.array).toEqual('REFERENCE');
-    expect(config.mode.object).toEqual('REFERENCE');
+    expect(config.mode.array).toEqual('DIFF');
+    expect(config.mode.object).toEqual('DIFF');
     expect(config.mode.function).toEqual('REFERENCE');
   });
 
@@ -382,13 +393,13 @@ describe('Testing differify lib: ', () => {
       '{"_":[{"original":1,"current":1,"status":"EQUAL","changes":0},{"original":2,"current":2,"status":"EQUAL","changes":0},{"original":3,"current":4,"status":"MODIFIED","changes":1},{"original":4,"current":6,"status":"MODIFIED","changes":1},{"original":5,"current":8,"status":"MODIFIED","changes":1},{"original":null,"current":10,"status":"ADDED","changes":1}],"status":"MODIFIED","changes":4}'
     );
 
-    differify.setConfig({ mode: { array: 'REFERENCE' } });
+    differify.setConfig({ mode: { array: 'REFERENCE', object: 'REFERENCE'} });
 
     expect(JSON.stringify(differify.compare(getAObject(), getBObject()))).toBe(
       '{"_":null,"status":"MODIFIED","changes":1}'
     );
 
-    differify.setConfig({ mode: { array: 'STRING' } });
+    differify.setConfig({ mode: { array: 'STRING' , object: 'REFERENCE'} });
 
     expect(JSON.stringify(differify.compare(getAObject(), getBObject()))).toBe(
       '{"_":null,"status":"MODIFIED","changes":1}'
