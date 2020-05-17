@@ -1,14 +1,17 @@
 
-## Differify V3 **x2** Faster than V2
 
-[logo.svg]
+
+![](assets/logo.svg)
+ 
+ - Completely rewritten
+ - The new version 3.x is <font size="3"> **x2 faster**</font> than the older one (version <= 2.x)
+ - Support for **Node.js** and **Browsers** (it works on both)
 
 ## Synopsis
 
   
 
-Differify allows you to get the difference between two entities (objects, arrays, dates, functions, numbers, etc) very easy, quickly and in a friendly way.
-
+Differify allows you to get the difference between two entities (objects, arrays, dates, functions, numbers, etc) very easily, quickly and in a friendly way.
 
 
 ## Your contribution is appreciated (thanks!)
@@ -35,44 +38,44 @@ npm install @netilon/differify
 
   
 
-Compare things with differify is **very simple**!
+Comparing things with differify is **very simple**!
 
 
 ### **> Compare objects**
 
-[how-to-use-differify-object-example.png]
+![](assets/how-to-use-differify-object-example.png)
 
 ### **> object diff output**
 
-[differify-object-output.png]
+![](assets/differify-object-output.png)
 
 ### **> Compare arrays**
 
-[how-to-use-differify-array-example.png]
+![](assets/how-to-use-differify-array-example.png)
 
 ### **> array diff output**
 
-[differify-array-output.png]
+![](assets/differify-array-output.png)
 
 
 ### **Simple Structure**
-As you can see, there are two different kinds of structures that you can get from compare method call.
+As you can see, there are two different kinds of structures that you can get from `compare` method call.
 
 1) For objects and arrays **only**, you will get this structure:
 
-	[basic-structure-for-objects-arrays.png]
+	![](assets/basic-structure-for-objects-arrays.png)
   
 	- the `_` property contains the detailed diff information (it's an underscore to improve the readability in complex nested objects property accesses)
-	- the `status` property contains the global status of the comparission ('EQUAL', 'MODIFIED', 'DELETED', 'ADDED')
-	- the `changes` property is the total changes found when the comparission was performed.
+	- the `status` property contains the global status of the comparison ('EQUAL', 'MODIFIED', 'DELETED', 'ADDED')
+	- the `changes` property is the total changes found when the comparison was performed.
   
 2) For anything that `Object.prototype.toString.call()` does NOT return `[object Array]` or `[object Object]` (functions, dates, numbers, etc), you will get this structure:
    
-	 [basic-structure-for-values.png]
+	 ![](assets/basic-structure-for-values.png)
 
 	 - the `original` property has the **original** value (left parameter in `compare` method).
 	 - the `current` property has the **current** value (right parameter in `compare` method).
-	 - the `status` property contains the current status of the comparission ('EQUAL', 'MODIFIED', 'DELETED', 'ADDED')
+	 - the `status` property contains the current status of the comparison ('EQUAL', 'MODIFIED', 'DELETED', 'ADDED')
 	 - the `changes` property will be 1 or 0 depending if there was a change or not.
 
 # Documentation
@@ -87,7 +90,7 @@ As you can see, there are two different kinds of structures that you can get fro
 
   
 
-**Description:** Set the configuration options that will be applied when compare() method is called.
+**Description:** It sets the configuration options that will be applied when compare() method is called.
 
   
 
@@ -107,7 +110,7 @@ Configuration Object (see the Config section).
 
   
 
-**Description:** Return the difference between two entities.
+**Description:** It returns the difference between two entities.
 
   
 
@@ -125,14 +128,14 @@ Both parameters indicate the entities to be compared.
 
   
 
-You can pass a config to the setConfig() method to change the behavior and adjust it to your needs. If you want, you can set it once and use everywhere or change it when you need.
+You can pass a config to the setConfig() method to change the behavior and adjust it to fit your needs. If you prefer, you can set it once and use it everywhere or you can change it when you need it.
 
 
 | key | value | default | description
 |--|--|--|--|
-| _mode.array_  | string | REFERENCE | **DIFF**: it will iterate over each element in the array A, and will compare each element against the element in the same index in the array B.<br><br>**REFERENCE**: just compare the references of each array.<br><br>**STRING**: only will check the array length and will do a toString comparission if necessary. |
-| _mode.object_  | string | REFERENCE | **DIFF**: it will iterate over each property in the object A and will compare each value with the same property value in the object B.<br><br>**REFERENCE**:  just compare the references of each object.<br><br>**STRING**: only do a toString comparission. |
-| _mode.function_  | string | REFERENCE | **REFERENCE**:  just compare the references of each function.<br><br>**STRING**: only do a toString comparission (useful to compare the function bodies). |
+| _mode.array_  | string | REFERENCE | **DIFF**: it will iterate over each element in the array A, and will compare each element against the element in the same index in the array B.<br><br>**REFERENCE**: just compare the references of each array.<br><br>**STRING**: only will check the array length and will do a toString comparison if necessary. |
+| _mode.object_  | string | REFERENCE | **DIFF**: it will iterate over each property in the object A and will compare each value with the same property value in the object B.<br><br>**REFERENCE**:  just compare the references of each object.<br><br>**STRING**: only do a toString comparison. |
+| _mode.function_  | string | REFERENCE | **REFERENCE**:  just compare the references of each function.<br><br>**STRING**: only do a toString comparison (useful to compare the function bodies). |
 
 **Configuration example:**
 
@@ -162,13 +165,13 @@ if you dont specify any configuration, the default options are the following:
 
 You have to know that the configuration you provide will change the behavior of the comparators and it will result in different outputs. 
 
-Just play around it and use the configuration that feet your needs.
+Just play around with it and use the configuration that fits your needs.
 
 The following image, **just represents the idea** of what each option does, but **is not** the real implementation:
 
   
 
-[comparators.png]
+![](assets/comparators.png)
 
   
 
@@ -214,13 +217,13 @@ you will get this output (note that there is a detail for each element in the ar
 
   
 
-you will get this output (just an string comparission):
+you will get this output (just a string comparison):
 
   
 
 	{
 		// no diff info 
-		// (because it's just string comparission)
+		// (because it's just string comparison)
 		"_": null, 
 		"status": "MODIFIED",
 		// always will be 1 or 0 because there is no
@@ -238,56 +241,4 @@ you will get this output (just an string comparission):
 [![alt text](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif 'thanks for contribute!')](https://paypal.me/netilon)
 
   
-
----
-
-## License
-
-  
-
-Copyright 2018 Netilon (Fabian Orue)
-
-http://netilon.com
-
-  
-
-Permission is hereby granted, free of charge, to any person obtaining
-
-a copy of this software and associated documentation files (the
-
-"Software"), to deal in the Software without restriction, including
-
-without limitation the rights to use, copy, modify, merge, publish,
-
-distribute, sublicense, and/or sell copies of the Software, and to
-
-permit persons to whom the Software is furnished to do so, subject to
-
-the following conditions:
-
-  
-
-The above copyright notice and this permission notice shall be
-
-included in all copies or substantial portions of the Software.
-
-  
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-
-NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-
-LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-
-OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-
-WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-  
-
----
 
