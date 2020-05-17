@@ -1,5 +1,5 @@
 
-const Differify = require('../src/differify');
+const Differify = require('../index');
 
 const differify = new Differify();
 
@@ -182,17 +182,17 @@ describe('Testing differify lib: ', () => {
         function: 'STRING',
       },
     });
-    let ao = new Date();
-    let bo = new Date(1983, 11, 15);
+    let a = new Date();
+    let b = new Date(1983, 11, 15);
 
-    let diff = differify.compare(ao, bo);
+    let diff = differify.compare(a, b);
 
     expect(diff.status === 'MODIFIED').toBeTruthy();
 
     const newDate = new Date();
-    ao = newDate;
-    bo = newDate;
-    diff = differify.compare(ao, bo);
+    a = newDate;
+    b = newDate;
+    diff = differify.compare(a, b);
     expect(diff.status === 'EQUAL').toBeTruthy();
   });
 
@@ -215,9 +215,9 @@ describe('Testing differify lib: ', () => {
     expect(differify.compare('a', 'b').status === 'MODIFIED').toBeTruthy();
 
     const newDate = new Date();
-    ao = newDate;
-    bo = newDate;
-    diff = differify.compare(ao, bo);
+    const a = newDate;
+    const b = newDate;
+    const diff = differify.compare(a, b);
     expect(diff.status === 'EQUAL').toBeTruthy();
   });
 
