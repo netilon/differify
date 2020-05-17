@@ -6,6 +6,8 @@
  - Completely rewritten
  - The new version 3.x is <font size="3"> **x2 faster**</font> than the older one (version <= 2.x)
  - Support for **Node.js** and **Browsers** (it works on both)
+ - just **8,0K** weight
+ - **no dependencies**
 
 ## Synopsis
 
@@ -13,6 +15,7 @@
 
 Differify allows you to get the difference between two entities (objects, arrays, dates, functions, numbers, etc) very easily, quickly and in a friendly way.
 
+<img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/netilon/differify/Differify CI"><img alt="GitHub package.json version" src="https://img.shields.io/github/package-json/v/netilon/differify"><img alt="GitHub" src="https://img.shields.io/github/license/netilon/differify">
 
 ## Your contribution is appreciated (thanks!)
 
@@ -179,7 +182,7 @@ The following image, **just represents the idea** of what each option does, but 
 
   
 
-#with the option ***DIFF***:
+### with the option ***DIFF***:
 
     const testA = [1,2];
     const testB = [1,3];
@@ -208,7 +211,7 @@ you will get this output (note that there is a detail for each element in the ar
 
   
 
-#with the option ***STRING***:
+### with the option ***STRING*** or ***REFERENCE***:
 
   
 
