@@ -334,4 +334,4 @@ Differify.prototype.compare = function compare(a, b) {
   return diff(a, b);
 };
 
-module.exports = Differify;
+export default Differify;

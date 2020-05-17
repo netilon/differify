@@ -1,14 +1,17 @@
 
-## Differify V3 **x2** Faster than V2
 
-![](https://github.com/netilon/differify/blob/v3/assets/logo.svg)
+
+![](assets/logo.svg)
+ 
+ - Completely rewritten
+ - The new version 3.x is <font size="3"> **x2 faster**</font> than the older one (version <= 2.x)
+ - Support for **Node.js** and **Browsers** (it works on both)
 
 ## Synopsis
 
   
 
 Differify allows you to get the difference between two entities (objects, arrays, dates, functions, numbers, etc) very easily, quickly and in a friendly way.
-
 
 
 ## Your contribution is appreciated (thanks!)
@@ -40,19 +43,19 @@ Comparing things with differify is **very simple**!
 
 ### **> Compare objects**
 
-![](https://github.com/netilon/differify/blob/v3/assets/how-to-use-differify-object-example.png)
+![](assets/how-to-use-differify-object-example.png)
 
 ### **> object diff output**
 
-![](https://github.com/netilon/differify/blob/v3/assets/differify-object-output.png)
+![](assets/differify-object-output.png)
 
 ### **> Compare arrays**
 
-![](https://github.com/netilon/differify/blob/v3/assets/how-to-use-differify-array-example.png)
+![](assets/how-to-use-differify-array-example.png)
 
 ### **> array diff output**
 
-![](https://github.com/netilon/differify/blob/v3/assets/differify-array-output.png)
+![](assets/differify-array-output.png)
 
 
 ### **Simple Structure**
@@ -60,7 +63,7 @@ As you can see, there are two different kinds of structures that you can get fro
 
 1) For objects and arrays **only**, you will get this structure:
 
-	![](https://github.com/netilon/differify/blob/v3/assets/basic-structure-for-objects-arrays.png)
+	![](assets/basic-structure-for-objects-arrays.png)
   
 	- the `_` property contains the detailed diff information (it's an underscore to improve the readability in complex nested objects property accesses)
 	- the `status` property contains the global status of the comparison ('EQUAL', 'MODIFIED', 'DELETED', 'ADDED')
@@ -68,7 +71,7 @@ As you can see, there are two different kinds of structures that you can get fro
   
 2) For anything that `Object.prototype.toString.call()` does NOT return `[object Array]` or `[object Object]` (functions, dates, numbers, etc), you will get this structure:
    
-	 ![](https://github.com/netilon/differify/blob/v3/assets/basic-structure-for-values.png)
+	 ![](assets/basic-structure-for-values.png)
 
 	 - the `original` property has the **original** value (left parameter in `compare` method).
 	 - the `current` property has the **current** value (right parameter in `compare` method).
@@ -168,7 +171,7 @@ The following image, **just represents the idea** of what each option does, but 
 
   
 
-![](https://github.com/netilon/differify/blob/v3/assets/comparators.png)
+![](assets/comparators.png)
 
   
 
