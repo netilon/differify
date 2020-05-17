@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   sodipodi:docname="logo.svg"
+   inkscape:version="1.0 (6e3e5246a0, 2020-05-07)"
+   id="svg8"
+   version="1.1"
+   viewBox="0 0 53.187687 10.386664"
+   height="10.386664mm"
+   width="53.187687mm">
+  <defs
+     id="defs2">
+    <rect
+       id="rect12"
+       height="13.311086"
+       width="45.094353"
+       y="26.457224"
+       x="37.154854" />
+  </defs>
+  <sodipodi:namedview
+     inkscape:window-maximized="0"
+     inkscape:window-y="1107"
+     inkscape:window-x="222"
+     inkscape:window-height="836"
+     inkscape:window-width="1428"
+     showgrid="false"
+     inkscape:document-rotation="0"
+     inkscape:current-layer="layer1"
+     inkscape:document-units="mm"
+     inkscape:cy="180.02124"
+     inkscape:cx="389.26481"
+     inkscape:zoom="1.3350385"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     borderopacity="1.0"
+     bordercolor="#666666"
+     pagecolor="#ffffff"
+     id="base" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     transform="translate(0.08123329,-0.21246521)"
+     id="layer1"
+     inkscape:groupmode="layer"
+     inkscape:label="Layer 1">
+    <g
+       transform="translate(-38.207044,-27.42305)"
+       id="g44">
+      <text
+         xml:space="preserve"
+         id="text10"
+         style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect12);fill:#000000;fill-opacity:1;stroke:none;"><tspan
+           x="37.154297"
+           y="35.820771"><tspan
+             style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#008080">Diff</tspan><tspan>erify</tspan></tspan></text>
+      <rect
+         style="fill:#008080;stroke-width:0.264583"
+         id="rect22"
+         width="4.9562654"
+         height="4.9562654"
+         x="83.683304"
+         y="30.564182" />
+      <rect
+         y="27.635515"
+         x="86.357231"
+         height="4.9562654"
+         width="4.9562654"
+         id="rect22-3"
+         style="fill:#d45500;stroke-width:0.264583" />
+    </g>
+  </g>
+</svg>
