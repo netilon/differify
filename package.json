@@ -1,6 +1,6 @@
 {
   "name": "@netilon/differify",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "description": "Differify allows you to get the diff between two entities (objects diff, arrays diff, date diff, functions diff, number diff, etc) very easily, quickly and in a friendly way.",
   "main": "./index.js",
   "scripts": {
@@ -39,7 +39,7 @@
     "email": "fabianorue@gmail.com"
   },
   "homepage": "http://www.netilon.com",
-  "license": "MIT",
+  "license": "BSD-3-Clause",
   "devDependencies": {
     "@babel/core": "^7.9.6",
     "@babel/preset-env": "^7.9.6",
