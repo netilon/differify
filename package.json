@@ -16,6 +16,9 @@
   "keywords": [
     "differify",
     "diff",
+    "object diff",
+    "array diff",
+    "difference",
     "compare",
     "comparator",
     "comparison",
