@@ -124,8 +124,8 @@ As you can see, there are two different kinds of structures that you can get fro
 Configuration Object (see the Configuration section).
 
 
-**Return**
-void
+**Return:** void
+
 ---
   
 **Method:**
@@ -136,8 +136,9 @@ void
 
 **Description:** It returns a copy of the current configuration object.
 
-**Return**
-Object
+
+**Return:** Object
+
 ---
 
   
@@ -156,8 +157,8 @@ Object
 
 Both parameters indicate the entities to be compared.
 
-**Return**
-Object.
+
+**Return:** Object.
 
 
 ---
@@ -174,11 +175,12 @@ Object.
 
 **Params:**
 
-**diffResult**: Object - It is the Object returned by the `compare()` method call.
-**diffOnly**: It returns just the difference (only the `MODIFIED` properties).
+*diffResult*: Object - It is the Object returned by the `compare()` method call.
 
-**Return**
-Object.
+*diffOnly*: boolean - (default: false) It returns just the difference (only the !== `EQUAL` properties).
+
+
+**Return:** Object.
 
 ---
 
@@ -194,11 +196,11 @@ Object.
 
 **Params:**
 
-**diffResult**: Object - It is the Object returned by the `compare()` method call.
-**diffOnly**: It returns just the difference (only the `MODIFIED` properties).
+*diffResult*: Object - It is the Object returned by the `compare()` method call.
 
-**Return**
-Object.
+*diffOnly*: boolean - (default: false) It returns just the difference (only the !== `EQUAL` properties).
+
+**Return:** Object.
 
 ---
 
