@@ -1,6 +1,6 @@
 
 const Bencharmk = require('benchmark');
-const Differify = require('../src/differify');
+const Differify = require('../index');
 
 const A = [
   {

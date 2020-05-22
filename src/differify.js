@@ -297,6 +297,70 @@ const configureComparators = (config) => {
   deepTypeMap['[object Object]'] = objectComp[config.mode.object];
 };
 
+const applyChanges = (next, selector) => {
+  if (isArray(next)) {
+    const list = [];
+    let curr;
+    for (let i = 0; i < next.length; i++) {
+      curr = selector(next[i]);
+      if (curr) {
+        list.push(curr);
+      }
+    }
+
+    return list;
+  }
+
+  if (typeof next === 'object') {
+    const o = {};
+    let curr;
+    for (let i in next) {
+      if (next.hasOwnProperty(i)) {
+        curr = selector(next[i]);
+        if (curr) {
+          o[i] = curr;
+        }
+      }
+    }
+
+    return o;
+  }
+
+  return selector(next);
+};
+
+const rightChangeSelector = (curr) => {
+  if (curr._) {
+    return applyChanges(curr._, rightChangeSelector);
+  }
+  return curr.status === PROPERTY_STATUS.DELETED ? curr.original : curr.current;
+};
+
+const leftChangeSelector = (curr) => {
+  if (curr._) {
+    return applyChanges(curr._, leftChangeSelector);
+  }
+  return curr.status === PROPERTY_STATUS.ADDED ? curr.current : curr.original;
+};
+
+const diffChangeSelectorCreator = (selector) => {
+  const diffChangeSelector = (curr) => {
+    if (curr._ && curr.changes > 0) {
+      return applyChanges(curr._, diffChangeSelector);
+    }
+    return curr.status === PROPERTY_STATUS.EQUAL ? null : selector(curr);
+  };
+  return diffChangeSelector;
+};
+
+const isMergeable = (config) => {
+  // It's no necessary to check the config because
+  // it's allways valid.
+  return (
+    config.mode.object === COMPARISON_MODE.DIFF &&
+    config.mode.array === COMPARISON_MODE.DIFF
+  );
+};
 function Differify(_config) {
   this.config = new Configuration(_config);
   configureComparators(this.config);
@@ -313,6 +377,41 @@ Differify.prototype.getConfig = function getConfig() {
 
 Differify.prototype.compare = function compare(a, b) {
   return diff(a, b);
+};
+
+// TODO: create a leftMerge > left changes && rightMerge > right changes and diffMerge > difference
+Differify.prototype.applyLeftChanges = function mergeLeft(
+  diffResult,
+  diffOnly = false
+) {
+  if (diffResult && diffResult._ && isMergeable(this.config)) {
+    return applyChanges(
+      diffResult._,
+      diffOnly
+        ? diffChangeSelectorCreator(leftChangeSelector)
+        : leftChangeSelector
+    );
+  }
+  return null;
+};
+
+Differify.prototype.applyRightChanges = function mergeRight(
+  diffResult,
+  diffOnly = false
+) {
+  if (
+    diffResult &&
+    diffResult._ &&
+    isMergeable(this.config)
+  ) {
+    return applyChanges(
+      diffResult._,
+      diffOnly
+        ? diffChangeSelectorCreator(rightChangeSelector)
+        : rightChangeSelector
+    );
+  }
+  return null;
 };
 
 export default Differify;
