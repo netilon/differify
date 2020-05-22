@@ -2,12 +2,18 @@
 
 
 ![Differify](assets/logo.svg)
+
+
+## Whats new?
  
  - Completely rewritten
  - The new version 3.x is <font size="3"> **x2 faster**</font> than the older versions (version <= 2.x)
  - Support for **Node.js** and **Browsers** (it works on both)
  - Just **5.9K** weight (import)
  - **No dependencies**
+ - **New features** were added! Now you can easily do more things with differify!
+     - you can apply changes (merge) from `left to right` (applyRightChanges) or `right to left` (applyLeftChanges)
+     - you can just `keep the differences between two entities` It's very useful indeed! (see more in the [Documentation](#id3) about the diffOnly option of `apply[Right|Left]Changes` methods). 
 
 
 ## Synopsis
@@ -29,8 +35,16 @@ Differify allows you to get the diff between two entities (objects diff, arrays 
 ---
 
   
+**Index**   
+1. [Installation](#id1)
+2. [How to use](#id2)
+2. [Documentation](#id3)
+2. [Configuration](#id4)
+2. [Examples](#id5)
 
-## Installation
+---
+
+## Installation<a name="id1"></a>
 
   
 
@@ -38,7 +52,7 @@ npm install @netilon/differify
 
   
 
-## How to use it
+## How to use it<a name="id2"></a>
 
   
 
@@ -49,11 +63,11 @@ Comparing things with differify is **very simple**!
 
 ![](assets/how-to-use-differify-object-example.png)
 
-### **> object diff output**
+### **> Object diff output**
 
 ![](assets/differify-object-output.png)
 
-### **> easy access and use**
+### **> Easy access and use**
 
 ![](assets/basic-use.png)
 
@@ -61,10 +75,9 @@ Comparing things with differify is **very simple**!
 
 ![](assets/how-to-use-differify-array-example.png)
 
-### **> array diff output**
+### **> Array diff output**
 
 ![](assets/differify-array-output.png)
-
 
 ### **Simple Structure**
 As you can see, there are two different kinds of structures that you can get from `compare` method call.
@@ -86,7 +99,11 @@ As you can see, there are two different kinds of structures that you can get fro
 	 - the `status` property contains the current status of the comparison ('EQUAL', 'MODIFIED', 'DELETED', 'ADDED')
 	 - the `changes` property will be 1 or 0 depending if there was a change or not.
 
-# Documentation
+### **> Apply changes**
+
+![](assets/apply-changes.png)
+
+# Documentation<a name="id3"></a>
 
 ## Methods
 
@@ -106,6 +123,9 @@ As you can see, there are two different kinds of structures that you can get fro
 
 Configuration Object (see the Configuration section).
 
+
+**Return:** void
+
 ---
   
 **Method:**
@@ -116,6 +136,8 @@ Configuration Object (see the Configuration section).
 
 **Description:** It returns a copy of the current configuration object.
 
+
+**Return:** Object
 
 ---
 
@@ -135,13 +157,56 @@ Configuration Object (see the Configuration section).
 
 Both parameters indicate the entities to be compared.
 
+
+**Return:** Object.
+
+
+---
+
+**Method:**
+
+*applyRightChanges(diffResult, diffOnly);*
+
   
+
+**Description:** It will apply the changes (merge both entities) and will keep the modified values **from the right**.  
+
+  
+
+**Params:**
+
+*diffResult*: Object - It is the Object returned by the `compare()` method call.
+
+*diffOnly*: boolean - (default: false) It returns just the difference (only the !== `EQUAL` properties).
+
+
+**Return:** Object.
+
+---
+
+**Method:**
+
+*applyLeftChanges(diffResult, diffOnly);*
+
+  
+
+**Description:** It will apply the changes (merge both entities) and will keep the modified values **from the left**.  
+
+  
+
+**Params:**
+
+*diffResult*: Object - It is the Object returned by the `compare()` method call.
+
+*diffOnly*: boolean - (default: false) It returns just the difference (only the !== `EQUAL` properties).
+
+**Return:** Object.
 
 ---
 
   
 
-## Configuration
+## Configuration<a name="id4"></a>
 
   
 
@@ -178,7 +243,7 @@ if you dont specify any configuration, the default options are the following:
 
   
 
-## Examples
+## Examples<a name="id5"></a>
 
 You have to know that the configuration you provide will change the behavior of the comparators and it will result in different outputs. 
 
