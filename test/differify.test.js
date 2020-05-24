@@ -609,6 +609,12 @@ describe('Testing differify lib: ', () => {
     expect(merged[0]).toBe(1);
     expect(merged[1]).toBe(2);
     expect(merged[2]).toBe(3);
+
+    diff = differify.compare([1, 2], [1, 2]);
+    merged = differify.applyLeftChanges(diff, true);
+
+    expect(merged).not.toBe(undefined);
+    expect(merged.length).toBe(0);
   });
 
   test('should return a non null result when the config parameters are DIFF for objects and arrays', () => {
@@ -655,6 +661,10 @@ describe('Testing differify lib: ', () => {
     diff = null;
     merged = differify.applyLeftChanges(diff);
     expect(merged).toBe(null);
+
+    diff = null;
+    merged = differify.filterDiffByStatus(diff);
+    expect(merged).toBe(null);
   });
 
   test('if no changes between two entities, the left or right apply method, should return the object when called', () => {
@@ -683,4 +693,108 @@ describe('Testing differify lib: ', () => {
     expect(merged.extras.somethingElse).toBe('2');
   });
 
+  test('should return the props filtered by status', () => {
+    differify.setConfig({ mode: { object: 'DIFF', array: 'DIFF' } });
+    const A = {
+      name: 'Person1',
+      extras: {
+        something: '1',
+        somethingElse: '2',
+      },
+      member: true,
+      doc: 10,
+      friends: ['A', 'B', 'C'],
+    };
+    const B = {
+      name: 'Person1',
+      extras: {
+        something: '1',
+        somethingElse: '2',
+      },
+      member: false,
+      badges: 7,
+      friends: ['A', 'D', 'C', 'F'],
+    };
+
+    const diff = differify.compare(A, B);
+    let merged = differify.filterDiffByStatus(diff, 'DELETED');
+    expect(merged).not.toBe(null);
+    expect(merged.name).toBe(undefined);
+    expect(merged.extras).toBe(undefined);
+    expect(merged.doc).toBe(10);
+    expect(merged.memeber).toBe(undefined);
+    expect(merged.friends.length).toBe(0);
+
+    merged = differify.filterDiffByStatus(diff, 'ADDED');
+    expect(merged).not.toBe(null);
+    expect(merged.name).toBe(undefined);
+    expect(merged.extras).toBe(undefined);
+    expect(merged.doc).toBe(undefined);
+    expect(merged.badges).toBe(7);
+    expect(merged.memeber).toBe(undefined);
+    expect(merged.friends.length).toBe(1);
+    expect(merged.friends[0]).toBe('F');
+
+    merged = differify.filterDiffByStatus(diff, 'MODIFIED');
+    expect(merged).not.toBe(null);
+    expect(merged.name).toBe(undefined);
+    expect(merged.extras).toBe(undefined);
+    expect(merged.doc).toBe(undefined);
+    expect(merged.badges).toBe(undefined);
+    expect(merged.memeber).toBeFalsy();
+    expect(merged.friends.length).toBe(1);
+    expect(merged.friends[0]).toBe('D');
+
+    merged = differify.filterDiffByStatus(diff, 'EQUAL');
+    expect(merged).not.toBe(null);
+    expect(merged.name).toBe('Person1');
+    expect(Object.prototype.toString(merged.extras)).toBe('[object Object]');
+    expect(merged.extras.something).toBe('1');
+    expect(merged.extras.somethingElse).toBe('2');
+    expect(merged.doc).toBe(undefined);
+    expect(merged.badges).toBe(undefined);
+    expect(merged.memeber).toBe(undefined);
+    expect(merged.friends.length).toBe(2);
+    expect(merged.friends[0]).toBe('A');
+    expect(merged.friends[1]).toBe('C');
+  });
+
+  test('if the input is an Array, must return an array with the elements filtered by status', () => {
+    differify.setConfig({ mode: { object: 'DIFF', array: 'DIFF' } });
+    const A = ['A', 'B', 'C'];
+    const B = ['A', 'D', 'C', 'F'];
+
+    const diff = differify.compare(A, B);
+    let merged = differify.filterDiffByStatus(diff, 'ADDED');
+    expect(merged).not.toBe(null);
+    expect(merged._).toBe(undefined);
+    expect(Array.isArray(merged)).toBeTruthy();
+    expect(merged.length).toBe(1);
+    expect(merged[0]).toBe('F');
+
+    merged = differify.filterDiffByStatus(diff, 'MODIFIED');
+    expect(merged).not.toBe(null);
+    expect(merged._).toBe(undefined);
+    expect(Array.isArray(merged)).toBeTruthy();
+    expect(merged.length).toBe(1);
+    expect(merged[0]).toBe('D');
+
+    merged = differify.filterDiffByStatus(diff, 'EQUAL');
+    expect(merged).not.toBe(null);
+    expect(merged._).toBe(undefined);
+    expect(Array.isArray(merged)).toBeTruthy();
+    expect(merged.length).toBe(2);
+    expect(merged[0]).toBe('A');
+    expect(merged[1]).toBe('C');
+
+    merged = differify.filterDiffByStatus(
+      differify.compare([1, 2], [1]),
+      'DELETED'
+    );
+    expect(merged).not.toBe(null);
+    expect(merged._).toBe(undefined);
+    expect(Array.isArray(merged)).toBeTruthy();
+    expect(merged.length).toBe(1);
+    expect(merged[0]).toBe(2);
+  });
 });

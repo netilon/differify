@@ -20,15 +20,15 @@
 ## Whats new?
  
  - Completely rewritten
- - The new version 3.x is <font size="3"> **x2 faster**</font> than the older versions (version <= 2.x)
-	 and is now the Fastest deep object/array comparator.
+ - The new version 3.x is <font size="3"> **x2 faster**</font> than the older versions (version < 3.0.0)
+	 and is now one of the **Fastests deep object/array** comparators.
  - Support for **Node.js** and **Browsers** (it works on both)
  - Just **6.7K (gzipped 2K)** weight (import)
  - **No dependencies**
  - **New features** were added! Now you can easily do more things with differify!
      - you can apply changes (merge) from `left to right` (applyRightChanges) or `right to left` (applyLeftChanges)
      - you can just `keep the differences between two entities` It's very useful indeed! (see more in the [Documentation](#id3) about the diffOnly option of `apply[Right|Left]Changes` methods). 
-
+		 - you can filter the diff result of `compare()` method by an specific status (`ADDED`, `MODIFIED`, `DELETED`, `EQUAL`).
 
 ## Synopsis
 
@@ -215,6 +215,26 @@ Both parameters indicate the entities to be compared.
 *diffOnly*: boolean - (default: false) It returns just the difference (only the !== `EQUAL` properties).
 
 **Return:** Object.
+
+---
+
+**Method:**
+
+*filterDiffByStatus(diffResult, status);*
+
+  
+
+**Description:** It will return the changes that match with the specified status (second parameter).  
+
+  
+
+**Params:**
+
+*diffResult*: Object - It is the Object returned by the `compare()` method call.
+
+*status*: string - one of the following (`ADDED` || `MODIFIED` || `DELETED` || `EQUAL`).
+
+**Return:** Object || Array - depending on if the input is an Object or an Array.
 
 ---
 

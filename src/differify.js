@@ -3,12 +3,13 @@
  * BSD Licensed
  */
 
+//TODO: the library has increased it size a lot, break this file in separate ones.
 function isArray(value) {
-  return value && Object.prototype.toString.call(value) === '[object Array]';
+  return value && Array.isArray(value);
 }
 
 function isObject(value) {
-  return value && !isArray(value) && typeof value === 'object';
+  return value && !Array.isArray(value) && typeof value === 'object';
 }
 
 function isValidString(val) {
@@ -353,6 +354,18 @@ const diffChangeSelectorCreator = (selector) => {
   return diffChangeSelector;
 };
 
+const statusSelectorCreator = (status) => {
+  const property = status === PROPERTY_STATUS.DELETED ? 'original' : 'current';
+  const check = status === PROPERTY_STATUS.EQUAL;
+  const statusChangeSelector = (curr) => {
+    if (curr._ && (check || curr.changes > 0)) {
+      return applyChanges(curr._, statusChangeSelector);
+    }
+    return curr.status === status ? curr[property] : null;
+  };
+  return statusChangeSelector;
+};
+
 const isMergeable = (config) => {
   // It's no necessary to check the config because
   // it's allways valid.
@@ -361,6 +374,15 @@ const isMergeable = (config) => {
     config.mode.array === COMPARISON_MODE.DIFF
   );
 };
+
+const getValidStatus = (status) => {
+  if (typeof status === 'string') {
+    const s = status.toUpperCase().trim();
+    return Object.values(PROPERTY_STATUS).indexOf(s) !== -1 ? s : null;
+  }
+  return null;
+};
+
 function Differify(_config) {
   this.config = new Configuration(_config);
   configureComparators(this.config);
@@ -399,17 +421,24 @@ Differify.prototype.applyRightChanges = function mergeRight(
   diffResult,
   diffOnly = false
 ) {
-  if (
-    diffResult &&
-    diffResult._ &&
-    isMergeable(this.config)
-  ) {
+  if (diffResult && diffResult._ && isMergeable(this.config)) {
     return applyChanges(
       diffResult._,
       diffOnly
         ? diffChangeSelectorCreator(rightChangeSelector)
         : rightChangeSelector
     );
+  }
+  return null;
+};
+
+Differify.prototype.filterDiffByStatus = function filterStatus(
+  diffResult,
+  status = PROPERTY_STATUS.MODIFIED
+) {
+  const propStatus = getValidStatus(status);
+  if (diffResult && diffResult._ && propStatus && isMergeable(this.config)) {
+    return applyChanges(diffResult._, statusSelectorCreator(status));
   }
   return null;
 };
