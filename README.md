@@ -3,9 +3,9 @@
 
 ![Differify](assets/logo.svg)
 
-## The Fastest **deep** object/array diff
+## One of the Fastest **deep** object/array diff
 
-- Benchmarks with other packages on the same category:
+- Benchmarks with other popular packages on the same category:
 		
 		
 		@netilon/differify x 1,045,377 ops/sec ±1.42% (93 runs sampled)
