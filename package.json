@@ -1,6 +1,6 @@
 {
   "name": "@netilon/differify",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "description": "Differify allows you to get the diff between two entities (objects diff, arrays diff, date diff, functions diff, number diff, etc) very easily, quickly and in a friendly way.",
   "main": "./index.js",
   "scripts": {

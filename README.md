@@ -3,13 +3,27 @@
 
 ![Differify](assets/logo.svg)
 
+## One of the Fastest **deep** object/array diff
+
+- Benchmarks with other popular packages on the same category:
+		
+		
+		@netilon/differify x 1,045,377 ops/sec ±1.42% (93 runs sampled)
+
+		deep-object-diff x 184,838 ops/sec ±2.55% (85 runs sampled)
+
+		recursive-diff x 108,276 ops/sec ±1.93% (94 runs sampled)
+
+		Fastest is @netilon/differify
+
 
 ## Whats new?
  
  - Completely rewritten
  - The new version 3.x is <font size="3"> **x2 faster**</font> than the older versions (version <= 2.x)
+	 and is now the Fastest deep object/array comparator.
  - Support for **Node.js** and **Browsers** (it works on both)
- - Just **5.9K** weight (import)
+ - Just **6.7K (gzipped 2K)** weight (import)
  - **No dependencies**
  - **New features** were added! Now you can easily do more things with differify!
      - you can apply changes (merge) from `left to right` (applyRightChanges) or `right to left` (applyLeftChanges)
