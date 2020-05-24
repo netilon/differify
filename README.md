@@ -28,7 +28,7 @@
  - **New features** were added! Now you can easily do more things with differify!
      - you can apply changes (merge) from `left to right` (applyRightChanges) or `right to left` (applyLeftChanges)
      - you can just `keep the differences between two entities` It's very useful indeed! (see more in the [Documentation](#id3) about the diffOnly option of `apply[Right|Left]Changes` methods). 
-		 - you can filter the diff result of `compare()` method by an specific status (`ADDED`, `MODIFIED`, `DELETED`, `EQUAL`).
+     - you can filter the diff result of `compare()` method by an specific status (`ADDED`, `MODIFIED`, `DELETED`, `EQUAL`).
 
 ## Synopsis
 
