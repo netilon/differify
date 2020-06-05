@@ -35,6 +35,11 @@ function Configuration(config) {
     function: COMPARISON_MODE.REFERENCE,
   };
 
+  this.allowUnorderedArray =
+    typeof config.allowUnorderedArray === 'boolean'
+      ? config.allowUnorderedArray
+      : false;
+
   if (isObject(config) && isObject(config.mode)) {
     const allowedComparissions = Object.values(COMPARISON_MODE);
 
@@ -152,6 +157,11 @@ function arraySimpleComparator(aArr, bArr) {
   return buildDiff(aArr, bArr, PROPERTY_STATUS.MODIFIED, 1);
 }
 
+/**
+ * Compare each element keeping the order of each one.
+ * @param {*} aArr
+ * @param {*} bArr
+ */
 function deepArrayComparator(aArr, bArr) {
   let maxArr;
   let minArr;
@@ -182,6 +192,79 @@ function deepArrayComparator(aArr, bArr) {
     for (i; i < maxArr.length; ++i) {
       ret.push(buildDiff(null, bArr[i], PROPERTY_STATUS.ADDED, 1));
       ++changes;
+    }
+  }
+
+  return buildDeepDiff(
+    ret,
+    changes > 0 ? PROPERTY_STATUS.MODIFIED : PROPERTY_STATUS.EQUAL,
+    changes
+  );
+}
+
+function deepUnorderedArrayComparator(aArr, bArr) {
+  let maxArr;
+  let action;
+  if (aArr.length > bArr.length || aArr.length === bArr.length) {
+    action = PROPERTY_STATUS.ADDED;
+    maxArr = aArr;
+  } else {
+    maxArr = bArr;
+    action = PROPERTY_STATUS.DELETED;
+  }
+
+  const occurencesMap = Object.create(null);
+  const occurencesList = [];
+
+  let changes = 0;
+  let i;
+  let index;
+  let curr;
+  const ret = [];
+  for (i = 0; i < maxArr.length; ++i) {
+    if (i < aArr.length) {
+      index = occurencesMap[String(aArr[i])];
+      if (index !== undefined) {
+        curr = occurencesList[index];
+        curr.a = aArr[i];
+        ret[index] = multipleComparator(curr.a, curr.b);
+        if (ret[index].status !== PROPERTY_STATUS.EQUAL) {
+          ++changes;
+        } else {
+          --changes;
+        }
+        delete occurencesMap[bArr[i]];
+      } else {
+        occurencesList.push({
+          a: aArr[i],
+          b: null,
+        });
+        ret.push(buildDiff(aArr[i], null, PROPERTY_STATUS.DELETED, 1));
+        ++changes;
+        occurencesMap[aArr[i]] = occurencesList.length - 1;
+      }
+    }
+    if (i < bArr.length) {
+      index = occurencesMap[String(bArr[i])];
+      if (index !== undefined) {
+        curr = occurencesList[index];
+        curr.b = bArr[i];
+        ret[index] = multipleComparator(curr.a, curr.b);
+        if (ret[index].status !== PROPERTY_STATUS.EQUAL) {
+          ++changes;
+        } else {
+          --changes;
+        }
+        delete occurencesMap[bArr[i]];
+      } else {
+        occurencesList.push({
+          b: bArr[i],
+          a: null,
+        });
+        occurencesMap[bArr[i]] = occurencesList.length - 1;
+        ret.push(buildDiff(null, bArr[i], PROPERTY_STATUS.ADDED, 1));
+        ++changes;
+      }
     }
   }
 
@@ -274,7 +357,9 @@ const configureComparators = (config) => {
     return buildDeepDiff(null, pDiff.status, pDiff.changes);
   };
   const arrayComp = {};
-  arrayComp[COMPARISON_MODE.DIFF] = deepArrayComparator;
+  arrayComp[COMPARISON_MODE.DIFF] = config.allowUnorderedArray
+    ? deepUnorderedArrayComparator
+    : deepArrayComparator;
   arrayComp[COMPARISON_MODE.REFERENCE] = (a, b) => {
     const pDiff = nativeEqualityComparator(a, b);
     return buildDeepDiff(null, pDiff.status, pDiff.changes);
@@ -443,4 +528,6 @@ Differify.prototype.filterDiffByStatus = function filterStatus(
   return null;
 };
 
-export default Differify;
+module.exports = Differify;
+//TODO: UNCCOMMENT THIS!!
+// export default Differify;
