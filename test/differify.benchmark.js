@@ -289,6 +289,11 @@ const BO = {
 const differify = new Differify();
 differify.setConfig({ mode: { object: 'DIFF', array: 'DIFF' } });
 
+const differifyUnordered = new Differify();
+differify.setConfig({ scan: {
+  keepArrayOrder: false
+}, mode: { object: 'DIFF', array: 'DIFF' } });
+
 const a = {
   name: 'Person1',
   extras: {
@@ -312,12 +317,17 @@ const b = {
 const suite = new Bencharmk.Suite();
 const diffTest = differify.compare(AO, BO);
 
+
+
 suite
   .add('Differify Complex object diff', () => {
     const diff = differify.compare(AO, BO);
   })
   .add('Large array of objects', () => {
     const diff = differify.compare(A, B);
+  })
+  .add('Large array unordered of objects', () => {
+    const diff = differifyUnordered.compare(A, B);
   })
   .add('Filter by status', () => {
     const diff = differify.filterDiffByStatus(diffTest, 'MODIFIED');

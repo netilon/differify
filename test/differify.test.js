@@ -25,9 +25,12 @@ describe('Testing differify lib: ', () => {
 
   test('testing bad config arguments', () => {
     differify.setConfig({
+      compareArraysInOrder: null,
       mode: { array: null, object: true },
     });
     let config = differify.getConfig();
+    expect(typeof config.compareArraysInOrder).toEqual('boolean');
+    expect(config.compareArraysInOrder).toBeTruthy();
     expect(config.mode.array).toEqual('DIFF');
     expect(config.mode.object).toEqual('DIFF');
     expect(config.mode.function).toEqual('REFERENCE');
@@ -46,6 +49,8 @@ describe('Testing differify lib: ', () => {
   test('testing empty config', () => {
     differify.setConfig();
     let config = differify.getConfig();
+    expect(typeof config.compareArraysInOrder).toEqual('boolean');
+    expect(config.compareArraysInOrder).toBeTruthy();
     expect(config.mode.array).toEqual('DIFF');
     expect(config.mode.object).toEqual('DIFF');
     expect(config.mode.function).toEqual('REFERENCE');
@@ -56,6 +61,8 @@ describe('Testing differify lib: ', () => {
       mode: {},
     });
     let config = differify.getConfig();
+    expect(typeof config.compareArraysInOrder).toEqual('boolean');
+    expect(config.compareArraysInOrder).toBeTruthy();
     expect(config.mode.array).toEqual('DIFF');
     expect(config.mode.object).toEqual('DIFF');
     expect(config.mode.function).toEqual('REFERENCE');
@@ -63,6 +70,7 @@ describe('Testing differify lib: ', () => {
 
   test('testing good config', () => {
     differify.setConfig({
+      compareArraysInOrder: false,
       mode: {
         array: 'DIFF',
         object: 'DIFF',
@@ -70,6 +78,8 @@ describe('Testing differify lib: ', () => {
       },
     });
     let config = differify.getConfig();
+    expect(typeof config.compareArraysInOrder).toEqual('boolean');
+    expect(config.compareArraysInOrder).toBeFalsy();
     expect(config.mode.array).toEqual('DIFF');
     expect(config.mode.object).toEqual('DIFF');
     expect(config.mode.function).toEqual('STRING');
@@ -467,6 +477,21 @@ describe('Testing differify lib: ', () => {
     expect(merged[0]).toBe(4);
     expect(merged[1]).toBe(5);
     expect(merged[2]).toBe(6);
+
+    differify.setConfig({
+      ...differify.getConfig(),
+      compareArraysInOrder: false,
+    });
+    diff = differify.compare([1, 2], [1, 4, 5, 6]);
+    merged = differify.applyRightChanges(diff);
+
+    expect(Object.prototype.toString.call(merged)).toBe('[object Array]');
+    expect(merged.length).toBe(5);
+    expect(merged[0]).toBe(1);
+    expect(merged[1]).toBe(2);
+    expect(merged[2]).toBe(4);
+    expect(merged[3]).toBe(5);
+    expect(merged[4]).toBe(6);
   });
 
   test('should merge left changes properly', () => {
@@ -796,5 +821,127 @@ describe('Testing differify lib: ', () => {
     expect(Array.isArray(merged)).toBeTruthy();
     expect(merged.length).toBe(1);
     expect(merged[0]).toBe(2);
+  });
+
+  test('Testing Unordered array comparison', () => {
+    differify.setConfig({
+      compareArraysInOrder: false,
+      mode: { object: 'DIFF', array: 'DIFF' },
+    });
+    const A = ['A', 'B', 'C'];
+    const B = ['A', 'D', 'C', 'F'];
+
+    let diff = differify.compare(A, B);
+
+    expect(diff.changes).toEqual(3);
+    expect(diff._.length).toEqual(5);
+    expect(diff._[0].status).toEqual('EQUAL');
+    expect(diff._[0].original).toEqual('A');
+    expect(diff._[0].current).toEqual('A');
+    expect(diff._[1].status).toEqual('DELETED');
+    expect(diff._[1].original).toEqual('B');
+    expect(diff._[1].current).toEqual(null);
+    expect(diff._[2].status).toEqual('ADDED');
+    expect(diff._[2].original).toEqual(null);
+    expect(diff._[2].current).toEqual('D');
+    expect(diff._[3].status).toEqual('EQUAL');
+    expect(diff._[3].original).toEqual('C');
+    expect(diff._[3].current).toEqual('C');
+    expect(diff._[4].status).toEqual('ADDED');
+    expect(diff._[4].original).toEqual(null);
+    expect(diff._[4].current).toEqual('F');
+
+    diff = differify.compare(B, A);
+
+    expect(diff.changes).toEqual(3);
+    expect(diff._.length).toEqual(5);
+    expect(diff._[0].status).toEqual('EQUAL');
+    expect(diff._[0].original).toEqual('A');
+    expect(diff._[0].current).toEqual('A');
+    expect(diff._[1].status).toEqual('DELETED');
+    expect(diff._[1].original).toEqual('D');
+    expect(diff._[1].current).toEqual(null);
+    expect(diff._[2].status).toEqual('ADDED');
+    expect(diff._[2].original).toEqual(null);
+    expect(diff._[2].current).toEqual('B');
+    expect(diff._[3].status).toEqual('EQUAL');
+    expect(diff._[3].original).toEqual('C');
+    expect(diff._[3].current).toEqual('C');
+    expect(diff._[4].status).toEqual('DELETED');
+    expect(diff._[4].current).toEqual(null);
+    expect(diff._[4].original).toEqual('F');
+
+    diff = differify.compare([1, 2, 3], [4, 5, 6, 1]);
+
+    expect(diff.changes).toEqual(5);
+    expect(diff._.length).toEqual(6);
+    expect(diff._[0].status).toEqual('EQUAL');
+    expect(diff._[0].original).toEqual(1);
+    expect(diff._[0].current).toEqual(1);
+    expect(diff._[1].status).toEqual('ADDED');
+    expect(diff._[1].original).toEqual(null);
+    expect(diff._[1].current).toEqual(4);
+    expect(diff._[2].status).toEqual('DELETED');
+    expect(diff._[2].original).toEqual(2);
+    expect(diff._[2].current).toEqual(null);
+    expect(diff._[3].status).toEqual('ADDED');
+    expect(diff._[3].original).toEqual(null);
+    expect(diff._[3].current).toEqual(5);
+    expect(diff._[4].status).toEqual('DELETED');
+    expect(diff._[4].original).toEqual(3);
+    expect(diff._[4].current).toEqual(null);
+
+    diff = differify.compare(
+      [
+        { name: 'Fabian', age: 18 },
+        { name: 'Judith', age: 18 },
+      ],
+      [
+        { name: 'Andres', age: 18 },
+        { name: 'Fabian', age: 18 },
+      ]
+    );
+
+    expect(diff.changes).toEqual(2);
+    expect(diff._.length).toEqual(3);
+    expect(diff.status).toEqual('MODIFIED');
+    expect(diff._[0].status).toEqual('EQUAL');
+    expect(diff._[0].original.name).toEqual('Fabian');
+    expect(diff._[0].current.name).toEqual('Fabian');
+    expect(diff._[1].status).toEqual('ADDED');
+    expect(diff._[1].original).toEqual(null);
+    expect(diff._[1].current.name).toEqual('Andres');
+    expect(diff._[2].status).toEqual('DELETED');
+    expect(diff._[2].original.name).toEqual('Judith');
+    expect(diff._[2].current).toEqual(null);
+
+    diff = differify.compare(
+      [
+        { name: 'Fabian', age: 19 },
+        { name: 'Judith', age: 18 },
+      ],
+      [
+        { name: 'Andres', age: 18 },
+        { name: 'Fabian', age: 18 },
+      ]
+    );
+
+    expect(diff.changes).toEqual(4);
+    expect(diff._.length).toEqual(4);
+    expect(diff.status).toEqual('MODIFIED');
+    expect(diff._[0].status).toEqual('DELETED');
+    expect(diff._[0].original.name).toEqual('Fabian');
+    expect(diff._[0].original.age).toEqual(19);
+    expect(diff._[0].current).toEqual(null);
+    expect(diff._[1].status).toEqual('ADDED');
+    expect(diff._[1].original).toEqual(null);
+    expect(diff._[1].current.name).toEqual('Andres');
+    expect(diff._[2].status).toEqual('DELETED');
+    expect(diff._[2].original.name).toEqual('Judith');
+    expect(diff._[2].current).toEqual(null);
+    expect(diff._[3].status).toEqual('ADDED');
+    expect(diff._[3].original).toEqual(null);
+    expect(diff._[3].current.name).toEqual('Fabian');
+    expect(diff._[3].current.age).toEqual(18);
   });
 });
