@@ -29,35 +29,45 @@ const COMPARISON_MODE = {
 };
 
 function Configuration(config) {
+  this.compareArraysInOrder = true;
+
   this.mode = {
     array: COMPARISON_MODE.DIFF,
     object: COMPARISON_MODE.DIFF,
     function: COMPARISON_MODE.REFERENCE,
   };
 
-  if (isObject(config) && isObject(config.mode)) {
-    const allowedComparissions = Object.values(COMPARISON_MODE);
-
-    if (isValidString(config.mode.array)) {
-      const comparison = config.mode.array.toUpperCase();
-      if (allowedComparissions.indexOf(comparison) !== -1) {
-        this.mode.array = comparison;
-      }
+  if (isObject(config)) {
+    if (
+      typeof config.compareArraysInOrder === 'boolean'
+    ) {
+      this.compareArraysInOrder = config.compareArraysInOrder;
     }
 
-    if (isValidString(config.mode.object)) {
-      const comparison = config.mode.object.toUpperCase();
-      if (allowedComparissions.indexOf(comparison) !== -1) {
-        this.mode.object = comparison;
+    if (isObject(config.mode)) {
+      const allowedComparissions = Object.values(COMPARISON_MODE);
+
+      if (isValidString(config.mode.array)) {
+        const comparison = config.mode.array.toUpperCase();
+        if (allowedComparissions.indexOf(comparison) !== -1) {
+          this.mode.array = comparison;
+        }
       }
-    }
-    if (isValidString(config.mode.function)) {
-      const comparison = config.mode.function.toUpperCase();
-      if (
-        comparison === COMPARISON_MODE.REFERENCE ||
-        comparison === COMPARISON_MODE.STRING
-      ) {
-        this.mode.function = comparison;
+
+      if (isValidString(config.mode.object)) {
+        const comparison = config.mode.object.toUpperCase();
+        if (allowedComparissions.indexOf(comparison) !== -1) {
+          this.mode.object = comparison;
+        }
+      }
+      if (isValidString(config.mode.function)) {
+        const comparison = config.mode.function.toUpperCase();
+        if (
+          comparison === COMPARISON_MODE.REFERENCE ||
+          comparison === COMPARISON_MODE.STRING
+        ) {
+          this.mode.function = comparison;
+        }
       }
     }
   }
@@ -152,6 +162,11 @@ function arraySimpleComparator(aArr, bArr) {
   return buildDiff(aArr, bArr, PROPERTY_STATUS.MODIFIED, 1);
 }
 
+/**
+ * Compare each element keeping the order of each one.
+ * @param {*} aArr
+ * @param {*} bArr
+ */
 function deepArrayComparator(aArr, bArr) {
   let maxArr;
   let minArr;
@@ -192,6 +207,98 @@ function deepArrayComparator(aArr, bArr) {
   );
 }
 
+function deepUnorderedArrayComparator(aArr, bArr) {
+  let maxArr;
+  if (aArr.length > bArr.length || aArr.length === bArr.length) {
+    maxArr = aArr;
+  } else {
+    maxArr = bArr;
+  }
+
+  const occurencesMap = Object.create(null);
+  const occurencesList = [];
+
+  let changes = 0;
+  let i;
+  let index;
+  let curr;
+  const ret = [];
+  let keyA;
+  let keyB;
+  let comparatorRes;
+  for (i = 0; i < maxArr.length; ++i) {
+    if (i < aArr.length) {
+      keyA = JSON.stringify(aArr[i]);
+      index = occurencesMap[keyA];
+      if (index !== undefined) {
+        curr = occurencesList[index];
+        curr.a = aArr[i];
+        comparatorRes = multipleComparator(curr.a, curr.b);
+        ret[index] = comparatorRes._ !== undefined
+            ? buildDiff(
+                comparatorRes._.original,
+                comparatorRes._.current,
+                comparatorRes.status,
+                comparatorRes.changes
+              )
+            : comparatorRes;
+
+        if (ret[index].status !== PROPERTY_STATUS.EQUAL) {
+          ++changes;
+        } else {
+          --changes;
+        }
+        delete occurencesMap[keyA];
+      } else {
+        occurencesList.push({
+          a: aArr[i],
+          b: null,
+        });
+        ret.push(buildDiff(aArr[i], null, PROPERTY_STATUS.DELETED, 1));
+        ++changes;
+        occurencesMap[keyA] = occurencesList.length - 1;
+      }
+    }
+    if (i < bArr.length) {
+      keyB = JSON.stringify(bArr[i]);
+      index = occurencesMap[keyB];
+      if (index !== undefined) {
+        curr = occurencesList[index];
+        curr.b = bArr[i];
+        comparatorRes = multipleComparator(curr.a, curr.b);
+        ret[index] = comparatorRes._ !== undefined
+            ? buildDiff(
+                curr.a,
+                curr.b,
+                comparatorRes.status,
+                comparatorRes.changes
+              )
+            : comparatorRes;
+        if (ret[index].status !== PROPERTY_STATUS.EQUAL) {
+          ++changes;
+        } else {
+          --changes;
+        }
+        delete occurencesMap[keyB];
+      } else {
+        occurencesList.push({
+          b: bArr[i],
+          a: null,
+        });
+        occurencesMap[keyB] = occurencesList.length - 1;
+        ret.push(buildDiff(null, bArr[i], PROPERTY_STATUS.ADDED, 1));
+        ++changes;
+      }
+    }
+  }
+
+  return buildDeepDiff(
+    ret,
+    changes > 0 ? PROPERTY_STATUS.MODIFIED : PROPERTY_STATUS.EQUAL,
+    changes
+  );
+}
+
 function toStringComparator(a, b) {
   const aStringified = a.toString();
   const bStringified = b.toString();
@@ -207,7 +314,7 @@ function deepObjectComparator(a, b) {
   let aLength = 0;
   let bLength = 0;
   let changes = 0;
-  for (let propA in a) {
+  for (const propA in a) {
     if (has(a, propA)) {
       ++aLength;
       if (has(b, propA)) {
@@ -219,7 +326,7 @@ function deepObjectComparator(a, b) {
     }
   }
 
-  for (let propB in b) {
+  for (const propB in b) {
     if (has(b, propB)) {
       ++bLength;
       if (!has(a, propB)) {
@@ -274,7 +381,9 @@ const configureComparators = (config) => {
     return buildDeepDiff(null, pDiff.status, pDiff.changes);
   };
   const arrayComp = {};
-  arrayComp[COMPARISON_MODE.DIFF] = deepArrayComparator;
+  arrayComp[COMPARISON_MODE.DIFF] = config.compareArraysInOrder
+    ? deepArrayComparator
+    : deepUnorderedArrayComparator;
   arrayComp[COMPARISON_MODE.REFERENCE] = (a, b) => {
     const pDiff = nativeEqualityComparator(a, b);
     return buildDeepDiff(null, pDiff.status, pDiff.changes);
@@ -394,7 +503,7 @@ Differify.prototype.setConfig = function setConfig(_config) {
 };
 
 Differify.prototype.getConfig = function getConfig() {
-  return { mode: { ...this.config.mode } };
+  return { compareArraysInOrder: this.config.compareArraysInOrder , mode: { ...this.config.mode } };
 };
 
 Differify.prototype.compare = function compare(a, b) {

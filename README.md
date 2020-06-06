@@ -26,6 +26,7 @@
  - Just **6.7K (gzipped 2K)** weight (import)
  - **No dependencies**
  - **New features** were added! Now you can easily do more things with differify!
+     - new config option added. Now, you can decide whether you prefer to compare arrays, either in an `ordered` or in an `unordered` way. Remember that, by default, you have an ordered comparison.
      - you can apply changes (merge) from `left to right` (applyRightChanges) or `right to left` (applyLeftChanges)
      - you can just `keep the differences between two entities` It's very useful indeed! (see more in the [Documentation](#id3) about the diffOnly option of `apply[Right|Left]Changes` methods). 
      - you can filter the diff result of `compare()` method by an specific status (`ADDED`, `MODIFIED`, `DELETED`, `EQUAL`).
@@ -252,6 +253,7 @@ You can pass a config to the setConfig() method to change the behavior and adjus
 | _mode.array_  | string | DIFF | **DIFF**: it will iterate over each element in the array A, and will compare each element against the element in the same index in the array B.<br><br>**REFERENCE**: just compare the references of each array.<br><br>**STRING**: only will check the array length and will do a toString comparison if necessary. |
 | _mode.object_  | string | DIFF | **DIFF**: it will iterate over each property in the object A and will compare each value with the same property value in the object B.<br><br>**REFERENCE**:  just compare the references of each object.<br><br>**STRING**: only do a toString comparison. |
 | _mode.function_  | string | REFERENCE | **REFERENCE**:  just compare the references of each function.<br><br>**STRING**: only do a toString comparison (useful to compare the function bodies). |
+| _compareArraysInOrder_  | boolean | true | if it is `true`, it will compare each element in both arrays one by one in an ordered way, assuming that each element, in the same index in both arrays, should be the same element that can have changes or not ([see an example of this case](#id6)). If the option is set to `false`, then it will compare each element in both arrays and it will check if they are `EQUAL`, `ADDED` or `DELETED` without keeping in mind the appearence order (there won't be details about the `MODIFIED` status, it's only available if the option is set to true, since in that case, the order matters and we know that each element in the same index (but in different arrays), should be the same element that could have been changed or not) ([see an example of this case](#id7)).
 
 **Configuration example:**
 
@@ -347,7 +349,77 @@ you will get this output (just a string comparison):
 		"changes": 1 
 	}
 
-  
+### Example of array comparision keeping the order (compareArraysInOrder: true) <a name="id6"></a>
+
+	const differify = new Differify({
+		compareArraysInOrder: true, //default value
+		mode: { object: 'DIFF', array: 'DIFF' },
+	});
+
+	const diff = differify.compare(['a', 'b'], ['a', 'z', 'b']);
+
+	/*
+		OUTPUT
+
+		{
+			"_": [{
+				"original": "a",
+				"current": "a",
+				"status": "EQUAL",
+				"changes": 0
+			}, {
+				"original": "b",
+				"current": "z",
+				"status": "MODIFIED",
+				"changes": 1
+			}, {
+				"original": null,
+				"current": "b",
+				"status": "ADDED",
+				"changes": 1
+			}],
+			"status": "MODIFIED",
+			"changes": 2
+		}
+	
+	*/
+
+
+### Example of array comparison without having the order in mind (compareArraysInOrder: false) <a name="id7"></a>
+
+	const differify = new Differify({
+		compareArraysInOrder: false,
+		mode: { object: 'DIFF', array: 'DIFF' },
+	});
+
+	const diff = differify.compare(['a', 'b'], ['a', 'z', 'b']);
+
+	/*
+		OUTPUT
+
+
+		{
+			"_": [{
+				"original": "a",
+				"current": "a",
+				"status": "EQUAL",
+				"changes": 0
+			}, {
+				"original": "b",
+				"current": "b",
+				"status": "EQUAL",
+				"changes": 0
+			}, {
+				"original": null,
+				"current": "z",
+				"status": "ADDED",
+				"changes": 1
+			}],
+			"status": "MODIFIED",
+			"changes": 1
+		}
+	
+	*/
 
 
 ## Your contribution is appreciated (thanks!)
