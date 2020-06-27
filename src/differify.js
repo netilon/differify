@@ -366,7 +366,7 @@ function deepComparator(a, b) {
     return comparator ? comparator(a, b) : nativeEqualityComparator(a, b);
   }
 
-  return buildDiff(a, b, PROPERTY_STATUS.MODIFIED);
+  return buildDiff(a, b, PROPERTY_STATUS.MODIFIED, 1);
 }
 
 const configureComparators = (config) => {

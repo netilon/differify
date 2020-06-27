@@ -241,6 +241,35 @@ describe('Testing differify lib: ', () => {
     expect(diff.status === 'EQUAL').toBeTruthy();
   });
 
+  test('compare different types input but same prototype', () => {
+    differify.setConfig({
+      mode: {
+        array: 'DIFF',
+        object: 'DIFF',
+      },
+    });
+
+    const a = [1, 2, 3];
+    const b = { a: 'foo', b: 'bar' };
+    let diff = differify.compare(a, b);
+
+    expect(diff.original).toBe(a);
+    expect(diff.current).toBe(b);
+    expect(diff.status).toBe('MODIFIED');
+    expect(diff.changes).toBe(1);
+
+    diff = differify.compare({ a: [1, 2, 3] }, { a: 'foo', b: 'bar' });
+    expect(diff.changes).toBe(2);
+    expect(diff._.a.changes).toBe(1);
+    expect(diff._.a.status).toBe('MODIFIED');
+    expect(JSON.stringify(diff._.a.original)).toBe(JSON.stringify([1, 2, 3]));
+    expect(diff._.a.current).toBe('foo');
+    expect(diff._.b.changes).toBe(1);
+    expect(diff._.b.status).toBe('ADDED');
+    expect(diff._.b.original).toBe(null);
+    expect(diff._.b.current).toBe('bar');
+  });
+
   test('Array comparission with ALL possible configurations', () => {
     // DIFF DIFF
     differify.setConfig({ mode: { object: 'DIFF', array: 'DIFF' } });
