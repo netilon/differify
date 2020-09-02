@@ -467,6 +467,7 @@ describe('Testing differify lib: ', () => {
       birthdate: 533444400000,
     };
     differify.setConfig({ mode: { object: 'DIFF', array: 'DIFF' } });
+
     let diff = differify.compare(A, B);
 
     let merged = differify.applyRightChanges(diff);
@@ -669,6 +670,78 @@ describe('Testing differify lib: ', () => {
 
     expect(merged).not.toBe(undefined);
     expect(merged.length).toBe(0);
+  });
+
+  test('should return falsy values when right changes are applied', () => {
+    differify.setConfig({ mode: { object: 'DIFF', array: 'DIFF' } });
+
+    const oldObj = { hasDocument: true };
+    const newObj = { hasDocument: false };
+
+    let diff = differify.compare(oldObj, newObj);
+    expect(diff._).not.toBe(undefined);
+    expect(diff.changes).toBe(1);
+    expect(diff._.hasDocument.original).toBe(true);
+    expect(diff._.hasDocument.current).toBe(false);
+    let changes = differify.applyRightChanges(diff, true);
+    expect(changes).not.toBe(undefined);
+    expect(changes.hasDocument).toBe(false);
+
+    newObj.hasDocument = null;
+    diff = differify.compare(oldObj, newObj);
+    expect(diff._).not.toBe(undefined);
+    expect(diff.changes).toBe(1);
+    expect(diff._.hasDocument.original).toBe(true);
+    expect(diff._.hasDocument.current).toBe(null);
+    changes = differify.applyRightChanges(diff, true);
+    expect(changes).not.toBe(undefined);
+    expect(changes.hasDocument).toBe(null);
+
+    newObj.hasDocument = undefined;
+    diff = differify.compare(oldObj, newObj);
+    expect(diff._).not.toBe(undefined);
+    expect(diff.changes).toBe(1);
+    expect(diff._.hasDocument.original).toBe(true);
+    expect(diff._.hasDocument.current).toBe(undefined);
+    changes = differify.applyRightChanges(diff, true);
+    expect(changes).not.toBe(undefined);
+    expect(changes.hasDocument).toBe(undefined);
+  });
+
+  test('should return falsy values when left changes are applied', () => {
+    differify.setConfig({ mode: { object: 'DIFF', array: 'DIFF' } });
+
+    const oldObj = { hasDocument: false };
+    const newObj = { hasDocument: true };
+
+    let diff = differify.compare(oldObj, newObj);
+    expect(diff._).not.toBe(undefined);
+    expect(diff.changes).toBe(1);
+    expect(diff._.hasDocument.current).toBe(true);
+    expect(diff._.hasDocument.original).toBe(false);
+    let changes = differify.applyLeftChanges(diff, true);
+    expect(changes).not.toBe(undefined);
+    expect(changes.hasDocument).toBe(false);
+
+    oldObj.hasDocument = null;
+    diff = differify.compare(oldObj, newObj);
+    expect(diff._).not.toBe(undefined);
+    expect(diff.changes).toBe(1);
+    expect(diff._.hasDocument.current).toBe(true);
+    expect(diff._.hasDocument.original).toBe(null);
+    changes = differify.applyLeftChanges(diff, true);
+    expect(changes).not.toBe(undefined);
+    expect(changes.hasDocument).toBe(null);
+
+    oldObj.hasDocument = undefined;
+    diff = differify.compare(oldObj, newObj);
+    expect(diff._).not.toBe(undefined);
+    expect(diff.changes).toBe(1);
+    expect(diff._.hasDocument.current).toBe(true);
+    expect(diff._.hasDocument.original).toBe(undefined);
+    changes = differify.applyLeftChanges(diff, true);
+    expect(changes).not.toBe(undefined);
+    expect(changes.hasDocument).toBe(undefined);
   });
 
   test('should return a non null result when the config parameters are DIFF for objects and arrays', () => {
