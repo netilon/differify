@@ -80,6 +80,8 @@ const PROPERTY_STATUS = {
   EQUAL: 'EQUAL',
 };
 
+const INVALID_VAL = Symbol('invalid');
+
 function buildDiff(original, current, status, changes = 0) {
   return {
     original,
@@ -413,7 +415,7 @@ const applyChanges = (next, selector) => {
     let curr;
     for (let i = 0; i < next.length; i++) {
       curr = selector(next[i]);
-      if (curr) {
+      if (curr !== INVALID_VAL) {
         list.push(curr);
       }
     }
@@ -427,7 +429,7 @@ const applyChanges = (next, selector) => {
     for (let i in next) {
       if (next.hasOwnProperty(i)) {
         curr = selector(next[i]);
-        if (curr) {
+        if (curr !== INVALID_VAL) {
           o[i] = curr;
         }
       }
@@ -458,7 +460,7 @@ const diffChangeSelectorCreator = (selector) => {
     if (curr._ && curr.changes > 0) {
       return applyChanges(curr._, diffChangeSelector);
     }
-    return curr.status === PROPERTY_STATUS.EQUAL ? null : selector(curr);
+    return curr.status === PROPERTY_STATUS.EQUAL ? INVALID_VAL : selector(curr);
   };
   return diffChangeSelector;
 };
@@ -470,7 +472,7 @@ const statusSelectorCreator = (status) => {
     if (curr._ && (check || curr.changes > 0)) {
       return applyChanges(curr._, statusChangeSelector);
     }
-    return curr.status === status ? curr[property] : null;
+    return curr.status === status ? curr[property] : INVALID_VAL;
   };
   return statusChangeSelector;
 };
