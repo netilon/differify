@@ -3,7 +3,7 @@
   "version": "3.2.2",
   "description": "Differify allows you to get the diff between two entities (objects diff, arrays diff, date diff, functions diff, number diff, etc) very easily, quickly and in a friendly way.",
   "main": "./index.js",
-  "files": ["index.js"],
+  "files": ["./index.js"],
   "scripts": {
     "start": "NODE_ENV=production node index.js",
     "start:dev": "NODE_ENV=development nodemon index.js",

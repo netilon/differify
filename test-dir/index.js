@@ -1,27 +1,50 @@
-const Differify = require('../index');
+const Differify = require('../src/differify');
 
 const differify = new Differify({
-  compareArraysInOrder: false,
+  compareArraysInOrder: true,
   mode: { object: 'DIFF', array: 'DIFF' },
 });
 
-const A = {
-  id: 1,
-  roles: ['admin', 'developer'],
-  name: 'Person1',
-  color: 'red',
-  birthdate: 440305200000,
-  another: 'property from A',
-};
+const A = [
+  {
+    id: 155,
+    phrase: "I was deleted",
+  },
+  {
+    id: 156,
+    phrase: "Can you help me with",
+  },
+  {
+    id: 123,
+    phrase: "Was edite",
+  },
+  {
+    id: 157,
+    phrase: "Help me with",
+  },
+]
 
-const B = {
-  id: 2,
-  roles: ['developer'],
-  name: 'Person2',
-  color: 'red',
-  birthdate: 533444400000,
-};
+const B = [
+  {
+    id: 156,
+    phrase: "Can you help me with",
+  },
+  {
+    id: 123,
+    phrase: "Was edited",
+  },
+  {
+    id: 88,
+    phrase: "Was added in between",
+  },
+  {
+    id: 157,
+    phrase: "Help me with",
+  },
+]
+
+
 
 const diff = differify.compare(A, B);
 console.log(JSON.stringify(diff));
-console.log(differify.applyRightChanges(diff));
+// console.log(differify.applyRightChanges(diff));
