@@ -189,5 +189,4 @@ Differify.prototype.filterDiffByStatus = function filterStatus(
   return null;
 };
 
-module.exports = Differify;
-// export default Differify;
+export default Differify;

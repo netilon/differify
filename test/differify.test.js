@@ -1,4 +1,4 @@
-const Differify = require('../src/differify');
+import Differify from '../src/differify';
 
 const differify = new Differify();
 

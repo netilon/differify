@@ -1,7 +1,7 @@
-const Differify = require('../src/differify');
+const Differify = require('../index');
 
 const differify = new Differify({
-  compareArraysInOrder: true,
+  compareArraysInOrder: false,
   mode: { object: 'DIFF', array: 'DIFF' },
 });
 

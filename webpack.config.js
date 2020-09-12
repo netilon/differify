@@ -19,6 +19,11 @@ module.exports = {
           presets: ['@babel/preset-env'],
         },
       },
+      {
+        test: /\.js$/,
+        loaders: ['webpack-comment-remover-loader'],
+        exclude: /node_modules/,
+      },
     ],
   },
 };
