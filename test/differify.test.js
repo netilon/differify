@@ -1,4 +1,4 @@
-const Differify = require('../index');
+import Differify from '../src/differify';
 
 const differify = new Differify();
 
@@ -239,6 +239,129 @@ describe('Testing differify lib: ', () => {
     const b = newDate;
     const diff = differify.compare(a, b);
     expect(diff.status === 'EQUAL').toBeTruthy();
+  });
+
+  test('should return the diff between two entities with different typeof result', () => {
+    differify.setConfig({
+      mode: {
+        array: 'DIFF',
+        object: 'DIFF',
+      },
+    });
+
+    const a = [1, 2, 3];
+    const b = 1;
+    let diff = differify.compare(a, b);
+
+    expect(diff._).toBe(undefined);
+    expect(diff.status).toBe('MODIFIED');
+    expect(diff.changes).toBe(1);
+    expect(diff.original).toBe(a);
+    expect(diff.current).toBe(b);
+  });
+  test('should return null when the passed status is not a valid one', () => {
+    differify.setConfig({
+      mode: {
+        array: 'DIFF',
+        object: 'DIFF',
+      },
+    });
+
+    const a = [1, 2, 3];
+    const b = 1;
+    const diff = differify.compare(a, b);
+    let res = differify.filterDiffByStatus(diff, 'MODIFIED');
+    expect(typeof res).toBe('object');
+    expect(res.status).toBe('MODIFIED');
+    expect(res.changes).toBe(1);
+    expect(res.original).toBe(a);
+    expect(res.current).toBe(b);
+
+    res = differify.filterDiffByStatus(diff, null);
+    expect(res).toBe(null);
+  });
+
+  test('applyChanges: should return undefined when the data passed in is not a valid property descriptor', () => {
+    let res = differify.applyLeftChanges({ _: 1 }, true);
+    expect(res).toBe(undefined);
+
+    res = differify.applyRightChanges({ _: 1 }, true);
+    expect(res).toBe(undefined);
+
+    res = differify.applyLeftChanges(
+      {
+        _: {
+          name: {
+            current: 'Fabian',
+            original: 'Fabian',
+            status: 'EQUAL',
+            changes: 0,
+          },
+        },
+      },
+      true
+    );
+    expect(res).toStrictEqual({});
+
+    res = differify.applyLeftChanges(
+      {
+        current: 'Judith',
+        original: 'Fabian',
+        status: 'EQUAL',
+        changes: 0,
+      },
+      true
+    );
+    expect(res).toBe('Fabian');
+
+    res = differify.applyLeftChanges(
+      {
+        _: {
+          name: {
+            current: 'Fabian',
+            original: 'Judith',
+            status: 'MODIFIED',
+            changes: 1,
+          },
+        },
+      },
+      true
+    );
+    expect(res).toStrictEqual({
+      name: 'Judith',
+    });
+
+    res = differify.applyRightChanges(
+      {
+        _: {
+          name: {
+            current: 'Fabian',
+            original: 'Judith',
+            status: 'MODIFIED',
+            changes: 1,
+          },
+        },
+      },
+      true
+    );
+
+    expect(res).toStrictEqual({
+      name: 'Fabian',
+    });
+
+    res = differify.applyRightChanges(
+      {
+        current: 'Judith',
+        original: 'Fabian',
+        status: 'EQUAL',
+        changes: 0,
+      },
+      true
+    );
+    expect(res).toBe('Judith');
+
+    res = differify.applyRightChanges({}, true);
+    expect(res).toBe(null);
   });
 
   test('compare different types input but same prototype', () => {
@@ -1010,6 +1133,9 @@ describe('Testing differify lib: ', () => {
     expect(diff._[0].status).toEqual('EQUAL');
     expect(diff._[0].original.name).toEqual('Fabian');
     expect(diff._[0].current.name).toEqual('Fabian');
+    expect(JSON.stringify(diff._[0].original)).toEqual(
+      JSON.stringify({ name: 'Fabian', age: 18 })
+    );
     expect(diff._[1].status).toEqual('ADDED');
     expect(diff._[1].original).toEqual(null);
     expect(diff._[1].current.name).toEqual('Andres');
@@ -1045,5 +1171,51 @@ describe('Testing differify lib: ', () => {
     expect(diff._[3].original).toEqual(null);
     expect(diff._[3].current.name).toEqual('Fabian');
     expect(diff._[3].current.age).toEqual(18);
+
+    diff = differify.compare(
+      [
+        {
+          id: 155,
+          phrase: 'I was deleted',
+        },
+        {
+          id: 156,
+          phrase: 'Can you help me with',
+        },
+        {
+          id: 123,
+          phrase: 'Was edite',
+        },
+        {
+          id: 157,
+          phrase: 'Help me with',
+        },
+      ],
+      [
+        {
+          id: 156,
+          phrase: 'Can you help me with',
+        },
+        {
+          id: 123,
+          phrase: 'Was edited',
+        },
+        {
+          id: 88,
+          phrase: 'Was added in between',
+        },
+        {
+          id: 157,
+          phrase: 'Help me with',
+        },
+      ]
+    );
+
+    expect(diff._).not.toBe(null);
+    expect(diff._.length).toEqual(6);
+    diff._.forEach((data) => {
+      expect(data.current).not.toBe(undefined);
+      expect(data.original).not.toBe(undefined);
+    });
   });
 });

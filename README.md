@@ -39,6 +39,10 @@ Differify allows you to get the diff between two entities (objects diff, arrays 
 
 <img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/netilon/differify/Differify CI"><img alt="GitHub package.json version" src="https://img.shields.io/github/package-json/v/netilon/differify">
 
+![](badges/badge-functions.svg)
+![](badges/badge-lines.svg)
+![](badges/badge-statements.svg)
+
 ## Your contribution is appreciated (thanks!)
 
   
@@ -349,7 +353,7 @@ you will get this output (just a string comparison):
 		"changes": 1 
 	}
 
-### Example of array comparision keeping the order (compareArraysInOrder: true) <a name="id6"></a>
+### Array comparison example, keeping the order (compareArraysInOrder: true) <a name="id6"></a>
 
 	const differify = new Differify({
 		compareArraysInOrder: true, //default value
@@ -385,7 +389,8 @@ you will get this output (just a string comparison):
 	*/
 
 
-### Example of array comparison without having the order in mind (compareArraysInOrder: false) <a name="id7"></a>
+### Array comparison example, without having the order in mind (compareArraysInOrder: false).. <a name="id7"></a>
+**NOTE**: In case you have Object elements inside the array and you are using compareArraysInOrder to false and array mode to true, then it is not possible to do a deeper object comparison because there is no way to know which element in the array A is related to another element in the array B, that's because the comparison is made in a non deeper way (STRING mode is the fallback) for this particular case (under the mentioned configuration) 
 
 	const differify = new Differify({
 		compareArraysInOrder: false,
