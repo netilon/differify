@@ -1,7 +1,7 @@
-const COMPARISON_MODE = require('./enums/modes');
-const { isObject, isValidString } = require('./utils/validations');
-
-function Configuration(config) {
+import COMPARISON_MODE from './enums/modes';
+import { isObject, isValidString } from './utils/validations';
+import config from './types/config';
+export default function Configuration(config?: config) {
   this.compareArraysInOrder = true;
 
   this.mode = {
@@ -20,22 +20,22 @@ function Configuration(config) {
 
       if (isValidString(config.mode.array)) {
         const comparison = config.mode.array.toUpperCase();
-        if (allowedComparissions.indexOf(comparison) !== -1) {
+        if (allowedComparissions.find((prop) => prop === comparison) !== undefined) {
           this.mode.array = comparison;
         }
       }
 
       if (isValidString(config.mode.object)) {
         const comparison = config.mode.object.toUpperCase();
-        if (allowedComparissions.indexOf(comparison) !== -1) {
+        if (allowedComparissions.find((prop) => prop === comparison) !== undefined) {
           this.mode.object = comparison;
         }
       }
       if (isValidString(config.mode.function)) {
         const comparison = config.mode.function.toUpperCase();
         if (
-          comparison === COMPARISON_MODE.REFERENCE
-          || comparison === COMPARISON_MODE.STRING
+          comparison === COMPARISON_MODE.REFERENCE ||
+          comparison === COMPARISON_MODE.STRING
         ) {
           this.mode.function = comparison;
         }
@@ -43,5 +43,3 @@ function Configuration(config) {
     }
   }
 }
-
-module.exports = Configuration;

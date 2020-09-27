@@ -1,4 +1,5 @@
 const path = require('path');
+const TypescriptDeclarationPlugin = require('typescript-declaration-webpack-plugin');
 
 module.exports = {
   entry: path.join(__dirname, 'src', 'differify'),
@@ -20,10 +21,23 @@ module.exports = {
         },
       },
       {
-        test: /\.js$/,
-        loaders: ['webpack-comment-remover-loader'],
-        exclude: /node_modules/,
+        test: /\.ts$/,
+        loader: 'ts-loader',
+        include: [/src/],
       },
+      {
+        test: /\.(j|t)s$/,
+        loader: 'webpack-comment-remover-loader',
+        exclude: /node_modules/,
+      }
     ],
+  },
+  plugins: [
+    new TypescriptDeclarationPlugin({
+      out: 'index.d.ts',
+    })
+  ],
+  resolve: {
+    extensions: ['.ts', '.js'],
   },
 };

@@ -2,19 +2,19 @@
  * Copyright(c) 2020 Fabian Roberto Orue <fabianorue@gmail.com>
  * BSD Licensed
  */
-module.exports.isArray = function isArray(value) {
+export function isArray(value) : boolean {
   return value && Array.isArray(value);
 }
 
-module.exports.isObject = function isObject(value) {
+export function isObject(value) : boolean {
   return value && !Array.isArray(value) && typeof value === 'object';
 }
 
-module.exports.isValidString = function isValidString(val) {
+export function isValidString(val) : boolean{
   return val && typeof val === 'string' && val.length > 0;
 }
 
-module.exports.has = function has(obj, prop) {
+export function has(obj, prop) : boolean {
   return obj.hasOwnProperty
     ? obj.hasOwnProperty(prop)
     : obj[prop] !== undefined;

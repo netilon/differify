@@ -1,16 +1,18 @@
 {
   "name": "@netilon/differify",
-  "version": "3.2.3",
+  "version": "3.3.0",
   "description": "Differify allows you to get the diff between two entities (objects diff, arrays diff, date diff, functions diff, number diff, etc) very easily, quickly and in a friendly way.",
   "main": "./index.js",
+  "types": "./index.d.ts",
   "files": [
-    "index.js"
+    "index.js",
+    "index.d.ts"
   ],
   "scripts": {
     "start": "NODE_ENV=production node index.js",
     "start:dev": "NODE_ENV=development nodemon index.js",
-    "debug": "node --inspect-brk=9229 --nolazy ./text-dir/index.js",
-    "build": "rm -rf ./index.js && npx webpack",
+    "debug": "node --inspect-brk=9229 --nolazy ./test-dir/index.js",
+    "build": "rm -rf ./index.js && rm -rf ./index.d.ts && npx webpack && node ./bin/defaultExport.js",
     "prepare": "npm run test -- --coverage && npm run build",
     "lint": "eslint ./src",
     "test": "jest",
@@ -55,15 +57,35 @@
     "jest": "^26.0.1",
     "jest-coverage-badges": "^1.1.2",
     "nodemon": "^2.0.3",
+    "ts-jest": "^26.4.0",
+    "ts-loader": "^8.0.4",
+    "typescript": "^4.0.3",
+    "typescript-declaration-webpack-plugin": "^0.1.1",
     "webpack": "^4.43.0",
     "webpack-cli": "^3.3.11",
     "webpack-comment-remover-loader": "0.0.3"
   },
   "jest": {
     "coverageReporters": [
-      "json-summary", 
+      "json-summary",
       "text",
       "lcov"
-    ]
+    ],
+    "preset": "ts-jest/presets/js-with-ts",
+    "globals": {
+      "ts-jest": {
+        "diagnostics": {
+          "ignoreCodes": [
+            2345,
+            2339,
+            2322,
+            2322,
+            2740,
+            2349,
+            2554
+          ]
+        }
+      }
+    }
   }
 }
