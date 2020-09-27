@@ -1,4 +1,4 @@
-const { buildDeepDiff, buildDiff } = require('../src/property-diff-model');
+import { buildDeepDiff, buildDiff }  from '../src/property-diff-model';
 
 describe('Testing property models', () => {
   test('buildDiff: should return simple diff model', () => {

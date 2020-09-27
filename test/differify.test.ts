@@ -1,5 +1,4 @@
 import Differify from '../src/differify';
-
 const differify = new Differify();
 
 describe('Testing differify lib: ', () => {
@@ -938,7 +937,7 @@ describe('Testing differify lib: ', () => {
     const merged = differify.applyLeftChanges(diff);
     expect(merged).not.toBe(null);
     expect(merged.name).toBe('Person1');
-    expect(Object.prototype.toString(merged.extras)).toBe('[object Object]');
+    expect(Object.prototype.toString.call(merged.extras)).toBe('[object Object]');
     expect(merged.extras.something).toBe('1');
     expect(merged.extras.somethingElse).toBe('2');
   });
@@ -998,7 +997,7 @@ describe('Testing differify lib: ', () => {
     merged = differify.filterDiffByStatus(diff, 'EQUAL');
     expect(merged).not.toBe(null);
     expect(merged.name).toBe('Person1');
-    expect(Object.prototype.toString(merged.extras)).toBe('[object Object]');
+    expect(Object.prototype.toString.call(merged.extras)).toBe('[object Object]');
     expect(merged.extras.something).toBe('1');
     expect(merged.extras.somethingElse).toBe('2');
     expect(merged.doc).toBe(undefined);

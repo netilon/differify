@@ -3,14 +3,16 @@
  * BSD Licensed
  */
 
-const PROPERTY_STATUS = require('./enums/property-status');
-const { buildDiff, buildDeepDiff } = require('./property-diff-model');
-const { has } = require('./utils/validations');
+import PROPERTY_STATUS from './enums/property-status';
+import { buildDiff, buildDeepDiff } from './property-diff-model';
+import { multiPropDiff } from './types/diff'
+import { comparator } from './types/comparators'
+import { has } from './utils/validations';
 
-module.exports.valueRefEqualityComparator = function valueRefEqualityComparator(
+export function valueRefEqualityComparator(
   a,
   b
-) {
+) : multiPropDiff {
   if (a === b) {
     return buildDiff(a, b, PROPERTY_STATUS.EQUAL);
   }
@@ -18,7 +20,7 @@ module.exports.valueRefEqualityComparator = function valueRefEqualityComparator(
   return buildDiff(a, b, PROPERTY_STATUS.MODIFIED, 1);
 };
 
-module.exports.dateComparator = function dateComparator(aDate, bDate) {
+export function dateComparator(aDate, bDate) : multiPropDiff {
   if (aDate.getTime() === bDate.getTime()) {
     return buildDiff(aDate, bDate, PROPERTY_STATUS.EQUAL);
   }
@@ -26,10 +28,10 @@ module.exports.dateComparator = function dateComparator(aDate, bDate) {
   return buildDiff(aDate, bDate, PROPERTY_STATUS.MODIFIED, 1);
 };
 
-module.exports.arraySimpleComparator = function arraySimpleComparator(
+export function arraySimpleComparator(
   aArr,
   bArr
-) {
+) : multiPropDiff {
   if (aArr.length === bArr.length) {
     if (JSON.stringify(aArr) === JSON.stringify(bArr)) {
       return buildDiff(aArr, bArr, PROPERTY_STATUS.EQUAL);
@@ -38,7 +40,7 @@ module.exports.arraySimpleComparator = function arraySimpleComparator(
   return buildDiff(aArr, bArr, PROPERTY_STATUS.MODIFIED, 1);
 };
 
-module.exports.JSONStringComparator = function JSONStringComparator(a, b) {
+export function JSONStringComparator(a, b) : multiPropDiff {
   if (JSON.stringify(a) === JSON.stringify(b)) {
     return buildDiff(a, b, PROPERTY_STATUS.EQUAL);
   }
@@ -46,7 +48,7 @@ module.exports.JSONStringComparator = function JSONStringComparator(a, b) {
   return buildDiff(a, b, PROPERTY_STATUS.MODIFIED, 1);
 };
 
-module.exports.toStringComparator = function toStringComparator(a, b) {
+export function toStringComparator(a, b) : multiPropDiff {
   if (a.toString() === b.toString()) {
     return buildDiff(a, b, PROPERTY_STATUS.EQUAL);
   }
@@ -60,9 +62,9 @@ module.exports.toStringComparator = function toStringComparator(a, b) {
  * @param {*} bArr
  */
 
-module.exports.getConfiguredOrderedDeepArrayComparator = function getConfiguredOrderedDeepArrayComparator(
-  multipleComparator
-) {
+export function getConfiguredOrderedDeepArrayComparator(
+  multipleComparator: comparator
+) : comparator{
   function orderedDeepArrayComparator(aArr, bArr) {
     let maxArr;
     let minArr;
@@ -113,9 +115,9 @@ module.exports.getConfiguredOrderedDeepArrayComparator = function getConfiguredO
  * @param {*} multipleComparator
  */
 
-module.exports.getConfiguredUnorderedDeepArrayComparator = function getConfiguredUnorderedDeepArrayComparator(
-  multipleComparator
-) {
+export function getConfiguredUnorderedDeepArrayComparator(
+  multipleComparator: comparator
+) : comparator {
   function deepUnorderedArrayComparator(aArr, bArr) {
     let maxArr;
     if (aArr.length >= bArr.length) {
@@ -216,9 +218,9 @@ module.exports.getConfiguredUnorderedDeepArrayComparator = function getConfigure
   return deepUnorderedArrayComparator;
 };
 
-module.exports.getConfiguredDeepObjectComparator = function getConfiguredDeepObjectComparator(
-  multipleComparator
-) {
+export function getConfiguredDeepObjectComparator(
+  multipleComparator: comparator
+) : comparator {
   function deepObjectComparator(a, b) {
     const ret = {};
     let aLength = 0;

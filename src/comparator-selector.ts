@@ -3,10 +3,10 @@
  * BSD Licensed
  */
 
-const { buildDiff, buildDeepDiff } = require('./property-diff-model');
-const COMPARISON_MODE = require('./enums/modes');
-const PROPERTY_STATUS = require('./enums/property-status');
-const {
+import COMPARISON_MODE from './enums/modes';
+import { buildDiff, buildDeepDiff } from './property-diff-model';
+import PROPERTY_STATUS from './enums/property-status';
+import {
   valueRefEqualityComparator,
   arraySimpleComparator,
   dateComparator,
@@ -15,13 +15,21 @@ const {
   getConfiguredUnorderedDeepArrayComparator,
   getConfiguredDeepObjectComparator,
   JSONStringComparator,
-} = require('./comparators');
+} from './comparators';
+import {
+  ComparatorMethods,
+  comparatorTypes,
+  comparator,
+} from './types/comparators';
+import config from './types/config';
+import { multiPropDiff } from './types/diff';
 
-function comparatorSelector() {
+export default function comparatorSelector(): ComparatorMethods {
   //types
-  const typeMap = {
+  const typeMap: comparatorTypes = {
     string: null,
     number: null,
+    boolean: null,
     function: null,
     object: null,
   };
@@ -29,7 +37,7 @@ function comparatorSelector() {
   const deepTypeMap = {};
 
   //comparator selectors
-  function multipleComparatorSelector(a, b) {
+  function multipleComparatorSelector(a, b): multiPropDiff {
     if (a === b) {
       return buildDiff(a, b, PROPERTY_STATUS.EQUAL);
     }
@@ -44,7 +52,7 @@ function comparatorSelector() {
     return comparator ? comparator(a, b) : valueRefEqualityComparator(a, b);
   }
 
-  function deepComparatorSelector(a, b) {
+  function deepComparatorSelector(a, b): multiPropDiff {
     // checks array => date => object
     const aType = Object.prototype.toString.call(a);
     const bType = Object.prototype.toString.call(b);
@@ -57,8 +65,9 @@ function comparatorSelector() {
     return buildDiff(a, b, PROPERTY_STATUS.MODIFIED, 1);
   }
 
-  function configure(config) {
-    const objectComp = {};
+  function configure(config: config): void {
+    const objectComp: { [key: string]: comparator } = {};
+
     objectComp[COMPARISON_MODE.DIFF] = getConfiguredDeepObjectComparator(
       multipleComparatorSelector
     );
@@ -99,7 +108,7 @@ function comparatorSelector() {
     deepTypeMap['[object Object]'] = objectComp[config.mode.object];
   }
 
-  function getComparatorByType(type) {
+  function getComparatorByType(type: string): comparator {
     return typeMap[type];
   }
 
@@ -110,5 +119,3 @@ function comparatorSelector() {
     configure,
   };
 }
-
-module.exports = comparatorSelector;

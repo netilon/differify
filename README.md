@@ -22,8 +22,9 @@
  - Completely rewritten
  - The new version 3.x is <font size="3"> **x2 faster**</font> than the older versions (version < 3.0.0)
 	 and is now one of the **Fastests deep object/array** comparators.
+ - Typescript support added.
  - Support for **Node.js** and **Browsers** (it works on both)
- - Just **6.7K (gzipped 2K)** weight (import)
+ - Just **7.6K (gzipped 2K)** weight (import)
  - **No dependencies**
  - **New features** were added! Now you can easily do more things with differify!
      - new config option added. Now, you can decide whether you prefer to compare arrays, either in an `ordered` or in an `unordered` way. Remember that, by default, you have an ordered comparison.

@@ -46,5 +46,5 @@ const B = [
 
 
 const diff = differify.compare(A, B);
-console.log(JSON.stringify(diff));
+console.log(diff, JSON.stringify(differify.filterDiffByStatus(diff, 'ADDED')));
 // console.log(differify.applyRightChanges(diff));

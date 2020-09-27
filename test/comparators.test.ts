@@ -1,4 +1,4 @@
-const {
+import {
   JSONStringComparator,
   arraySimpleComparator,
   dateComparator,
@@ -7,8 +7,8 @@ const {
   getConfiguredUnorderedDeepArrayComparator,
   toStringComparator,
   valueRefEqualityComparator,
-} = require('../src/comparators');
-const comparatorSelector = require('../src/comparator-selector');
+} from '../src/comparators';
+import comparatorSelector from '../src/comparator-selector';
 
 let A = {};
 let B = {};
