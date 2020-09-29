@@ -285,8 +285,18 @@ if you dont specify any configuration, the default options are the following:
 
 ## Typescript<a name="id5"></a>
 
-To use differify library with Typescript, you have to enable the allowJs option (`"allowJs": true`) inside the tsconfig.json file.
+To use differify library with Typescript, you have to configure your tsconfig.json file and enable the following properties:
 
+tsconfig.json
+
+	{
+		"compilerOptions": {
+			"allowJs": true,
+			"esModuleInterop": true,
+		}
+	}
+
+then in your .ts file, you can import Differify this way:
 
 	import Differify, { DIFF_MODES } from '@netilon/differify';
 
