@@ -4,12 +4,12 @@
  */
 
 import { deepPropDiff, propDiff } from './types/diff';
-import propertyStatus from './enums/property-status';
+import PROPERTY_STATUS from './enums/property-status';
 
 export function buildDiff(
   original: any,
   current: any,
-  status: propertyStatus,
+  status: PROPERTY_STATUS,
   changes: number = 0
 ): propDiff {
   return {
@@ -22,7 +22,7 @@ export function buildDiff(
 
 export function buildDeepDiff(
   data,
-  status: propertyStatus,
+  status: PROPERTY_STATUS,
   changes: number = 0
 ): deepPropDiff {
   return {

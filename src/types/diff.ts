@@ -1,16 +1,16 @@
-import propertyStatus from '../enums/property-status';
+import PROPERTY_STATUS from '../enums/property-status';
 
 export type propDiff = {
   original: any;
   current: any;
-  status: propertyStatus;
+  status: PROPERTY_STATUS;
   changes: number;
   _?: undefined;
 };
 
 export type deepPropDiff = {
   _: { [key: string]: propDiff | deepPropDiff } | Array<any> | null;
-  status: propertyStatus;
+  status: PROPERTY_STATUS;
   changes: number;
   original?: undefined;
   current?: undefined;

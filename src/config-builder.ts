@@ -1,13 +1,13 @@
-import COMPARISON_MODE from './enums/modes';
+import DIFF_MODES from './enums/modes';
 import { isObject, isValidString } from './utils/validations';
 import config from './types/config';
 export default function Configuration(config?: config) {
   this.compareArraysInOrder = true;
 
   this.mode = {
-    array: COMPARISON_MODE.DIFF,
-    object: COMPARISON_MODE.DIFF,
-    function: COMPARISON_MODE.REFERENCE,
+    array: DIFF_MODES.DIFF,
+    object: DIFF_MODES.DIFF,
+    function: DIFF_MODES.REFERENCE,
   };
 
   if (isObject(config)) {
@@ -16,7 +16,7 @@ export default function Configuration(config?: config) {
     }
 
     if (isObject(config.mode)) {
-      const allowedComparissions = Object.values(COMPARISON_MODE);
+      const allowedComparissions = Object.values(DIFF_MODES);
 
       if (isValidString(config.mode.array)) {
         const comparison = config.mode.array.toUpperCase();
@@ -34,8 +34,8 @@ export default function Configuration(config?: config) {
       if (isValidString(config.mode.function)) {
         const comparison = config.mode.function.toUpperCase();
         if (
-          comparison === COMPARISON_MODE.REFERENCE ||
-          comparison === COMPARISON_MODE.STRING
+          comparison === DIFF_MODES.REFERENCE ||
+          comparison === DIFF_MODES.STRING
         ) {
           this.mode.function = comparison;
         }

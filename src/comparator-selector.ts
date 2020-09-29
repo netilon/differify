@@ -3,7 +3,7 @@
  * BSD Licensed
  */
 
-import COMPARISON_MODE from './enums/modes';
+import DIFF_MODES from './enums/modes';
 import { buildDiff, buildDeepDiff } from './property-diff-model';
 import PROPERTY_STATUS from './enums/property-status';
 import {
@@ -68,34 +68,34 @@ export default function comparatorSelector(): ComparatorMethods {
   function configure(config: config): void {
     const objectComp: { [key: string]: comparator } = {};
 
-    objectComp[COMPARISON_MODE.DIFF] = getConfiguredDeepObjectComparator(
+    objectComp[DIFF_MODES.DIFF] = getConfiguredDeepObjectComparator(
       multipleComparatorSelector
     );
-    objectComp[COMPARISON_MODE.REFERENCE] = (a, b) => {
+    objectComp[DIFF_MODES.REFERENCE] = (a, b) => {
       const pDiff = valueRefEqualityComparator(a, b);
       return buildDeepDiff(null, pDiff.status, pDiff.changes);
     };
-    objectComp[COMPARISON_MODE.STRING] = (a, b) => {
+    objectComp[DIFF_MODES.STRING] = (a, b) => {
       const pDiff = JSONStringComparator(a, b);
       return buildDeepDiff(null, pDiff.status, pDiff.changes);
     };
     const arrayComp = {};
     //TODO: si el modo es deepUnorderedArrayComparator entonces el comparar objetos
     //dentro del array, debe ser no deep STRING mode
-    arrayComp[COMPARISON_MODE.DIFF] = config.compareArraysInOrder
+    arrayComp[DIFF_MODES.DIFF] = config.compareArraysInOrder
       ? getConfiguredOrderedDeepArrayComparator(multipleComparatorSelector)
       : getConfiguredUnorderedDeepArrayComparator(multipleComparatorSelector);
-    arrayComp[COMPARISON_MODE.REFERENCE] = (a, b) => {
+    arrayComp[DIFF_MODES.REFERENCE] = (a, b) => {
       const pDiff = valueRefEqualityComparator(a, b);
       return buildDeepDiff(null, pDiff.status, pDiff.changes);
     };
-    arrayComp[COMPARISON_MODE.STRING] = (a, b) => {
+    arrayComp[DIFF_MODES.STRING] = (a, b) => {
       const pDiff = arraySimpleComparator(a, b);
       return buildDeepDiff(null, pDiff.status, pDiff.changes);
     };
     const functionComp = {};
-    functionComp[COMPARISON_MODE.REFERENCE] = valueRefEqualityComparator;
-    functionComp[COMPARISON_MODE.STRING] = toStringComparator;
+    functionComp[DIFF_MODES.REFERENCE] = valueRefEqualityComparator;
+    functionComp[DIFF_MODES.STRING] = toStringComparator;
 
     typeMap.string = valueRefEqualityComparator;
     typeMap.number = valueRefEqualityComparator;

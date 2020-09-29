@@ -1,8 +1,9 @@
+import DIFF_MODES from '../enums/modes'
 
 type modeOptions = {
-  array?: string;
-  object?: string;
-  function?: string;
+  array?: DIFF_MODES;
+  object?: DIFF_MODES;
+  function?: DIFF_MODES;
 };
 
 type config = {

@@ -60,7 +60,8 @@ Differify allows you to get the diff between two entities (objects diff, arrays 
 2. [How to use](#id2)
 2. [Documentation](#id3)
 2. [Configuration](#id4)
-2. [Examples](#id5)
+2. [Typescript](#id5)
+2. [Examples](#id6)
 
 ---
 
@@ -282,9 +283,12 @@ if you dont specify any configuration, the default options are the following:
     }
 
 
+## Typescript<a name="id5"></a>
+
+To use differify with Typescript, you have to enable the allowJs option ("allowJs": true) inside the tsconfig.json file.
   
 
-## Examples<a name="id5"></a>
+## Examples<a name="id6"></a>
 
 You have to know that the configuration you provide will change the behavior of the comparators and it will result in different outputs. 
 
