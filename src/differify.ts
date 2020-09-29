@@ -2,7 +2,7 @@
  * Copyright(c) 2020 Fabian Roberto Orue <fabianorue@gmail.com>
  * BSD Licensed
  */
-import COMPARISON_MODE from './enums/modes';
+import DIFF_MODES from './enums/modes';
 import { isArray } from './utils/validations';
 import { buildDiff } from './property-diff-model';
 import Configuration from './config-builder';
@@ -11,7 +11,7 @@ import { valueRefEqualityComparator } from './comparators';
 import comparatorSelector from './comparator-selector';
 import { propertySelector } from './types/comparators';
 import config from './types/config';
-import { multiPropDiff } from './types/diff';
+import { multiPropDiff, deepPropDiff, propDiff } from './types/diff';
 
 const INVALID_VAL = Symbol('invalid');
 
@@ -99,8 +99,8 @@ const statusSelectorCreator = (status: string) => {
 };
 
 const isMergeable = (config: config) =>
-  config.mode.object === COMPARISON_MODE.DIFF &&
-  config.mode.array === COMPARISON_MODE.DIFF;
+  config.mode.object === DIFF_MODES.DIFF &&
+  config.mode.array === DIFF_MODES.DIFF;
 
 const getValidStatus = (status: string): string | null => {
   if (typeof status === 'string') {
@@ -116,6 +116,13 @@ const isValidPropertyDescriptor = (prop) =>
   prop && 'original' in prop && 'current' in prop && 'status' in prop;
 
 class Differify {
+  static DIFF_MODES = DIFF_MODES;
+  static PROPERTY_STATUS = PROPERTY_STATUS;
+  static multiPropDiff: multiPropDiff;
+  static deepPropDiff: deepPropDiff;
+  static propDiff: propDiff;
+  static config: config;
+
   private config: config = null;
   constructor(config?: config) {
     this.config = new Configuration(config);
