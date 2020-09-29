@@ -285,7 +285,7 @@ if you dont specify any configuration, the default options are the following:
 
 ## Typescript<a name="id5"></a>
 
-To use differify library with Typescript, you have to configure your tsconfig.json file and enable the following properties:
+To use the differify library with Typescript, you have to configure your tsconfig.json file and enable the following properties:
 
 tsconfig.json
 
