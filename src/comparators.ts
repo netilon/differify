@@ -179,7 +179,7 @@ export function getConfiguredUnorderedDeepArrayComparator(
               delete comparisonPairsMap[key];
             }
           } else {
-            keyList.push({
+            keyList.unshift({
               a: currElement,
               b: null,
             });
@@ -208,7 +208,7 @@ export function getConfiguredUnorderedDeepArrayComparator(
               delete comparisonPairsMap[key];
             }
           } else {
-            keyList.push({
+            keyList.unshift({
               a: null,
               b: currElement,
             });
@@ -261,14 +261,14 @@ export function getConfiguredUnorderedDeepArrayComparator(
       }
     }
 
-    for (let i = 0; i < uncomparedPair.a.length; i++) {
+    for (let i = uncomparedPair.a.length - 1; i > -1; --i) {
       ret.push(
         buildDiff(uncomparedPair.a[i], null, PROPERTY_STATUS.DELETED, 1)
       );
       ++changes;
     }
 
-    for (let i = 0; i < uncomparedPair.b.length; i++) {
+    for (let i = uncomparedPair.b.length - 1; i > -1; --i) {
       ret.push(buildDiff(null, uncomparedPair.b[i], PROPERTY_STATUS.ADDED, 1));
       ++changes;
     }
