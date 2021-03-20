@@ -30,13 +30,13 @@ module.exports = {
         test: /\.(j|t)s$/,
         loader: 'webpack-comment-remover-loader',
         exclude: /node_modules/,
-      }
+      },
     ],
   },
   plugins: [
     new TypescriptDeclarationPlugin({
       out: 'index.d.ts',
-    })
+    }),
   ],
   resolve: {
     extensions: ['.ts', '.js'],
