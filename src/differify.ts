@@ -9,15 +9,17 @@ import Configuration from './config-builder';
 import PROPERTY_STATUS from './enums/property-status';
 import { valueRefEqualityComparator } from './comparators';
 import comparatorSelector from './comparator-selector';
-import { propertySelector } from './types/comparators';
+import { propertySelector, ComparatorMethods } from './types/comparators';
 import config from './types/config';
 import { multiPropDiff, deepPropDiff, propDiff } from './types/diff';
 
 const INVALID_VAL = Symbol('invalid');
 
-const compSelector = comparatorSelector();
-
-function diff(a: any, b: any): multiPropDiff {
+function diff(
+  comparatorSelector: ComparatorMethods,
+  a: any,
+  b: any
+): multiPropDiff {
   // here, we avoid comparing by reference because of the nested objects can be changed
   const aType = typeof a;
   const bType = typeof b;
@@ -25,7 +27,7 @@ function diff(a: any, b: any): multiPropDiff {
   if (aType !== bType) {
     return buildDiff(a, b, PROPERTY_STATUS.MODIFIED, 1);
   }
-  const comparator = compSelector.getComparatorByType(aType);
+  const comparator = comparatorSelector.getComparatorByType(aType);
   return comparator ? comparator(a, b) : valueRefEqualityComparator(a, b);
 }
 
@@ -138,12 +140,12 @@ class Differify {
   static multiPropDiff: multiPropDiff;
   static deepPropDiff: deepPropDiff;
   static propDiff: propDiff;
-  static config: config;
+  private compSelector = comparatorSelector();
 
   private config: config = null;
   constructor(config?: config) {
     this.config = new Configuration(config);
-    compSelector.configure(this.config);
+    this.compSelector.configure(this.config);
   }
   /**
    * It sets the configuration options that will be applied when compare() method is called.
@@ -151,7 +153,7 @@ class Differify {
    */
   setConfig = (_config: config) => {
     this.config = new Configuration(_config);
-    compSelector.configure(this.config);
+    this.compSelector.configure(this.config);
   };
 
   /**
@@ -172,7 +174,7 @@ class Differify {
    * @returns {multiPropDiff}
    */
   compare = (a: any, b: any): multiPropDiff => {
-    return diff(a, b);
+    return diff(this.compSelector, a, b);
   };
 
   /**
