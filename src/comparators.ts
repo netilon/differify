@@ -5,56 +5,50 @@
 
 import PROPERTY_STATUS from './enums/property-status';
 import { buildDiff, buildDeepDiff } from './property-diff-model';
-import { multiPropDiff } from './types/diff'
-import { comparator } from './types/comparators'
+import { multiPropDiff, deepPropDiff } from './types/diff';
+import { comparator } from './types/comparators';
 import { has } from './utils/validations';
 
-export function valueRefEqualityComparator(
-  a,
-  b
-) : multiPropDiff {
+export function valueRefEqualityComparator(a, b): multiPropDiff {
   if (a === b) {
     return buildDiff(a, b, PROPERTY_STATUS.EQUAL);
   }
 
   return buildDiff(a, b, PROPERTY_STATUS.MODIFIED, 1);
-};
+}
 
-export function dateComparator(aDate, bDate) : multiPropDiff {
+export function dateComparator(aDate, bDate): multiPropDiff {
   if (aDate.getTime() === bDate.getTime()) {
     return buildDiff(aDate, bDate, PROPERTY_STATUS.EQUAL);
   }
 
   return buildDiff(aDate, bDate, PROPERTY_STATUS.MODIFIED, 1);
-};
+}
 
-export function arraySimpleComparator(
-  aArr,
-  bArr
-) : multiPropDiff {
+export function arraySimpleComparator(aArr, bArr): multiPropDiff {
   if (aArr.length === bArr.length) {
     if (JSON.stringify(aArr) === JSON.stringify(bArr)) {
       return buildDiff(aArr, bArr, PROPERTY_STATUS.EQUAL);
     }
   }
   return buildDiff(aArr, bArr, PROPERTY_STATUS.MODIFIED, 1);
-};
+}
 
-export function JSONStringComparator(a, b) : multiPropDiff {
+export function JSONStringComparator(a, b): multiPropDiff {
   if (JSON.stringify(a) === JSON.stringify(b)) {
     return buildDiff(a, b, PROPERTY_STATUS.EQUAL);
   }
 
   return buildDiff(a, b, PROPERTY_STATUS.MODIFIED, 1);
-};
+}
 
-export function toStringComparator(a, b) : multiPropDiff {
+export function toStringComparator(a, b): multiPropDiff {
   if (a.toString() === b.toString()) {
     return buildDiff(a, b, PROPERTY_STATUS.EQUAL);
   }
 
   return buildDiff(a, b, PROPERTY_STATUS.MODIFIED, 1);
-};
+}
 
 /**
  * Compare each element keeping the order of each one.
@@ -64,7 +58,7 @@ export function toStringComparator(a, b) : multiPropDiff {
 
 export function getConfiguredOrderedDeepArrayComparator(
   multipleComparator: comparator
-) : comparator{
+): comparator {
   function orderedDeepArrayComparator(aArr, bArr) {
     let maxArr;
     let minArr;
@@ -101,11 +95,44 @@ export function getConfiguredOrderedDeepArrayComparator(
     return buildDeepDiff(
       ret,
       changes > 0 ? PROPERTY_STATUS.MODIFIED : PROPERTY_STATUS.EQUAL,
-      changes,
+      changes
     );
   }
 
   return orderedDeepArrayComparator;
+}
+
+const getFirstLevelObjectProps = (obj) => {
+  const flatObject = {};
+  for (let prop in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, prop)) {
+      flatObject[prop] = typeof obj[prop] === 'object' ? '' : obj[prop];
+    }
+  }
+
+  return flatObject;
+};
+
+const extractKeyFromData = (data) => {
+  let key;
+  if (typeof data === 'object' && !Array.isArray(data)) {
+    key = getFirstLevelObjectProps(data);
+  } else {
+    key = data;
+  }
+
+  return JSON.stringify(key);
+};
+
+const getChangeCountFromDeepComparator = (
+  comparatorResult: deepPropDiff,
+  currentChangeCount: number
+): number => {
+  return comparatorResult.status === PROPERTY_STATUS.EQUAL
+    ? currentChangeCount - 1
+    : comparatorResult.status === PROPERTY_STATUS.MODIFIED
+    ? comparatorResult.changes
+    : currentChangeCount + 1;
 };
 
 /**
@@ -117,7 +144,7 @@ export function getConfiguredOrderedDeepArrayComparator(
 
 export function getConfiguredUnorderedDeepArrayComparator(
   multipleComparator: comparator
-) : comparator {
+): comparator {
   function deepUnorderedArrayComparator(aArr, bArr) {
     let maxArr;
     if (aArr.length >= bArr.length) {
@@ -126,87 +153,124 @@ export function getConfiguredUnorderedDeepArrayComparator(
       maxArr = bArr;
     }
 
-    const occurencesMap = Object.create(null);
-    const occurencesList = [];
-
     let changes = 0;
     let i;
-    let index;
-    let curr;
     const ret = [];
-    let keyA;
-    let keyB;
+    let key;
     let comparatorRes;
+    let currElement;
+    let currMapElement;
+    let keyList;
+
+    const comparisonPairsMap = Object.create(null);
     for (i = 0; i < maxArr.length; ++i) {
       if (i < aArr.length) {
-        keyA = JSON.stringify(aArr[i]);
-        index = occurencesMap[keyA];
-        if (index !== undefined) {
-          curr = occurencesList[index];
-          curr.a = aArr[i];
-          comparatorRes = multipleComparator(curr.a, curr.b);
-          //BUG issue 18: el problema esta aca cuando el objeto tiene una comparacion profunda
-          //y trae mas propiedades anidadas en lugar de current y original
-          ret[index] =
-            comparatorRes._ !== undefined
-              ? buildDiff(
-                  curr.a,
-                  curr.b,
-                  comparatorRes.status,
-                  comparatorRes.changes
-                )
-              : comparatorRes;
+        currElement = aArr[i];
+        key = JSON.stringify(currElement);
+        keyList = comparisonPairsMap[key];
+        if (keyList !== undefined && keyList.length > 0) {
+          currMapElement = keyList[keyList.length - 1];
+          if (currMapElement.b !== null) {
+            comparatorRes = multipleComparator(currElement, currMapElement.b);
 
-          // if (ret[index].status !== PROPERTY_STATUS.EQUAL) {
-          //   console.log('ENTRO: ', keyA);
-          //   ++changes;
-          // } else {
-          --changes;
-          // }
-          delete occurencesMap[keyA];
+            ret.push(comparatorRes);
+            keyList.pop();
+            if (keyList.length === 0) {
+              delete comparisonPairsMap[key];
+            }
+          } else {
+            keyList.unshift({
+              a: currElement,
+              b: null,
+            });
+          }
         } else {
-          occurencesList.push({
-            a: aArr[i],
-            b: null,
-          });
-          ret.push(buildDiff(aArr[i], null, PROPERTY_STATUS.DELETED, 1));
-          ++changes;
-          occurencesMap[keyA] = occurencesList.length - 1;
+          comparisonPairsMap[key] = [
+            {
+              a: currElement,
+              b: null,
+            },
+          ];
         }
       }
       if (i < bArr.length) {
-        keyB = JSON.stringify(bArr[i]);
-        index = occurencesMap[keyB];
-        if (index !== undefined) {
-          curr = occurencesList[index];
-          curr.b = bArr[i];
-          comparatorRes = multipleComparator(curr.a, curr.b);
-          ret[index] =
-            comparatorRes._ !== undefined
-              ? buildDiff(
-                  curr.a,
-                  curr.b,
-                  comparatorRes.status,
-                  comparatorRes.changes
-                )
-              : comparatorRes;
-          // if (ret[index].status !== PROPERTY_STATUS.EQUAL) {
-          //   console.log('ENTRO: ', keyB);
-          //   ++changes;
-          // } else {
-          --changes;
-          // }
-          delete occurencesMap[keyB];
+        currElement = bArr[i];
+        key = JSON.stringify(currElement);
+        keyList = comparisonPairsMap[key];
+        if (keyList !== undefined && keyList.length > 0) {
+          currMapElement = keyList[keyList.length - 1];
+          if (currMapElement.a !== null) {
+            comparatorRes = multipleComparator(currMapElement.a, currElement);
+
+            ret.push(comparatorRes);
+            keyList.pop();
+            if (keyList.length === 0) {
+              delete comparisonPairsMap[key];
+            }
+          } else {
+            keyList.unshift({
+              a: null,
+              b: currElement,
+            });
+          }
         } else {
-          occurencesList.push({
-            b: bArr[i],
-            a: null,
-          });
-          occurencesMap[keyB] = occurencesList.length - 1;
-          ret.push(buildDiff(null, bArr[i], PROPERTY_STATUS.ADDED, 1));
-          ++changes;
+          comparisonPairsMap[key] = [
+            {
+              a: null,
+              b: currElement,
+            },
+          ];
         }
       }
+    }
+
+    //matchAll
+    let uncomparedPair = Object.create(null);
+    uncomparedPair.a = [];
+    uncomparedPair.b = [];
+
+    for (let key in comparisonPairsMap) {
+      keyList = comparisonPairsMap[key];
+      for (let i = 0; i < keyList.length; ++i) {
+        currMapElement = keyList[i];
+        if (currMapElement.a) {
+          if (uncomparedPair.b.length > 0) {
+            comparatorRes = multipleComparator(
+              currMapElement.a,
+              uncomparedPair.b.pop()
+            );
+
+            changes += comparatorRes.changes;
+            ret.push(comparatorRes);
+          } else {
+            uncomparedPair.a.unshift(currMapElement.a);
+          }
+        } else if (currMapElement.b) {
+          if (uncomparedPair.a.length > 0) {
+            comparatorRes = multipleComparator(
+              uncomparedPair.a.pop(),
+              currMapElement.b
+            );
+
+            changes += comparatorRes.changes;
+            ret.push(comparatorRes);
+          } else {
+            uncomparedPair.b.unshift(currMapElement.b);
+          }
+        }
+      }
+    }
+
+    for (let i = uncomparedPair.a.length - 1; i > -1; --i) {
+      ret.push(
+        buildDiff(uncomparedPair.a[i], null, PROPERTY_STATUS.DELETED, 1)
+      );
+      ++changes;
+    }
+
+    for (let i = uncomparedPair.b.length - 1; i > -1; --i) {
+      ret.push(buildDiff(null, uncomparedPair.b[i], PROPERTY_STATUS.ADDED, 1));
+      ++changes;
     }
 
     return buildDeepDiff(
@@ -216,11 +280,11 @@ export function getConfiguredUnorderedDeepArrayComparator(
     );
   }
   return deepUnorderedArrayComparator;
-};
+}
 
 export function getConfiguredDeepObjectComparator(
   multipleComparator: comparator
-) : comparator {
+): comparator {
   function deepObjectComparator(a, b) {
     const ret = {};
     let aLength = 0;
@@ -254,8 +318,8 @@ export function getConfiguredDeepObjectComparator(
       : buildDeepDiff(
           ret,
           changes > 0 ? PROPERTY_STATUS.MODIFIED : PROPERTY_STATUS.EQUAL,
-          changes,
+          changes
         );
   }
   return deepObjectComparator;
-};
+}

@@ -9,15 +9,17 @@ import Configuration from './config-builder';
 import PROPERTY_STATUS from './enums/property-status';
 import { valueRefEqualityComparator } from './comparators';
 import comparatorSelector from './comparator-selector';
-import { propertySelector } from './types/comparators';
+import { propertySelector, ComparatorMethods } from './types/comparators';
 import config from './types/config';
 import { multiPropDiff, deepPropDiff, propDiff } from './types/diff';
 
 const INVALID_VAL = Symbol('invalid');
 
-const compSelector = comparatorSelector();
-
-function diff(a: any, b: any): multiPropDiff {
+function diff(
+  comparatorSelector: ComparatorMethods,
+  a: any,
+  b: any
+): multiPropDiff {
   // here, we avoid comparing by reference because of the nested objects can be changed
   const aType = typeof a;
   const bType = typeof b;
@@ -25,8 +27,23 @@ function diff(a: any, b: any): multiPropDiff {
   if (aType !== bType) {
     return buildDiff(a, b, PROPERTY_STATUS.MODIFIED, 1);
   }
-  const comparator = compSelector.getComparatorByType(aType);
+  const comparator = comparatorSelector.getComparatorByType(aType);
   return comparator ? comparator(a, b) : valueRefEqualityComparator(a, b);
+}
+
+/**
+ * It returns a normalized output based on the type of the
+ * input when the output is invalid.
+ * @param inputData
+ * @param outputData
+ * @returns
+ */
+function normalizeInvalidOutputFormat(inputData, outputData) {
+  return outputData === INVALID_VAL
+    ? Array.isArray(inputData)
+      ? []
+      : {}
+    : outputData;
 }
 
 const applyChanges = (next, selector: propertySelector) => {
@@ -40,23 +57,25 @@ const applyChanges = (next, selector: propertySelector) => {
       }
     }
 
-    return list;
+    return list.length === 0 ? INVALID_VAL : list;
   }
 
   if (typeof next === 'object') {
     const o = {};
     let curr;
+    let atLeastOneProp = false;
     /* eslint-disable no-debugger,guard-for-in */
     for (const i in next) {
       if (Object.prototype.hasOwnProperty.call(next, i)) {
         curr = selector(next[i]);
         if (curr !== INVALID_VAL) {
           o[i] = curr;
+          atLeastOneProp = true;
         }
       }
     }
     /* eslint-enable no-alert,guard-for-in */
-    return o;
+    return atLeastOneProp ? o : INVALID_VAL;
   }
 
   return selector(next);
@@ -121,12 +140,12 @@ class Differify {
   static multiPropDiff: multiPropDiff;
   static deepPropDiff: deepPropDiff;
   static propDiff: propDiff;
-  static config: config;
+  private compSelector = comparatorSelector();
 
   private config: config = null;
   constructor(config?: config) {
     this.config = new Configuration(config);
-    compSelector.configure(this.config);
+    this.compSelector.configure(this.config);
   }
   /**
    * It sets the configuration options that will be applied when compare() method is called.
@@ -134,7 +153,7 @@ class Differify {
    */
   setConfig = (_config: config) => {
     this.config = new Configuration(_config);
-    compSelector.configure(this.config);
+    this.compSelector.configure(this.config);
   };
 
   /**
@@ -155,7 +174,7 @@ class Differify {
    * @returns {multiPropDiff}
    */
   compare = (a: any, b: any): multiPropDiff => {
-    return diff(a, b);
+    return diff(this.compSelector, a, b);
   };
 
   /**
@@ -166,11 +185,14 @@ class Differify {
    */
   applyLeftChanges = (diffResult: multiPropDiff, diffOnly: boolean = false) => {
     if (diffResult && diffResult._ && isMergeable(this.config)) {
-      return applyChanges(
+      return normalizeInvalidOutputFormat(
         diffResult._,
-        diffOnly
-          ? diffChangeSelectorCreator(leftChangeSelector)
-          : leftChangeSelector
+        applyChanges(
+          diffResult._,
+          diffOnly
+            ? diffChangeSelectorCreator(leftChangeSelector)
+            : leftChangeSelector
+        )
       );
     }
 
@@ -192,11 +214,14 @@ class Differify {
     diffOnly: boolean = false
   ) => {
     if (diffResult && diffResult._ && isMergeable(this.config)) {
-      return applyChanges(
+      return normalizeInvalidOutputFormat(
         diffResult._,
-        diffOnly
-          ? diffChangeSelectorCreator(rightChangeSelector)
-          : rightChangeSelector
+        applyChanges(
+          diffResult._,
+          diffOnly
+            ? diffChangeSelectorCreator(rightChangeSelector)
+            : rightChangeSelector
+        )
       );
     }
 
@@ -220,7 +245,10 @@ class Differify {
     const propStatus = getValidStatus(status);
     if (propStatus && diffResult) {
       if (diffResult._ && isMergeable(this.config)) {
-        return applyChanges(diffResult._, statusSelectorCreator(status));
+        return normalizeInvalidOutputFormat(
+          diffResult._,
+          applyChanges(diffResult._, statusSelectorCreator(status))
+        );
       }
 
       if (

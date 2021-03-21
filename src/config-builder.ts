@@ -20,14 +20,18 @@ export default function Configuration(config?: config) {
 
       if (isValidString(config.mode.array)) {
         const comparison = config.mode.array.toUpperCase();
-        if (allowedComparissions.find((prop) => prop === comparison) !== undefined) {
+        if (
+          allowedComparissions.find((prop) => prop === comparison) !== undefined
+        ) {
           this.mode.array = comparison;
         }
       }
 
       if (isValidString(config.mode.object)) {
         const comparison = config.mode.object.toUpperCase();
-        if (allowedComparissions.find((prop) => prop === comparison) !== undefined) {
+        if (
+          allowedComparissions.find((prop) => prop === comparison) !== undefined
+        ) {
           this.mode.object = comparison;
         }
       }

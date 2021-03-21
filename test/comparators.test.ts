@@ -320,48 +320,28 @@ describe('Testing each comparator separately', () => {
     expect(Object.prototype.toString.call(res._) === '[object Array]').toBe(
       true
     );
-    expect(res._.length).toBe(3);
-    expect(res._[0].status).toBe('DELETED');
-    expect(res._[0].changes).toBe(1);
-    expect(res._[0].original).toBe(A.hobbies[0]);
-    expect(res._[0].current).toBe(null);
 
-    expect(res._[1].status).toBe('ADDED');
-    expect(res._[1].changes).toBe(1);
-    expect(res._[1].current).toBe(B.hobbies[0]);
-    expect(res._[1].original).toBe(null);
+    expect(res._.length).toBe(2);
+    expect(res.status).toBe('MODIFIED');
 
-    expect(res._[2].status).toBe('EQUAL');
-    expect(res._[2].changes).toBe(0);
-    expect(res._[2].original).toBe(A.hobbies[1]);
-    expect(res._[2].current).toBe(B.hobbies[1]);
+    expect(res._[0].changes).toBe(0);
 
-    A.hobbies.push({ points: 9, desc: 'game dev' });
-    res = unorderedDeepArrayComparator(A.hobbies, B.hobbies);
+    expect(res._[0]._.points.original).toBe(A.hobbies[1].points);
+    expect(res._[0]._.points.current).toBe(B.hobbies[1].points);
+    expect(res._[0]._.points.changes).toBe(0);
+    expect(res._[0]._.points.status).toBe('EQUAL');
+    expect(res._[0]._.desc.original).toBe(A.hobbies[1].desc);
+    expect(res._[0]._.desc.current).toBe(B.hobbies[1].desc);
+    expect(res._[0]._.desc.changes).toBe(0);
+    expect(res._[0]._.desc.status).toBe('EQUAL');
 
-    expect(res._).not.toBe(null);
-    expect(Object.prototype.toString.call(res._) === '[object Array]').toBe(
-      true
-    );
-    expect(res._.length).toBe(4);
-    expect(res._[0].status).toBe('DELETED');
-    expect(res._[0].changes).toBe(1);
-    expect(res._[0].original).toBe(A.hobbies[0]);
-    expect(res._[0].current).toBe(null);
-
-    expect(res._[1].status).toBe('ADDED');
-    expect(res._[1].changes).toBe(1);
-    expect(res._[1].current).toBe(B.hobbies[0]);
-    expect(res._[1].original).toBe(null);
-
-    expect(res._[2].status).toBe('EQUAL');
-    expect(res._[2].changes).toBe(0);
-    expect(res._[2].original).toBe(A.hobbies[1]);
-    expect(res._[2].current).toBe(B.hobbies[1]);
-
-    expect(res._[3].status).toBe('DELETED');
-    expect(res._[3].changes).toBe(1);
-    expect(res._[3].original).toBe(A.hobbies[2]);
-    expect(res._[3].current).toBe(null);
+    expect(res._[1]._.points.original).toBe(A.hobbies[0].points);
+    expect(res._[1]._.points.current).toBe(B.hobbies[0].points);
+    expect(res._[1]._.points.changes).toBe(0);
+    expect(res._[1]._.points.status).toBe('EQUAL');
+    expect(res._[1]._.desc.original).toBe(A.hobbies[0].desc);
+    expect(res._[1]._.desc.current).toBe(B.hobbies[0].desc);
+    expect(res._[1]._.desc.changes).toBe(1);
+    expect(res._[1]._.desc.status).toBe('MODIFIED');
   });
 });

@@ -6,6 +6,6 @@ enum DIFF_MODES {
   REFERENCE = 'REFERENCE',
   DIFF = 'DIFF',
   STRING = 'STRING',
-};
+}
 
 export default DIFF_MODES;
