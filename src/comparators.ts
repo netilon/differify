@@ -102,39 +102,6 @@ export function getConfiguredOrderedDeepArrayComparator(
   return orderedDeepArrayComparator;
 }
 
-const getFirstLevelObjectProps = (obj) => {
-  const flatObject = {};
-  for (let prop in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, prop)) {
-      flatObject[prop] = typeof obj[prop] === 'object' ? '' : obj[prop];
-    }
-  }
-
-  return flatObject;
-};
-
-const extractKeyFromData = (data) => {
-  let key;
-  if (typeof data === 'object' && !Array.isArray(data)) {
-    key = getFirstLevelObjectProps(data);
-  } else {
-    key = data;
-  }
-
-  return JSON.stringify(key);
-};
-
-const getChangeCountFromDeepComparator = (
-  comparatorResult: deepPropDiff,
-  currentChangeCount: number
-): number => {
-  return comparatorResult.status === PROPERTY_STATUS.EQUAL
-    ? currentChangeCount - 1
-    : comparatorResult.status === PROPERTY_STATUS.MODIFIED
-    ? comparatorResult.changes
-    : currentChangeCount + 1;
-};
-
 /**
  * Compare the array in an unordered way, without having in mind the
  * order of each element. It will look for equality if not, the element

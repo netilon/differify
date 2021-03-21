@@ -1018,7 +1018,17 @@ describe('Testing differify lib: ', () => {
     expect(merged.name).toBe(undefined);
     expect(merged.extras).toBe(undefined);
     expect(merged.doc).toBe(10);
-    expect(merged.memeber).toBe(undefined);
+    expect(merged.member).toBe(undefined);
+    expect(merged.friends).toBe(undefined);
+
+    //Extended information
+    merged = differify.filterDiffByStatus(diff, 'DELETED', true);
+    expect(merged).not.toBe(null);
+    expect(merged.name).toBe(undefined);
+    expect(merged.extras).toBe(undefined);
+    expect(merged.doc.original).toBe(10);
+    expect(merged.doc.current).toBe(null);
+    expect(merged.member).toBe(undefined);
     expect(merged.friends).toBe(undefined);
 
     merged = differify.filterDiffByStatus(diff, PROPERTY_STATUS.ADDED);
@@ -1027,9 +1037,22 @@ describe('Testing differify lib: ', () => {
     expect(merged.extras).toBe(undefined);
     expect(merged.doc).toBe(undefined);
     expect(merged.badges).toBe(7);
-    expect(merged.memeber).toBe(undefined);
+    expect(merged.member).toBe(undefined);
     expect(merged.friends.length).toBe(1);
     expect(merged.friends[0]).toBe('F');
+
+    //Extended information
+    merged = differify.filterDiffByStatus(diff, PROPERTY_STATUS.ADDED, true);
+    expect(merged).not.toBe(null);
+    expect(merged.name).toBe(undefined);
+    expect(merged.extras).toBe(undefined);
+    expect(merged.doc).toBe(undefined);
+    expect(merged.badges.current).toBe(7);
+    expect(merged.badges.original).toBe(null);
+    expect(merged.member).toBe(undefined);
+    expect(merged.friends.length).toBe(1);
+    expect(merged.friends[0].original).toBe(null);
+    expect(merged.friends[0].current).toBe('F');
 
     merged = differify.filterDiffByStatus(diff, PROPERTY_STATUS.MODIFIED);
     expect(merged).not.toBe(null);
@@ -1037,9 +1060,22 @@ describe('Testing differify lib: ', () => {
     expect(merged.extras).toBe(undefined);
     expect(merged.doc).toBe(undefined);
     expect(merged.badges).toBe(undefined);
-    expect(merged.memeber).toBeFalsy();
+    expect(merged.member).toBeFalsy();
     expect(merged.friends.length).toBe(1);
     expect(merged.friends[0]).toBe('D');
+
+    //Extended information
+    merged = differify.filterDiffByStatus(diff, PROPERTY_STATUS.MODIFIED, true);
+    expect(merged).not.toBe(null);
+    expect(merged.name).toBe(undefined);
+    expect(merged.extras).toBe(undefined);
+    expect(merged.doc).toBe(undefined);
+    expect(merged.badges).toBe(undefined);
+    expect(merged.member.original).toBeTruthy();
+    expect(merged.member.current).toBeFalsy();
+    expect(merged.friends.length).toBe(1);
+    expect(merged.friends[0].current).toBe('D');
+    expect(merged.friends[0].original).toBe('B');
 
     merged = differify.filterDiffByStatus(diff, PROPERTY_STATUS.EQUAL);
     expect(merged).not.toBe(null);
@@ -1051,10 +1087,31 @@ describe('Testing differify lib: ', () => {
     expect(merged.extras.somethingElse).toBe('2');
     expect(merged.doc).toBe(undefined);
     expect(merged.badges).toBe(undefined);
-    expect(merged.memeber).toBe(undefined);
+    expect(merged.member).toBe(undefined);
     expect(merged.friends.length).toBe(2);
     expect(merged.friends[0]).toBe('A');
     expect(merged.friends[1]).toBe('C');
+
+    //Extended information
+    merged = differify.filterDiffByStatus(diff, PROPERTY_STATUS.EQUAL, true);
+    expect(merged).not.toBe(null);
+    expect(merged.name.original).toBe('Person1');
+    expect(merged.name.current).toBe('Person1');
+    expect(Object.prototype.toString.call(merged.extras)).toBe(
+      '[object Object]'
+    );
+    expect(merged.extras.something.original).toBe('1');
+    expect(merged.extras.something.current).toBe('1');
+    expect(merged.extras.somethingElse.original).toBe('2');
+    expect(merged.extras.somethingElse.current).toBe('2');
+    expect(merged.doc).toBe(undefined);
+    expect(merged.badges).toBe(undefined);
+    expect(merged.member).toBe(undefined);
+    expect(merged.friends.length).toBe(2);
+    expect(merged.friends[0].current).toBe('A');
+    expect(merged.friends[0].original).toBe('A');
+    expect(merged.friends[1].current).toBe('C');
+    expect(merged.friends[1].original).toBe('C');
   });
 
   test('if the input is an Array, must return an array with the elements filtered by status', () => {

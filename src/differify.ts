@@ -117,6 +117,19 @@ const statusSelectorCreator = (status: string) => {
   return statusChangeSelector;
 };
 
+const statusSelectorCreatorExtendedInformation = (status: string) => {
+  const check = status === PROPERTY_STATUS.EQUAL;
+  const statusChangeSelector = (curr) => {
+    if (curr._ && (check || curr.changes > 0)) {
+      return applyChanges(curr._, statusChangeSelector);
+    }
+    return curr.status === status
+      ? { current: curr.current, original: curr.original }
+      : INVALID_VAL;
+  };
+  return statusChangeSelector;
+};
+
 const isMergeable = (config: config) =>
   config.mode.object === DIFF_MODES.DIFF &&
   config.mode.array === DIFF_MODES.DIFF;
@@ -240,14 +253,20 @@ class Differify {
    */
   filterDiffByStatus = (
     diffResult: multiPropDiff,
-    status: string = PROPERTY_STATUS.MODIFIED
+    status: string = PROPERTY_STATUS.MODIFIED,
+    extendedInformation: boolean = false
   ) => {
     const propStatus = getValidStatus(status);
     if (propStatus && diffResult) {
       if (diffResult._ && isMergeable(this.config)) {
         return normalizeInvalidOutputFormat(
           diffResult._,
-          applyChanges(diffResult._, statusSelectorCreator(status))
+          applyChanges(
+            diffResult._,
+            extendedInformation
+              ? statusSelectorCreatorExtendedInformation(status)
+              : statusSelectorCreator(status)
+          )
         );
       }
 
