@@ -1028,8 +1028,6 @@ describe('Testing differify lib: ', () => {
     expect(merged.extras).toBe(undefined);
     expect(merged.doc.original).toBe(10);
     expect(merged.doc.current).toBe(null);
-    expect(merged.doc.changes).toBe(1);
-    expect(merged.doc.status).toBe('DELETED');
     expect(merged.member).toBe(undefined);
     expect(merged.friends).toBe(undefined);
 
@@ -1051,14 +1049,10 @@ describe('Testing differify lib: ', () => {
     expect(merged.doc).toBe(undefined);
     expect(merged.badges.current).toBe(7);
     expect(merged.badges.original).toBe(null);
-    expect(merged.badges.changes).toBe(1);
-    expect(merged.badges.status).toBe('ADDED');
     expect(merged.member).toBe(undefined);
     expect(merged.friends.length).toBe(1);
     expect(merged.friends[0].original).toBe(null);
     expect(merged.friends[0].current).toBe('F');
-    expect(merged.friends[0].status).toBe('ADDED');
-    expect(merged.friends[0].changes).toBe(1);
 
     merged = differify.filterDiffByStatus(diff, PROPERTY_STATUS.MODIFIED);
     expect(merged).not.toBe(null);
@@ -1079,13 +1073,9 @@ describe('Testing differify lib: ', () => {
     expect(merged.badges).toBe(undefined);
     expect(merged.member.original).toBeTruthy();
     expect(merged.member.current).toBeFalsy();
-    expect(merged.member.status).toBe('MODIFIED');
-    expect(merged.member.changes).toBe(1);
     expect(merged.friends.length).toBe(1);
     expect(merged.friends[0].current).toBe('D');
     expect(merged.friends[0].original).toBe('B');
-    expect(merged.friends[0].status).toBe('MODIFIED');
-    expect(merged.friends[0].changes).toBe(1);
 
     merged = differify.filterDiffByStatus(diff, PROPERTY_STATUS.EQUAL);
     expect(merged).not.toBe(null);
@@ -1107,31 +1097,21 @@ describe('Testing differify lib: ', () => {
     expect(merged).not.toBe(null);
     expect(merged.name.original).toBe('Person1');
     expect(merged.name.current).toBe('Person1');
-    expect(merged.name.status).toBe('EQUAL');
-    expect(merged.name.changes).toBe(0);
     expect(Object.prototype.toString.call(merged.extras)).toBe(
       '[object Object]'
     );
     expect(merged.extras.something.original).toBe('1');
     expect(merged.extras.something.current).toBe('1');
-    expect(merged.extras.something.status).toBe('EQUAL');
-    expect(merged.extras.something.changes).toBe(0);
     expect(merged.extras.somethingElse.original).toBe('2');
     expect(merged.extras.somethingElse.current).toBe('2');
-    expect(merged.extras.somethingElse.status).toBe('EQUAL');
-    expect(merged.extras.somethingElse.changes).toBe(0);
     expect(merged.doc).toBe(undefined);
     expect(merged.badges).toBe(undefined);
     expect(merged.member).toBe(undefined);
     expect(merged.friends.length).toBe(2);
     expect(merged.friends[0].current).toBe('A');
     expect(merged.friends[0].original).toBe('A');
-    expect(merged.friends[0].status).toBe('EQUAL');
-    expect(merged.friends[0].changes).toBe(0);
     expect(merged.friends[1].current).toBe('C');
     expect(merged.friends[1].original).toBe('C');
-    expect(merged.friends[1].status).toBe('EQUAL');
-    expect(merged.friends[1].changes).toBe(0);
   });
 
   test('if the input is an Array, must return an array with the elements filtered by status', () => {

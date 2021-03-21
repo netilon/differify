@@ -192,7 +192,7 @@ _diffResult_: Object - It is the Object returned by the `compare()` method call.
 
 _status_: string - one of the following (`ADDED` || `MODIFIED` || `DELETED` || `EQUAL`).
 
-_extendedInformation_: boolean - if true, it will add more detail to the given output. Defaults to false.
+_extendedInformation_: boolean - if true, it will add more detail about the elements to the given output. Defaults to false.
 
 **Return:** Object || Array - depending on the input type.
 

@@ -123,7 +123,9 @@ const statusSelectorCreatorExtendedInformation = (status: string) => {
     if (curr._ && (check || curr.changes > 0)) {
       return applyChanges(curr._, statusChangeSelector);
     }
-    return curr.status === status ? curr : INVALID_VAL;
+    return curr.status === status
+      ? { current: curr.current, original: curr.original }
+      : INVALID_VAL;
   };
   return statusChangeSelector;
 };
