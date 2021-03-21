@@ -1,4 +1,5 @@
 import Differify from '../src/differify';
+import PROPERTY_STATUS from '../src/enums/property-status';
 const differify = new Differify();
 
 describe('Testing differify lib: ', () => {
@@ -94,18 +95,18 @@ describe('Testing differify lib: ', () => {
     });
     const diff = differify.compare(Object.create(null), getAObject());
 
-    expect(diff._.name.status === 'ADDED').toBeTruthy();
+    expect(diff._.name.status === PROPERTY_STATUS.ADDED).toBeTruthy();
     expect(diff._.name.original).toBe(null);
     expect(diff._.name.current).toBe('Judith');
-    expect(diff._.date.status === 'ADDED').toBeTruthy();
+    expect(diff._.date.status === PROPERTY_STATUS.ADDED).toBeTruthy();
     expect(diff._.date.original).toBe(null);
     expect(Object.prototype.toString.call(diff._.date.current)).toBe(
       '[object Date]'
     );
-    expect(diff._.age.status === 'ADDED').toBeTruthy();
+    expect(diff._.age.status === PROPERTY_STATUS.ADDED).toBeTruthy();
     expect(diff._.age.original).toBe(null);
     expect(diff._.age.current).toBe(33);
-    expect(diff._.friends.status === 'ADDED').toBeTruthy();
+    expect(diff._.friends.status === PROPERTY_STATUS.ADDED).toBeTruthy();
     expect(diff._.friends.original).toBe(null);
     expect(Object.prototype.toString.call(diff._.friends.current)).toBe(
       '[object Array]'
@@ -122,7 +123,7 @@ describe('Testing differify lib: ', () => {
     });
     const diff = differify.compare({}, {});
 
-    expect(diff.status === 'EQUAL').toBeTruthy();
+    expect(diff.status === PROPERTY_STATUS.EQUAL).toBeTruthy();
     expect(diff.changes === 0).toBeTruthy();
     expect(diff._ === null).toBeTruthy();
   });
@@ -141,7 +142,7 @@ describe('Testing differify lib: ', () => {
       Object.prototype.toString.call(diff._) === '[object Array]'
     ).toBeTruthy();
     expect(diff._.length).toBe(0);
-    expect(diff.status).toBe('EQUAL');
+    expect(diff.status).toBe(PROPERTY_STATUS.EQUAL);
     expect(diff.changes).toBe(0);
   });
 
@@ -156,18 +157,18 @@ describe('Testing differify lib: ', () => {
 
     let diff = differify.compare(Object.create(null), getAObject());
 
-    expect(diff._.name.status === 'ADDED').toBeTruthy();
+    expect(diff._.name.status === PROPERTY_STATUS.ADDED).toBeTruthy();
     expect(diff._.name.original).toBe(null);
     expect(diff._.name.current).toBe('Judith');
-    expect(diff._.date.status === 'ADDED').toBeTruthy();
+    expect(diff._.date.status === PROPERTY_STATUS.ADDED).toBeTruthy();
     expect(diff._.date.original).toBe(null);
     expect(Object.prototype.toString.call(diff._.date.current)).toBe(
       '[object Date]'
     );
-    expect(diff._.age.status === 'ADDED').toBeTruthy();
+    expect(diff._.age.status === PROPERTY_STATUS.ADDED).toBeTruthy();
     expect(diff._.age.original).toBe(null);
     expect(diff._.age.current).toBe(33);
-    expect(diff._.friends.status === 'ADDED').toBeTruthy();
+    expect(diff._.friends.status === PROPERTY_STATUS.ADDED).toBeTruthy();
     expect(diff._.friends.original).toBe(null);
     expect(Object.prototype.toString.call(diff._.friends.current)).toBe(
       '[object Array]'
@@ -206,13 +207,13 @@ describe('Testing differify lib: ', () => {
 
     let diff = differify.compare(a, b);
 
-    expect(diff.status === 'MODIFIED').toBeTruthy();
+    expect(diff.status === PROPERTY_STATUS.MODIFIED).toBeTruthy();
 
     const newDate = new Date();
     a = newDate;
     b = newDate;
     diff = differify.compare(a, b);
-    expect(diff.status === 'EQUAL').toBeTruthy();
+    expect(diff.status === PROPERTY_STATUS.EQUAL).toBeTruthy();
   });
 
   test('checking Native values diff', () => {
@@ -225,19 +226,27 @@ describe('Testing differify lib: ', () => {
     });
 
     // NATIVE DIFF
-    expect(differify.compare(1, 2).status === 'MODIFIED').toBeTruthy();
-    expect(differify.compare(true, false).status === 'MODIFIED').toBeTruthy();
-    expect(differify.compare(null, null).status === 'EQUAL').toBeTruthy();
     expect(
-      differify.compare(undefined, undefined).status === 'EQUAL'
+      differify.compare(1, 2).status === PROPERTY_STATUS.MODIFIED
     ).toBeTruthy();
-    expect(differify.compare('a', 'b').status === 'MODIFIED').toBeTruthy();
+    expect(
+      differify.compare(true, false).status === PROPERTY_STATUS.MODIFIED
+    ).toBeTruthy();
+    expect(
+      differify.compare(null, null).status === PROPERTY_STATUS.EQUAL
+    ).toBeTruthy();
+    expect(
+      differify.compare(undefined, undefined).status === PROPERTY_STATUS.EQUAL
+    ).toBeTruthy();
+    expect(
+      differify.compare('a', 'b').status === PROPERTY_STATUS.MODIFIED
+    ).toBeTruthy();
 
     const newDate = new Date();
     const a = newDate;
     const b = newDate;
     const diff = differify.compare(a, b);
-    expect(diff.status === 'EQUAL').toBeTruthy();
+    expect(diff.status === PROPERTY_STATUS.EQUAL).toBeTruthy();
   });
 
   test('should return the diff between two entities with different typeof result', () => {
@@ -253,7 +262,7 @@ describe('Testing differify lib: ', () => {
     let diff = differify.compare(a, b);
 
     expect(diff._).toBe(undefined);
-    expect(diff.status).toBe('MODIFIED');
+    expect(diff.status).toBe(PROPERTY_STATUS.MODIFIED);
     expect(diff.changes).toBe(1);
     expect(diff.original).toBe(a);
     expect(diff.current).toBe(b);
@@ -269,9 +278,9 @@ describe('Testing differify lib: ', () => {
     const a = [1, 2, 3];
     const b = 1;
     const diff = differify.compare(a, b);
-    let res = differify.filterDiffByStatus(diff, 'MODIFIED');
+    let res = differify.filterDiffByStatus(diff, PROPERTY_STATUS.MODIFIED);
     expect(typeof res).toBe('object');
-    expect(res.status).toBe('MODIFIED');
+    expect(res.status).toBe(PROPERTY_STATUS.MODIFIED);
     expect(res.changes).toBe(1);
     expect(res.original).toBe(a);
     expect(res.current).toBe(b);
@@ -291,12 +300,14 @@ describe('Testing differify lib: ', () => {
       {
         _: {
           name: {
-            current: 'Fabian',
             original: 'Fabian',
-            status: 'EQUAL',
+            current: 'Fabian',
+            status: PROPERTY_STATUS.EQUAL,
             changes: 0,
           },
         },
+        status: PROPERTY_STATUS.EQUAL,
+        changes: 0,
       },
       true
     );
@@ -306,7 +317,7 @@ describe('Testing differify lib: ', () => {
       {
         current: 'Judith',
         original: 'Fabian',
-        status: 'EQUAL',
+        status: PROPERTY_STATUS.EQUAL,
         changes: 0,
       },
       true
@@ -319,7 +330,7 @@ describe('Testing differify lib: ', () => {
           name: {
             current: 'Fabian',
             original: 'Judith',
-            status: 'MODIFIED',
+            status: PROPERTY_STATUS.MODIFIED,
             changes: 1,
           },
         },
@@ -336,7 +347,7 @@ describe('Testing differify lib: ', () => {
           name: {
             current: 'Fabian',
             original: 'Judith',
-            status: 'MODIFIED',
+            status: PROPERTY_STATUS.MODIFIED,
             changes: 1,
           },
         },
@@ -352,7 +363,7 @@ describe('Testing differify lib: ', () => {
       {
         current: 'Judith',
         original: 'Fabian',
-        status: 'EQUAL',
+        status: PROPERTY_STATUS.EQUAL,
         changes: 0,
       },
       true
@@ -377,17 +388,17 @@ describe('Testing differify lib: ', () => {
 
     expect(diff.original).toBe(a);
     expect(diff.current).toBe(b);
-    expect(diff.status).toBe('MODIFIED');
+    expect(diff.status).toBe(PROPERTY_STATUS.MODIFIED);
     expect(diff.changes).toBe(1);
 
     diff = differify.compare({ a: [1, 2, 3] }, { a: 'foo', b: 'bar' });
     expect(diff.changes).toBe(2);
     expect(diff._.a.changes).toBe(1);
-    expect(diff._.a.status).toBe('MODIFIED');
+    expect(diff._.a.status).toBe(PROPERTY_STATUS.MODIFIED);
     expect(JSON.stringify(diff._.a.original)).toBe(JSON.stringify([1, 2, 3]));
     expect(diff._.a.current).toBe('foo');
     expect(diff._.b.changes).toBe(1);
-    expect(diff._.b.status).toBe('ADDED');
+    expect(diff._.b.status).toBe(PROPERTY_STATUS.ADDED);
     expect(diff._.b.original).toBe(null);
     expect(diff._.b.current).toBe('bar');
   });
@@ -405,54 +416,54 @@ describe('Testing differify lib: ', () => {
 
     let diff = differify.compare(a, b);
 
-    expect(diff.status === 'MODIFIED').toBeTruthy();
+    expect(diff.status === PROPERTY_STATUS.MODIFIED).toBeTruthy();
     expect(diff.changes === 4).toBeTruthy();
-    expect(diff._[0].status === 'MODIFIED').toBeTruthy();
-    expect(diff._[1].status === 'MODIFIED').toBeTruthy();
-    expect(diff._[2].status === 'MODIFIED').toBeTruthy();
+    expect(diff._[0].status === PROPERTY_STATUS.MODIFIED).toBeTruthy();
+    expect(diff._[1].status === PROPERTY_STATUS.MODIFIED).toBeTruthy();
+    expect(diff._[2].status === PROPERTY_STATUS.MODIFIED).toBeTruthy();
     expect(diff._[3].status === 'DELETED').toBeTruthy();
 
     diff = differify.compare(b, a);
 
-    expect(diff.status === 'MODIFIED').toBeTruthy();
+    expect(diff.status === PROPERTY_STATUS.MODIFIED).toBeTruthy();
     expect(diff.changes === 4).toBeTruthy();
-    expect(diff._[0].status === 'MODIFIED').toBeTruthy();
-    expect(diff._[1].status === 'MODIFIED').toBeTruthy();
-    expect(diff._[2].status === 'MODIFIED').toBeTruthy();
-    expect(diff._[3].status === 'ADDED').toBeTruthy();
+    expect(diff._[0].status === PROPERTY_STATUS.MODIFIED).toBeTruthy();
+    expect(diff._[1].status === PROPERTY_STATUS.MODIFIED).toBeTruthy();
+    expect(diff._[2].status === PROPERTY_STATUS.MODIFIED).toBeTruthy();
+    expect(diff._[3].status === PROPERTY_STATUS.ADDED).toBeTruthy();
 
     // DIFF EQ
     diff = differify.compare(a, a);
 
-    expect(diff.status === 'EQUAL').toBeTruthy();
+    expect(diff.status === PROPERTY_STATUS.EQUAL).toBeTruthy();
     expect(diff.changes === 0).toBeTruthy();
-    expect(diff._[0].status === 'EQUAL').toBeTruthy();
-    expect(diff._[1].status === 'EQUAL').toBeTruthy();
-    expect(diff._[2].status === 'EQUAL').toBeTruthy();
-    expect(diff._[3].status === 'EQUAL').toBeTruthy();
+    expect(diff._[0].status === PROPERTY_STATUS.EQUAL).toBeTruthy();
+    expect(diff._[1].status === PROPERTY_STATUS.EQUAL).toBeTruthy();
+    expect(diff._[2].status === PROPERTY_STATUS.EQUAL).toBeTruthy();
+    expect(diff._[3].status === PROPERTY_STATUS.EQUAL).toBeTruthy();
 
     // REFERENCE DIFF
     differify.setConfig({ mode: { object: 'DIFF', array: 'REFERENCE' } });
     diff = differify.compare(a, b);
-    expect(diff.status === 'MODIFIED').toBeTruthy();
+    expect(diff.status === PROPERTY_STATUS.MODIFIED).toBeTruthy();
     expect(diff.changes === 1).toBeTruthy();
     expect(diff._ === null).toBeTruthy();
 
     // REFERENCE EQ
     diff = differify.compare(a, a);
-    expect(diff.status === 'EQUAL').toBeTruthy();
+    expect(diff.status === PROPERTY_STATUS.EQUAL).toBeTruthy();
     expect(diff.changes === 0).toBeTruthy();
 
     // STRING DIFF
     differify.setConfig({ mode: { object: 'DIFF', array: 'STRING' } });
     diff = differify.compare(a, b);
-    expect(diff.status === 'MODIFIED').toBeTruthy();
+    expect(diff.status === PROPERTY_STATUS.MODIFIED).toBeTruthy();
     expect(diff.changes === 1).toBeTruthy();
     expect(differify.compare([], [])._ === null).toBeTruthy();
 
     // STRING EQ
     diff = differify.compare(a, a);
-    expect(diff.status === 'EQUAL').toBeTruthy();
+    expect(diff.status === PROPERTY_STATUS.EQUAL).toBeTruthy();
     expect(diff.changes === 0).toBeTruthy();
     expect(differify.compare([], [])._ === null).toBeTruthy();
   });
@@ -464,60 +475,64 @@ describe('Testing differify lib: ', () => {
     let b = getBObject();
 
     expect(differify.compare({}, {})._).toBe(null);
-    expect(differify.compare({}, {}).status).toBe('EQUAL');
+    expect(differify.compare({}, {}).status).toBe(PROPERTY_STATUS.EQUAL);
     expect(differify.compare({}, {}).changes).toBe(0);
 
     let diff = differify.compare(a, b);
-    expect(diff.status).toBe('MODIFIED');
+    expect(diff.status).toBe(PROPERTY_STATUS.MODIFIED);
     expect(diff.changes).toBe(7);
-    expect(diff._.name.status === 'MODIFIED').toBeTruthy();
-    expect(diff._.age.status === 'MODIFIED').toBeTruthy();
+    expect(diff._.name.status === PROPERTY_STATUS.MODIFIED).toBeTruthy();
+    expect(diff._.age.status === PROPERTY_STATUS.MODIFIED).toBeTruthy();
     diff._.extras._.hobbies._.forEach((i) =>
-      expect(i.status === 'MODIFIED').toBeTruthy()
+      expect(i.status === PROPERTY_STATUS.MODIFIED).toBeTruthy()
     );
-    expect(diff._.date.status === 'MODIFIED').toBeTruthy();
+    expect(diff._.date.status === PROPERTY_STATUS.MODIFIED).toBeTruthy();
 
     // DIFF EQ
     a = getAObject();
     b = getAObject();
     b.date = a.date;
     diff = differify.compare(a, b);
-    expect(diff.status).toBe('EQUAL');
+    expect(diff.status).toBe(PROPERTY_STATUS.EQUAL);
     expect(diff.changes).toBe(0);
-    expect(diff._.name.status === 'EQUAL').toBeTruthy();
-    expect(diff._.age.status === 'EQUAL').toBeTruthy();
+    expect(diff._.name.status === PROPERTY_STATUS.EQUAL).toBeTruthy();
+    expect(diff._.age.status === PROPERTY_STATUS.EQUAL).toBeTruthy();
     diff._.extras._.hobbies._.forEach((i) =>
-      expect(i.status === 'EQUAL').toBeTruthy()
+      expect(i.status === PROPERTY_STATUS.EQUAL).toBeTruthy()
     );
-    expect(diff._.date.status === 'EQUAL').toBeTruthy();
+    expect(diff._.date.status === PROPERTY_STATUS.EQUAL).toBeTruthy();
 
     // REFERENCE DIFF
     differify.setConfig({ mode: { object: 'REFERENCE', array: 'REFERENCE' } });
     diff = differify.compare(getAObject(), getBObject());
-    expect(diff.status === 'MODIFIED').toBeTruthy();
+    expect(diff.status === PROPERTY_STATUS.MODIFIED).toBeTruthy();
     expect(diff.changes === 1).toBeTruthy();
-    expect(differify.compare({}, {}).status === 'MODIFIED').toBeTruthy();
+    expect(
+      differify.compare({}, {}).status === PROPERTY_STATUS.MODIFIED
+    ).toBeTruthy();
 
     // REFERENCE EQ
     a = getAObject();
     b = a;
     diff = differify.compare(a, b);
-    expect(diff.status === 'EQUAL').toBeTruthy();
+    expect(diff.status === PROPERTY_STATUS.EQUAL).toBeTruthy();
     expect(diff.changes === 0).toBeTruthy();
 
     // STRING DIFF
     differify.setConfig({ mode: { object: 'STRING', array: 'STRING' } });
     diff = differify.compare(getAObject(), getBObject());
-    expect(diff.status === 'MODIFIED').toBeTruthy();
+    expect(diff.status === PROPERTY_STATUS.MODIFIED).toBeTruthy();
     expect(diff.changes === 1).toBeTruthy();
-    expect(differify.compare({}, {}).status === 'EQUAL').toBeTruthy();
+    expect(
+      differify.compare({}, {}).status === PROPERTY_STATUS.EQUAL
+    ).toBeTruthy();
 
     // STRING EQ
     a = getAObject();
     b = a;
     diff = differify.compare(a, b);
     expect(diff.changes === 0).toBeTruthy();
-    expect(diff.status === 'EQUAL').toBeTruthy();
+    expect(diff.status === PROPERTY_STATUS.EQUAL).toBeTruthy();
   });
 
   test('test output for ALL object modes', () => {
@@ -973,9 +988,9 @@ describe('Testing differify lib: ', () => {
     expect(merged.extras).toBe(undefined);
     expect(merged.doc).toBe(10);
     expect(merged.memeber).toBe(undefined);
-    expect(merged.friends.length).toBe(0);
+    expect(merged.friends).toBe(undefined);
 
-    merged = differify.filterDiffByStatus(diff, 'ADDED');
+    merged = differify.filterDiffByStatus(diff, PROPERTY_STATUS.ADDED);
     expect(merged).not.toBe(null);
     expect(merged.name).toBe(undefined);
     expect(merged.extras).toBe(undefined);
@@ -985,7 +1000,7 @@ describe('Testing differify lib: ', () => {
     expect(merged.friends.length).toBe(1);
     expect(merged.friends[0]).toBe('F');
 
-    merged = differify.filterDiffByStatus(diff, 'MODIFIED');
+    merged = differify.filterDiffByStatus(diff, PROPERTY_STATUS.MODIFIED);
     expect(merged).not.toBe(null);
     expect(merged.name).toBe(undefined);
     expect(merged.extras).toBe(undefined);
@@ -995,7 +1010,7 @@ describe('Testing differify lib: ', () => {
     expect(merged.friends.length).toBe(1);
     expect(merged.friends[0]).toBe('D');
 
-    merged = differify.filterDiffByStatus(diff, 'EQUAL');
+    merged = differify.filterDiffByStatus(diff, PROPERTY_STATUS.EQUAL);
     expect(merged).not.toBe(null);
     expect(merged.name).toBe('Person1');
     expect(Object.prototype.toString.call(merged.extras)).toBe(
@@ -1017,21 +1032,21 @@ describe('Testing differify lib: ', () => {
     const B = ['A', 'D', 'C', 'F'];
 
     const diff = differify.compare(A, B);
-    let merged = differify.filterDiffByStatus(diff, 'ADDED');
+    let merged = differify.filterDiffByStatus(diff, PROPERTY_STATUS.ADDED);
     expect(merged).not.toBe(null);
     expect(merged._).toBe(undefined);
     expect(Array.isArray(merged)).toBeTruthy();
     expect(merged.length).toBe(1);
     expect(merged[0]).toBe('F');
 
-    merged = differify.filterDiffByStatus(diff, 'MODIFIED');
+    merged = differify.filterDiffByStatus(diff, PROPERTY_STATUS.MODIFIED);
     expect(merged).not.toBe(null);
     expect(merged._).toBe(undefined);
     expect(Array.isArray(merged)).toBeTruthy();
     expect(merged.length).toBe(1);
     expect(merged[0]).toBe('D');
 
-    merged = differify.filterDiffByStatus(diff, 'EQUAL');
+    merged = differify.filterDiffByStatus(diff, PROPERTY_STATUS.EQUAL);
     expect(merged).not.toBe(null);
     expect(merged._).toBe(undefined);
     expect(Array.isArray(merged)).toBeTruthy();
@@ -1062,16 +1077,16 @@ describe('Testing differify lib: ', () => {
 
     expect(diff.changes).toEqual(2);
     expect(diff._.length).toEqual(4);
-    expect(diff._[0].status).toEqual('EQUAL');
+    expect(diff._[0].status).toEqual(PROPERTY_STATUS.EQUAL);
     expect(diff._[0].original).toEqual('A');
     expect(diff._[0].current).toEqual('A');
-    expect(diff._[1].status).toEqual('EQUAL');
+    expect(diff._[1].status).toEqual(PROPERTY_STATUS.EQUAL);
     expect(diff._[1].original).toEqual('C');
     expect(diff._[1].current).toEqual('C');
-    expect(diff._[2].status).toEqual('MODIFIED');
+    expect(diff._[2].status).toEqual(PROPERTY_STATUS.MODIFIED);
     expect(diff._[2].original).toEqual('B');
     expect(diff._[2].current).toEqual('D');
-    expect(diff._[3].status).toEqual('ADDED');
+    expect(diff._[3].status).toEqual(PROPERTY_STATUS.ADDED);
     expect(diff._[3].original).toEqual(null);
     expect(diff._[3].current).toEqual('F');
 
@@ -1079,13 +1094,13 @@ describe('Testing differify lib: ', () => {
 
     expect(diff.changes).toEqual(2);
     expect(diff._.length).toEqual(4);
-    expect(diff._[0].status).toEqual('EQUAL');
+    expect(diff._[0].status).toEqual(PROPERTY_STATUS.EQUAL);
     expect(diff._[0].original).toEqual('A');
     expect(diff._[0].current).toEqual('A');
-    expect(diff._[1].status).toEqual('EQUAL');
+    expect(diff._[1].status).toEqual(PROPERTY_STATUS.EQUAL);
     expect(diff._[1].original).toEqual('C');
     expect(diff._[1].current).toEqual('C');
-    expect(diff._[2].status).toEqual('MODIFIED');
+    expect(diff._[2].status).toEqual(PROPERTY_STATUS.MODIFIED);
     expect(diff._[2].original).toEqual('D');
     expect(diff._[2].current).toEqual('B');
     expect(diff._[3].status).toEqual('DELETED');
@@ -1096,16 +1111,16 @@ describe('Testing differify lib: ', () => {
 
     expect(diff.changes).toEqual(3);
     expect(diff._.length).toEqual(4);
-    expect(diff._[0].status).toEqual('EQUAL');
+    expect(diff._[0].status).toEqual(PROPERTY_STATUS.EQUAL);
     expect(diff._[0].original).toEqual(1);
     expect(diff._[0].current).toEqual(1);
-    expect(diff._[1].status).toEqual('MODIFIED');
+    expect(diff._[1].status).toEqual(PROPERTY_STATUS.MODIFIED);
     expect(diff._[1].original).toEqual(2);
     expect(diff._[1].current).toEqual(4);
-    expect(diff._[2].status).toEqual('MODIFIED');
+    expect(diff._[2].status).toEqual(PROPERTY_STATUS.MODIFIED);
     expect(diff._[2].original).toEqual(3);
     expect(diff._[2].current).toEqual(5);
-    expect(diff._[3].status).toEqual('ADDED');
+    expect(diff._[3].status).toEqual(PROPERTY_STATUS.ADDED);
     expect(diff._[3].original).toEqual(null);
     expect(diff._[3].current).toEqual(6);
 
@@ -1122,14 +1137,14 @@ describe('Testing differify lib: ', () => {
 
     expect(diff.changes).toEqual(1);
     expect(diff._.length).toEqual(2);
-    expect(diff.status).toEqual('MODIFIED');
-    expect(diff._[0].status).toEqual('EQUAL');
+    expect(diff.status).toEqual(PROPERTY_STATUS.MODIFIED);
+    expect(diff._[0].status).toEqual(PROPERTY_STATUS.EQUAL);
     expect(diff._[0]._.name.original).toEqual('Fabian');
     expect(diff._[0]._.name.current).toEqual('Fabian');
     expect(diff._[0]._.age.original).toEqual(18);
     expect(diff._[0]._.age.current).toEqual(18);
 
-    expect(diff._[1].status).toEqual('MODIFIED');
+    expect(diff._[1].status).toEqual(PROPERTY_STATUS.MODIFIED);
     expect(diff._[1]._.name.original).toEqual('Judith');
     expect(diff._[1]._.name.current).toEqual('Andres');
     expect(diff._[1]._.age.original).toEqual(18);
@@ -1148,21 +1163,21 @@ describe('Testing differify lib: ', () => {
 
     expect(diff.changes).toEqual(3);
     expect(diff._.length).toEqual(2);
-    expect(diff.status).toEqual('MODIFIED');
-    expect(diff._[0].status).toEqual('MODIFIED');
+    expect(diff.status).toEqual(PROPERTY_STATUS.MODIFIED);
+    expect(diff._[0].status).toEqual(PROPERTY_STATUS.MODIFIED);
     expect(diff._[0]._.name.original).toEqual('Fabian');
     expect(diff._[0]._.name.current).toEqual('Andres');
-    expect(diff._[0]._.name.status).toEqual('MODIFIED');
+    expect(diff._[0]._.name.status).toEqual(PROPERTY_STATUS.MODIFIED);
     expect(diff._[0]._.age.original).toEqual(19);
     expect(diff._[0]._.age.current).toEqual(18);
-    expect(diff._[0]._.age.status).toEqual('MODIFIED');
+    expect(diff._[0]._.age.status).toEqual(PROPERTY_STATUS.MODIFIED);
 
     expect(diff._[1]._.name.original).toEqual('Judith');
     expect(diff._[1]._.name.current).toEqual('Fabian');
-    expect(diff._[1]._.name.status).toEqual('MODIFIED');
+    expect(diff._[1]._.name.status).toEqual(PROPERTY_STATUS.MODIFIED);
     expect(diff._[1]._.age.original).toEqual(18);
     expect(diff._[1]._.age.current).toEqual(18);
-    expect(diff._[1]._.age.status).toEqual('EQUAL');
+    expect(diff._[1]._.age.status).toEqual(PROPERTY_STATUS.EQUAL);
 
     diff = differify.compare(
       [
@@ -1205,39 +1220,39 @@ describe('Testing differify lib: ', () => {
 
     expect(diff.changes).toEqual(4);
     expect(diff._.length).toEqual(4);
-    expect(diff.status).toEqual('MODIFIED');
+    expect(diff.status).toEqual(PROPERTY_STATUS.MODIFIED);
 
-    expect(diff._[0].status).toEqual('EQUAL');
+    expect(diff._[0].status).toEqual(PROPERTY_STATUS.EQUAL);
     expect(diff._[0]._.id.original).toEqual(156);
     expect(diff._[0]._.id.current).toEqual(156);
-    expect(diff._[0]._.id.status).toEqual('EQUAL');
+    expect(diff._[0]._.id.status).toEqual(PROPERTY_STATUS.EQUAL);
     expect(diff._[0]._.phrase.original).toEqual('Can you help me with');
     expect(diff._[0]._.phrase.current).toEqual('Can you help me with');
-    expect(diff._[0]._.phrase.status).toEqual('EQUAL');
+    expect(diff._[0]._.phrase.status).toEqual(PROPERTY_STATUS.EQUAL);
 
-    expect(diff._[1].status).toEqual('EQUAL');
+    expect(diff._[1].status).toEqual(PROPERTY_STATUS.EQUAL);
     expect(diff._[1]._.id.original).toEqual(157);
     expect(diff._[1]._.id.current).toEqual(157);
-    expect(diff._[1]._.id.status).toEqual('EQUAL');
+    expect(diff._[1]._.id.status).toEqual(PROPERTY_STATUS.EQUAL);
     expect(diff._[1]._.phrase.original).toEqual('Help me with');
     expect(diff._[1]._.phrase.current).toEqual('Help me with');
-    expect(diff._[1]._.phrase.status).toEqual('EQUAL');
+    expect(diff._[1]._.phrase.status).toEqual(PROPERTY_STATUS.EQUAL);
 
-    expect(diff._[2].status).toEqual('MODIFIED');
+    expect(diff._[2].status).toEqual(PROPERTY_STATUS.MODIFIED);
     expect(diff._[2]._.id.original).toEqual(155);
     expect(diff._[2]._.id.current).toEqual(123);
-    expect(diff._[2]._.id.status).toEqual('MODIFIED');
+    expect(diff._[2]._.id.status).toEqual(PROPERTY_STATUS.MODIFIED);
     expect(diff._[2]._.phrase.original).toEqual('I was deleted');
     expect(diff._[2]._.phrase.current).toEqual('Was edited');
-    expect(diff._[2]._.phrase.status).toEqual('MODIFIED');
+    expect(diff._[2]._.phrase.status).toEqual(PROPERTY_STATUS.MODIFIED);
 
-    expect(diff._[3].status).toEqual('MODIFIED');
+    expect(diff._[3].status).toEqual(PROPERTY_STATUS.MODIFIED);
     expect(diff._[3]._.id.original).toEqual(123);
     expect(diff._[3]._.id.current).toEqual(88);
-    expect(diff._[3]._.id.status).toEqual('MODIFIED');
+    expect(diff._[3]._.id.status).toEqual(PROPERTY_STATUS.MODIFIED);
     expect(diff._[3]._.phrase.original).toEqual('Was edite');
     expect(diff._[3]._.phrase.current).toEqual('Was added in between');
-    expect(diff._[3]._.phrase.status).toEqual('MODIFIED');
+    expect(diff._[3]._.phrase.status).toEqual(PROPERTY_STATUS.MODIFIED);
 
     const before = {
       members: [
@@ -1285,7 +1300,7 @@ describe('Testing differify lib: ', () => {
     };
 
     diff = differify.compare(before, after);
-    expect(diff.status).toBe('MODIFIED');
+    expect(diff.status).toBe(PROPERTY_STATUS.MODIFIED);
     expect(diff.changes).toBe(3);
 
     expect(JSON.stringify(diff)).toBe(
