@@ -1,5 +1,6 @@
 import Differify from '../src/differify';
 import PROPERTY_STATUS from '../src/enums/property-status';
+import DIFF_MODES from '../src/enums/modes';
 const differify = new Differify();
 
 describe('Testing differify lib: ', () => {
@@ -54,6 +55,36 @@ describe('Testing differify lib: ', () => {
     expect(config.mode.array).toEqual('DIFF');
     expect(config.mode.object).toEqual('DIFF');
     expect(config.mode.function).toEqual('REFERENCE');
+  });
+
+  test('testing multiple instance config', () => {
+    const diff = new Differify({
+      mode: {
+        object: DIFF_MODES.DIFF,
+        array: DIFF_MODES.DIFF,
+      },
+    });
+
+    const diff2 = new Differify({
+      compareArraysInOrder: false,
+      mode: {
+        object: DIFF_MODES.DIFF,
+        array: DIFF_MODES.STRING,
+      },
+    });
+
+    expect(JSON.stringify(diff.getConfig())).toBe(
+      JSON.stringify({
+        compareArraysInOrder: true,
+        mode: { array: 'DIFF', object: 'DIFF', function: 'REFERENCE' },
+      })
+    );
+    expect(JSON.stringify(diff2.getConfig())).toBe(
+      JSON.stringify({
+        compareArraysInOrder: false,
+        mode: { array: 'STRING', object: 'DIFF', function: 'REFERENCE' },
+      })
+    );
   });
 
   test('testing incomplete config', () => {
