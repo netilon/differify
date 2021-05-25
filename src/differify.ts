@@ -131,8 +131,7 @@ const statusSelectorCreatorExtendedInformation = (status: string) => {
 };
 
 const isMergeable = (config: config) =>
-  config.mode.object === DIFF_MODES.DIFF &&
-  config.mode.array === DIFF_MODES.DIFF;
+  config.mode.object === DIFF_MODES.DIFF;
 
 const getValidStatus = (status: string): string | null => {
   if (typeof status === 'string') {
