@@ -478,7 +478,7 @@ describe('Testing differify lib: ', () => {
     diff = differify.compare(a, b);
     expect(diff.status === PROPERTY_STATUS.MODIFIED).toBeTruthy();
     expect(diff.changes === 1).toBeTruthy();
-    expect(diff._ === null).toBeTruthy();
+    expect(diff._ === null).toBeFalsy();
 
     // REFERENCE EQ
     diff = differify.compare(a, a);
@@ -490,13 +490,13 @@ describe('Testing differify lib: ', () => {
     diff = differify.compare(a, b);
     expect(diff.status === PROPERTY_STATUS.MODIFIED).toBeTruthy();
     expect(diff.changes === 1).toBeTruthy();
-    expect(differify.compare([], [])._ === null).toBeTruthy();
+    expect(differify.compare([], [])._ === null).toBeFalsy();
 
     // STRING EQ
     diff = differify.compare(a, a);
     expect(diff.status === PROPERTY_STATUS.EQUAL).toBeTruthy();
     expect(diff.changes === 0).toBeTruthy();
-    expect(differify.compare([], [])._ === null).toBeTruthy();
+    expect(differify.compare([], [])._ === null).toBeFalsy();
   });
 
   test('Object comparission with ALL possible configurations', () => {
@@ -939,7 +939,7 @@ describe('Testing differify lib: ', () => {
     differify.setConfig({ mode: { object: 'DIFF', array: 'STRING' } });
     diff = differify.compare({ a: 'a', b: 'b', c: 'c' }, { a: 'b', b: 'a' });
     merged = differify.applyLeftChanges(diff);
-    expect(merged).toBe(null);
+    expect(merged).toStrictEqual({"a": "a", "b": "b", "c": "c"});
   });
 
   test('should return null if wrong diff data is provided', () => {
