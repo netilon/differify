@@ -14,7 +14,7 @@
 ## Whats new?
 
 - Completely rewritten
-- The new version 3.x is <font size="3"> **x2 faster**</font> than the older versions (version < 3.0.0)
+- The new version 4.x is <font size="3"> **x2 faster**</font> than the older versions (version < 3.0.0)
   and is now one of the **Fastests deep object/array** comparators.
 - Typescript support added.
 - Support for **Node.js** and **Browsers** (it works on both)
