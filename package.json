@@ -16,7 +16,7 @@
     "prepare": "npm run test -- --coverage && npm run build",
     "lint": "eslint ./src",
     "test": "jest",
-    "changelog": "git log --oneline  --pretty=format:'- [%ci] (%h) %s' | tail -n 10 > CHANGELOG.md",
+    "changelog": "git log --oneline  --pretty=format:'- [%ci] (%h) %s' -n 10 > CHANGELOG.md",
     "coverage": "jest --coverage && jest-coverage-badges --output './badges'",
     "benchmark": "node ./test/differify.benchmark.js"
   },
