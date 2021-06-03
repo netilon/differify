@@ -184,7 +184,7 @@ _diffOnly_: boolean - (default: false) It returns just the difference (only the 
 
 _filterDiffByStatus(diffResult, status, extendedInformation);_
 
-**Description:** It will return the changes that match with the specified status (second parameter).
+**Description:** It will return the changes that match the specified property status (second parameter) using the **DIFF_MODES.DIFF** in the configuration. **IMPORTANT:** If you use another diff mode (different than DIFF_MODES.DIFF), then you will get the corresponding value from original/current property (based on the status) without any filtering (you will get the raw value).
 
 **Params:**
 
@@ -194,7 +194,7 @@ _status_: string - one of the following (`ADDED` || `MODIFIED` || `DELETED` || `
 
 _extendedInformation_: boolean - if true, it will add more detail about the elements to the given output. Defaults to false.
 
-**Return:** Object || Array - depending on the input type.
+**Return:** any || null - it depends on the input type. If there is no status matching, then null will be returned.
 
 ---
 
@@ -288,12 +288,11 @@ you will get this output (note that there is a detail for each element in the ar
 you will get this output (just a string comparison):
 
     {
-    	// no diff info
-    	// (because it's just string comparison)
-    	"_": null,
+    	"original": [1,2],
+    	"current": [1,3],
     	"status": "MODIFIED",
     	// always will be 1 or 0 because there is no
-    	// deep checking (just DIFF option do that)
+    	// deep checking (use the DIFF option if you want more information)
     	"changes": 1
     }
 
