@@ -779,6 +779,22 @@ describe('Testing differify lib: ', () => {
     );
     expect(merged.hobbies.b.length).toBe(1);
     expect(merged.hobbies.b[0].name).toBe('willys');
+
+    differify.setConfig({ mode: { object: 'REFERENCE', array: 'REFERENCE' } });
+
+    diff = differify.compare(A, B);
+
+    merged = differify.applyRightChanges(diff);
+
+    expect(merged.id).toBe(2);
+    expect(merged.name).toBe('Person2');
+    expect(merged.birthdate).toBe(533444400000);
+    expect(merged.hobbies.a).toBe('dance');
+    expect(Object.prototype.toString.call(merged.hobbies.b)).toBe(
+      '[object Array]'
+    );
+    expect(merged.hobbies.b.length).toBe(1);
+    expect(merged.hobbies.b[0].name).toBe('willys');
   });
 
   test('should merge left changes properly', () => {
@@ -835,6 +851,28 @@ describe('Testing differify lib: ', () => {
     expect(merged[1]).toBe(2);
     expect(merged[2]).toBe(3);
     expect(merged[3]).toBe(7);
+
+    diff = differify.compare([1, 2, 3], [4, 5]);
+    merged = differify.applyLeftChanges(diff);
+
+    expect(Object.prototype.toString.call(merged)).toBe('[object Array]');
+    expect(merged.length).toBe(3);
+    expect(merged[0]).toBe(1);
+    expect(merged[1]).toBe(2);
+    expect(merged[2]).toBe(3);
+
+    differify.setConfig({ mode: { object: 'STRING', array: 'STRING' } });
+
+    diff = differify.compare([1, 2, 3], [4, 5]);
+    merged = differify.applyLeftChanges(diff);
+
+    expect(Object.prototype.toString.call(merged)).toBe('[object Array]');
+    expect(merged.length).toBe(3);
+    expect(merged[0]).toBe(1);
+    expect(merged[1]).toBe(2);
+    expect(merged[2]).toBe(3);
+
+    differify.setConfig({ mode: { object: 'REFERENCE', array: 'REFERENCE' } });
 
     diff = differify.compare([1, 2, 3], [4, 5]);
     merged = differify.applyLeftChanges(diff);
@@ -1017,7 +1055,7 @@ describe('Testing differify lib: ', () => {
     expect(merged).not.toBe(null);
   });
 
-  test('should return null if the config is not DIFF for objects and arrays', () => {
+  test('applyLeftChanges: config combinatios', () => {
     differify.setConfig({ mode: { object: 'REFERENCE', array: 'DIFF' } });
     const a = { a: 'a', b: 'b', c: 'c' };
     const b = { a: 'b', b: 'a' };

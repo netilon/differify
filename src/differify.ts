@@ -133,7 +133,7 @@ const statusSelectorCreatorExtendedInformation = (status: string) => {
 const getValidStatus = (status: string): string | null => {
   if (typeof status === 'string') {
     const s = status.trim().toUpperCase();
-    return Object.keys(PROPERTY_STATUS).some((prop) => s === prop) !== undefined
+    return Object.keys(PROPERTY_STATUS).find((prop) => s === prop) !== undefined
       ? s
       : null;
   }
