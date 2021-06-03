@@ -1,6 +1,6 @@
 {
   "name": "@netilon/differify",
-  "version": "3.4.3",
+  "version": "4.0.0",
   "description": "Differify allows you to get the diff between two entities (objects diff, arrays diff, date diff, functions diff, number diff, etc) very easily, quickly and in a friendly way.",
   "main": "./index.js",
   "types": "index.d.ts",
@@ -16,9 +16,13 @@
     "prepare": "npm run test -- --coverage && npm run build",
     "lint": "eslint ./src",
     "test": "jest",
+    "changelog": "git log --oneline  --pretty=format:'- [%ci] (%h) %s' -n 10 > CHANGELOG.md",
     "coverage": "jest --coverage && jest-coverage-badges --output './badges'",
     "benchmark": "node ./test/differify.benchmark.js"
   },
+  "pre-commit": [
+    "test"
+  ],
   "keywords": [
     "differify",
     "diff",
@@ -47,23 +51,24 @@
   "homepage": "http://www.netilon.com",
   "license": "BSD-3-Clause",
   "devDependencies": {
-    "@babel/core": "^7.13.10",
-    "@babel/preset-env": "^7.13.10",
-    "babel-loader": "^8.1.0",
+    "@babel/core": "^7.14.3",
+    "@babel/preset-env": "^7.14.4",
+    "babel-loader": "^8.2.2",
     "benchmark": "^2.1.4",
     "eslint": "^6.8.0",
-    "eslint-config-airbnb-base": "^14.1.0",
-    "eslint-plugin-import": "^2.20.2",
-    "jest": "^26.0.1",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.23.4",
+    "jest": "^26.6.3",
     "jest-coverage-badges": "^1.1.2",
     "nodemon": "^2.0.7",
-    "ts-jest": "^26.5.3",
-    "ts-loader": "^8.0.18",
-    "ts-node": "^9.0.0",
-    "typescript": "^4.2.3",
+    "pre-commit": "^1.2.2",
+    "ts-jest": "^26.5.6",
+    "ts-loader": "^8.3.0",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.3.2",
     "typescript-declaration-webpack-plugin": "^0.1.1",
     "webpack": "^4.46.0",
-    "webpack-cli": "^3.3.11",
+    "webpack-cli": "^3.3.12",
     "webpack-comment-remover-loader": "0.0.3"
   },
   "jest": {

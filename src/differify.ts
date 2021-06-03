@@ -130,13 +130,9 @@ const statusSelectorCreatorExtendedInformation = (status: string) => {
   return statusChangeSelector;
 };
 
-const isMergeable = (config: config) =>
-  config.mode.object === DIFF_MODES.DIFF &&
-  config.mode.array === DIFF_MODES.DIFF;
-
 const getValidStatus = (status: string): string | null => {
   if (typeof status === 'string') {
-    const s = status.toUpperCase().trim();
+    const s = status.trim().toUpperCase();
     return Object.keys(PROPERTY_STATUS).find((prop) => s === prop) !== undefined
       ? s
       : null;
@@ -197,7 +193,7 @@ class Differify {
    * @returns {Object|Array}
    */
   applyLeftChanges = (diffResult: multiPropDiff, diffOnly: boolean = false) => {
-    if (diffResult && diffResult._ && isMergeable(this.config)) {
+    if (diffResult && diffResult._) {
       return normalizeInvalidOutputFormat(
         diffResult._,
         applyChanges(
@@ -226,7 +222,7 @@ class Differify {
     diffResult: multiPropDiff,
     diffOnly: boolean = false
   ) => {
-    if (diffResult && diffResult._ && isMergeable(this.config)) {
+    if (diffResult && diffResult._) {
       return normalizeInvalidOutputFormat(
         diffResult._,
         applyChanges(
@@ -258,7 +254,7 @@ class Differify {
   ) => {
     const propStatus = getValidStatus(status);
     if (propStatus && diffResult) {
-      if (diffResult._ && isMergeable(this.config)) {
+      if (diffResult._) {
         return normalizeInvalidOutputFormat(
           diffResult._,
           applyChanges(
@@ -269,12 +265,14 @@ class Differify {
           )
         );
       }
-
       if (
         isValidPropertyDescriptor(diffResult) &&
         diffResult.status === propStatus
       ) {
-        return diffResult;
+        const selector = extendedInformation
+          ? statusSelectorCreatorExtendedInformation(status)
+          : statusSelectorCreator(status);
+        return selector(diffResult);
       }
     }
     return null;

@@ -73,11 +73,11 @@ export default function comparatorSelector(): ComparatorMethods {
     );
     objectComp[DIFF_MODES.REFERENCE] = (a, b) => {
       const pDiff = valueRefEqualityComparator(a, b);
-      return buildDeepDiff(null, pDiff.status, pDiff.changes);
+      return buildDiff(a, b, pDiff.status, pDiff.changes);
     };
     objectComp[DIFF_MODES.STRING] = (a, b) => {
       const pDiff = JSONStringComparator(a, b);
-      return buildDeepDiff(null, pDiff.status, pDiff.changes);
+      return buildDiff(a, b, pDiff.status, pDiff.changes);
     };
     const arrayComp = {};
     //TODO: si el modo es deepUnorderedArrayComparator entonces el comparar objetos
@@ -87,11 +87,11 @@ export default function comparatorSelector(): ComparatorMethods {
       : getConfiguredUnorderedDeepArrayComparator(multipleComparatorSelector);
     arrayComp[DIFF_MODES.REFERENCE] = (a, b) => {
       const pDiff = valueRefEqualityComparator(a, b);
-      return buildDeepDiff(null, pDiff.status, pDiff.changes);
+      return buildDiff(a, b, pDiff.status, pDiff.changes);
     };
     arrayComp[DIFF_MODES.STRING] = (a, b) => {
       const pDiff = arraySimpleComparator(a, b);
-      return buildDeepDiff(null, pDiff.status, pDiff.changes);
+      return buildDiff(a, b, pDiff.status, pDiff.changes);
     };
     const functionComp = {};
     functionComp[DIFF_MODES.REFERENCE] = valueRefEqualityComparator;

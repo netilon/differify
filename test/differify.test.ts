@@ -298,7 +298,7 @@ describe('Testing differify lib: ', () => {
     expect(diff.original).toBe(a);
     expect(diff.current).toBe(b);
   });
-  test('should return null when the passed status is not a valid one', () => {
+  test('should return null when the passed status is not a valid one or is not present', () => {
     differify.setConfig({
       mode: {
         array: 'DIFF',
@@ -310,13 +310,17 @@ describe('Testing differify lib: ', () => {
     const b = 1;
     const diff = differify.compare(a, b);
     let res = differify.filterDiffByStatus(diff, PROPERTY_STATUS.MODIFIED);
-    expect(typeof res).toBe('object');
-    expect(res.status).toBe(PROPERTY_STATUS.MODIFIED);
-    expect(res.changes).toBe(1);
-    expect(res.original).toBe(a);
-    expect(res.current).toBe(b);
+    expect(typeof res).toBe('number');
+    expect(res).toBe(b);
 
     res = differify.filterDiffByStatus(diff, null);
+    expect(res).toBe(null);
+
+    res = differify.filterDiffByStatus(diff, PROPERTY_STATUS.ADDED);
+    expect(res).toBe(null);
+    res = differify.filterDiffByStatus(diff, PROPERTY_STATUS.EQUAL);
+    expect(res).toBe(null);
+    res = differify.filterDiffByStatus(diff, PROPERTY_STATUS.DELETED);
     expect(res).toBe(null);
   });
 
@@ -478,7 +482,12 @@ describe('Testing differify lib: ', () => {
     diff = differify.compare(a, b);
     expect(diff.status === PROPERTY_STATUS.MODIFIED).toBeTruthy();
     expect(diff.changes === 1).toBeTruthy();
-    expect(diff._ === null).toBeTruthy();
+    expect(
+      Object.prototype.toString.call(diff) === '[object Object]'
+    ).toBeTruthy();
+
+    expect(diff.original).toEqual(a);
+    expect(diff.current).toEqual(b);
 
     // REFERENCE EQ
     diff = differify.compare(a, a);
@@ -490,13 +499,60 @@ describe('Testing differify lib: ', () => {
     diff = differify.compare(a, b);
     expect(diff.status === PROPERTY_STATUS.MODIFIED).toBeTruthy();
     expect(diff.changes === 1).toBeTruthy();
-    expect(differify.compare([], [])._ === null).toBeTruthy();
+    expect(
+      Object.prototype.toString.call(diff) === '[object Object]'
+    ).toBeTruthy();
+
+    expect(diff.original).toEqual(a);
+    expect(diff.current).toEqual(b);
+
+    diff = differify.compare([], []);
+
+    expect(diff.status === PROPERTY_STATUS.EQUAL).toBeTruthy();
+    expect(diff.changes === 0).toBeTruthy();
+    expect(
+      Object.prototype.toString.call(diff) === '[object Object]'
+    ).toBeTruthy();
+    expect(diff.original).toEqual([]);
+    expect(
+      Array.isArray(diff.original) && diff.original.length === 0
+    ).toBeTruthy();
+    expect(diff.current).toEqual([]);
+    expect(
+      Array.isArray(diff.current) && diff.current.length === 0
+    ).toBeTruthy();
+
+    expect(diff._ === undefined).toBeTruthy();
 
     // STRING EQ
     diff = differify.compare(a, a);
     expect(diff.status === PROPERTY_STATUS.EQUAL).toBeTruthy();
     expect(diff.changes === 0).toBeTruthy();
-    expect(differify.compare([], [])._ === null).toBeTruthy();
+    expect(
+      Object.prototype.toString.call(diff) === '[object Object]'
+    ).toBeTruthy();
+
+    expect(diff.original).toEqual(a);
+    expect(diff.current).toEqual(a);
+
+    diff = differify.compare([], []);
+
+    expect(diff.status === PROPERTY_STATUS.EQUAL).toBeTruthy();
+    expect(diff.changes === 0).toBeTruthy();
+    expect(
+      Object.prototype.toString.call(diff) === '[object Object]'
+    ).toBeTruthy();
+
+    expect(diff.original).toEqual([]);
+    expect(
+      Array.isArray(diff.original) && diff.original.length === 0
+    ).toBeTruthy();
+    expect(diff.current).toEqual([]);
+    expect(
+      Array.isArray(diff.current) && diff.current.length === 0
+    ).toBeTruthy();
+
+    expect(diff._ === undefined).toBeTruthy();
   });
 
   test('Object comparission with ALL possible configurations', () => {
@@ -579,15 +635,23 @@ describe('Testing differify lib: ', () => {
 
     differify.setConfig({ mode: { object: 'REFERENCE' } });
 
-    expect(JSON.stringify(differify.compare(a, b))).toBe(
-      '{"_":null,"status":"MODIFIED","changes":1}'
-    );
+    let diff = differify.compare(a, b);
+
+    expect(diff._ === undefined).toBeTruthy();
+    expect(diff.original).toEqual(a);
+    expect(diff.current).toEqual(b);
+    expect(diff.status).toEqual(PROPERTY_STATUS.MODIFIED);
+    expect(diff.changes).toEqual(1);
 
     differify.setConfig({ mode: { object: 'STRING' } });
 
-    expect(JSON.stringify(differify.compare(a, b))).toBe(
-      '{"_":null,"status":"MODIFIED","changes":1}'
-    );
+    diff = differify.compare(a, b);
+
+    expect(diff._ === undefined).toBeTruthy();
+    expect(diff.original).toEqual(a);
+    expect(diff.current).toEqual(b);
+    expect(diff.status).toEqual(PROPERTY_STATUS.MODIFIED);
+    expect(diff.changes).toEqual(1);
   });
 
   test('test output for ALL array modes', () => {
@@ -601,15 +665,23 @@ describe('Testing differify lib: ', () => {
 
     differify.setConfig({ mode: { array: 'REFERENCE', object: 'REFERENCE' } });
 
-    expect(JSON.stringify(differify.compare(getAObject(), getBObject()))).toBe(
-      '{"_":null,"status":"MODIFIED","changes":1}'
-    );
+    let diff = differify.compare(a, b);
+
+    expect(diff._ === undefined).toBeTruthy();
+    expect(diff.original).toEqual(a);
+    expect(diff.current).toEqual(b);
+    expect(diff.status).toEqual(PROPERTY_STATUS.MODIFIED);
+    expect(diff.changes).toEqual(1);
 
     differify.setConfig({ mode: { array: 'STRING', object: 'REFERENCE' } });
 
-    expect(JSON.stringify(differify.compare(getAObject(), getBObject()))).toBe(
-      '{"_":null,"status":"MODIFIED","changes":1}'
-    );
+    diff = differify.compare(a, b);
+
+    expect(diff._ === undefined).toBeTruthy();
+    expect(diff.original).toEqual(a);
+    expect(diff.current).toEqual(b);
+    expect(diff.status).toEqual(PROPERTY_STATUS.MODIFIED);
+    expect(diff.changes).toEqual(1);
   });
 
   test('should merge right changes properly', () => {
@@ -689,6 +761,40 @@ describe('Testing differify lib: ', () => {
     expect(merged[1]).toBe(4);
     expect(merged[2]).toBe(5);
     expect(merged[3]).toBe(6);
+
+    // STRING MODE
+
+    differify.setConfig({ mode: { object: 'STRING', array: 'STRING' } });
+
+    diff = differify.compare(A, B);
+
+    merged = differify.applyRightChanges(diff);
+
+    expect(merged.id).toBe(2);
+    expect(merged.name).toBe('Person2');
+    expect(merged.birthdate).toBe(533444400000);
+    expect(merged.hobbies.a).toBe('dance');
+    expect(Object.prototype.toString.call(merged.hobbies.b)).toBe(
+      '[object Array]'
+    );
+    expect(merged.hobbies.b.length).toBe(1);
+    expect(merged.hobbies.b[0].name).toBe('willys');
+
+    differify.setConfig({ mode: { object: 'REFERENCE', array: 'REFERENCE' } });
+
+    diff = differify.compare(A, B);
+
+    merged = differify.applyRightChanges(diff);
+
+    expect(merged.id).toBe(2);
+    expect(merged.name).toBe('Person2');
+    expect(merged.birthdate).toBe(533444400000);
+    expect(merged.hobbies.a).toBe('dance');
+    expect(Object.prototype.toString.call(merged.hobbies.b)).toBe(
+      '[object Array]'
+    );
+    expect(merged.hobbies.b.length).toBe(1);
+    expect(merged.hobbies.b[0].name).toBe('willys');
   });
 
   test('should merge left changes properly', () => {
@@ -745,6 +851,28 @@ describe('Testing differify lib: ', () => {
     expect(merged[1]).toBe(2);
     expect(merged[2]).toBe(3);
     expect(merged[3]).toBe(7);
+
+    diff = differify.compare([1, 2, 3], [4, 5]);
+    merged = differify.applyLeftChanges(diff);
+
+    expect(Object.prototype.toString.call(merged)).toBe('[object Array]');
+    expect(merged.length).toBe(3);
+    expect(merged[0]).toBe(1);
+    expect(merged[1]).toBe(2);
+    expect(merged[2]).toBe(3);
+
+    differify.setConfig({ mode: { object: 'STRING', array: 'STRING' } });
+
+    diff = differify.compare([1, 2, 3], [4, 5]);
+    merged = differify.applyLeftChanges(diff);
+
+    expect(Object.prototype.toString.call(merged)).toBe('[object Array]');
+    expect(merged.length).toBe(3);
+    expect(merged[0]).toBe(1);
+    expect(merged[1]).toBe(2);
+    expect(merged[2]).toBe(3);
+
+    differify.setConfig({ mode: { object: 'REFERENCE', array: 'REFERENCE' } });
 
     diff = differify.compare([1, 2, 3], [4, 5]);
     merged = differify.applyLeftChanges(diff);
@@ -927,19 +1055,29 @@ describe('Testing differify lib: ', () => {
     expect(merged).not.toBe(null);
   });
 
-  test('should return null if the config is not DIFF for objects and arrays', () => {
+  test('applyLeftChanges: config combinatios', () => {
     differify.setConfig({ mode: { object: 'REFERENCE', array: 'DIFF' } });
-    let diff = differify.compare(
-      { a: 'a', b: 'b', c: 'c' },
-      { a: 'b', b: 'a' }
-    );
+    const a = { a: 'a', b: 'b', c: 'c' };
+    const b = { a: 'b', b: 'a' };
+    let diff = differify.compare(a, b);
     let merged = differify.applyLeftChanges(diff);
-    expect(merged).toBe(null);
+
+    expect(merged).toEqual(a);
 
     differify.setConfig({ mode: { object: 'DIFF', array: 'STRING' } });
-    diff = differify.compare({ a: 'a', b: 'b', c: 'c' }, { a: 'b', b: 'a' });
+    diff = differify.compare(a, b);
     merged = differify.applyLeftChanges(diff);
-    expect(merged).toBe(null);
+    expect(merged).toEqual({ a: 'a', b: 'b', c: 'c' });
+
+    differify.setConfig({ mode: { object: 'STRING', array: 'STRING' } });
+    diff = differify.compare(a, b);
+    merged = differify.applyLeftChanges(diff);
+    expect(merged).toEqual({ a: 'a', b: 'b', c: 'c' });
+
+    differify.setConfig({ mode: { object: 'REFERENCE', array: 'REFERENCE' } });
+    diff = differify.compare(a, b);
+    merged = differify.applyLeftChanges(diff);
+    expect(merged).toEqual({ a: 'a', b: 'b', c: 'c' });
   });
 
   test('should return null if wrong diff data is provided', () => {
@@ -1012,7 +1150,7 @@ describe('Testing differify lib: ', () => {
       friends: ['A', 'D', 'C', 'F'],
     };
 
-    const diff = differify.compare(A, B);
+    let diff = differify.compare(A, B);
     let merged = differify.filterDiffByStatus(diff, 'DELETED');
     expect(merged).not.toBe(null);
     expect(merged.name).toBe(undefined);
@@ -1112,6 +1250,22 @@ describe('Testing differify lib: ', () => {
     expect(merged.friends[0].original).toBe('A');
     expect(merged.friends[1].current).toBe('C');
     expect(merged.friends[1].original).toBe('C');
+
+    differify.setConfig({ mode: { object: 'REFERENCE', array: 'REFERENCE' } });
+    diff = differify.compare(A, B);
+    merged = differify.filterDiffByStatus(diff, PROPERTY_STATUS.MODIFIED);
+    expect(merged).toEqual({
+      name: 'Person1',
+      extras: { something: '1', somethingElse: '2' },
+      member: false,
+      badges: 7,
+      friends: ['A', 'D', 'C', 'F'],
+    });
+
+    differify.setConfig({ mode: { object: 'STRING', array: 'STRING' } });
+    diff = differify.compare(A, B);
+    merged = differify.filterDiffByStatus(diff, PROPERTY_STATUS.MODIFIED);
+    expect(merged).toEqual(B);
   });
 
   test('if the input is an Array, must return an array with the elements filtered by status', () => {
