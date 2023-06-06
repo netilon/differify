@@ -1,10 +1,10 @@
+- [2023-06-05 21:49:34 -0300] (8aac961) fixing vulnerabilities + updating dependencies
+- [2021-06-02 23:38:40 -0300] (2e29448) Merge pull request #40 from netilon/hotfix_issue36
+- [2021-06-02 23:01:37 -0300] (8ae3397) adding more test to cover issue36
+- [2021-06-02 22:46:23 -0300] (fb9acba) updating README
+- [2021-06-02 22:19:27 -0300] (d19a837) adding changelog
 - [2021-06-02 22:13:39 -0300] (0fc2279) now the input data for the 'compare' method is included in its response (inside the 'original'/'current' properties). Before this update, if you used a diff mode different than DIFF_MODES.DIFF, then you got a null value for the '_' property, but now what you will get is not the '_' property but the properties 'original' and 'current' filled with the input data (first and second parameter). It will be usefull to use this output with methods like applyLeftChanges, applyRightChanges and filterDiffByStatus. This only apply when you use DIFF_MODES.REFERENCE OR DIFF_MODES.STRING to make them compatible with the mentioned methods.If you use the DIFF_MODES.DIFF in the config, the output will be the same.
 - [2021-03-21 13:16:30 -0300] (c981db5) Merge pull request #31 from netilon/feature_issue30
 - [2021-03-21 13:10:19 -0300] (2749631) removing redundant information in the extended filtered output
 - [2021-03-21 12:43:30 -0300] (007b871) updating documentation
 - [2021-03-21 12:27:19 -0300] (5f1da8a) adding feature for filterDiffByStatus method to be able to get extended information for each element in the output (issue30) + adding tests to address this new feature + upgrading package version
-- [2021-03-20 23:34:18 -0300] (4969940) Merge pull request #29 from netilon/hotfix-issue25
-- [2021-03-20 23:15:12 -0300] (66086a6) adding multiple instance config test
-- [2021-03-20 23:02:21 -0300] (258ec77) upgrading package version + enabling es6 module in tsconfig
-- [2021-03-20 22:59:13 -0300] (cf44d17) creating different instances of comparator selector
-- [2021-03-20 21:35:05 -0300] (306a98e) normalizing output when filter/apply methods are used and fixing tests to match changes
