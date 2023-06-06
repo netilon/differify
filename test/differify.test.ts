@@ -27,22 +27,22 @@ describe('Testing differify lib: ', () => {
   test('testing bad config arguments', () => {
     differify.setConfig({
       compareArraysInOrder: null,
-      mode: { array: null, object: true },
+      mode: { array: (null as any), object: (true as any) },
     });
     let config = differify.getConfig();
     expect(typeof config.compareArraysInOrder).toEqual('boolean');
     expect(config.compareArraysInOrder).toBeTruthy();
-    expect(config.mode.array).toEqual('DIFF');
-    expect(config.mode.object).toEqual('DIFF');
+    expect(config.mode.array).toEqual(DIFF_MODES.DIFF);
+    expect(config.mode.object).toEqual(DIFF_MODES.DIFF);
     expect(config.mode.function).toEqual('REFERENCE');
   });
 
   test('testing case insensitive config arguments', () => {
     differify.setConfig({
-      mode: { array: 'diff', object: 'string', function: 'string' },
+      mode: { array: DIFF_MODES.DIFF, object: DIFF_MODES.STRING, function: DIFF_MODES.STRING },
     });
     const config = differify.getConfig();
-    expect(config.mode.array).toEqual('DIFF');
+    expect(config.mode.array).toEqual(DIFF_MODES.DIFF);
     expect(config.mode.object).toEqual('STRING');
     expect(config.mode.function).toEqual('STRING');
   });
@@ -52,8 +52,8 @@ describe('Testing differify lib: ', () => {
     let config = differify.getConfig();
     expect(typeof config.compareArraysInOrder).toEqual('boolean');
     expect(config.compareArraysInOrder).toBeTruthy();
-    expect(config.mode.array).toEqual('DIFF');
-    expect(config.mode.object).toEqual('DIFF');
+    expect(config.mode.array).toEqual(DIFF_MODES.DIFF);
+    expect(config.mode.object).toEqual(DIFF_MODES.DIFF);
     expect(config.mode.function).toEqual('REFERENCE');
   });
 
@@ -76,13 +76,13 @@ describe('Testing differify lib: ', () => {
     expect(JSON.stringify(diff.getConfig())).toBe(
       JSON.stringify({
         compareArraysInOrder: true,
-        mode: { array: 'DIFF', object: 'DIFF', function: 'REFERENCE' },
+        mode: { array: DIFF_MODES.DIFF, object: DIFF_MODES.DIFF, function: 'REFERENCE' },
       })
     );
     expect(JSON.stringify(diff2.getConfig())).toBe(
       JSON.stringify({
         compareArraysInOrder: false,
-        mode: { array: 'STRING', object: 'DIFF', function: 'REFERENCE' },
+        mode: { array: DIFF_MODES.STRING, object: DIFF_MODES.DIFF, function: 'REFERENCE' },
       })
     );
   });
@@ -94,8 +94,8 @@ describe('Testing differify lib: ', () => {
     let config = differify.getConfig();
     expect(typeof config.compareArraysInOrder).toEqual('boolean');
     expect(config.compareArraysInOrder).toBeTruthy();
-    expect(config.mode.array).toEqual('DIFF');
-    expect(config.mode.object).toEqual('DIFF');
+    expect(config.mode.array).toEqual(DIFF_MODES.DIFF);
+    expect(config.mode.object).toEqual(DIFF_MODES.DIFF);
     expect(config.mode.function).toEqual('REFERENCE');
   });
 
@@ -103,25 +103,25 @@ describe('Testing differify lib: ', () => {
     differify.setConfig({
       compareArraysInOrder: false,
       mode: {
-        array: 'DIFF',
-        object: 'DIFF',
-        function: 'STRING',
+        array: DIFF_MODES.DIFF,
+        object: DIFF_MODES.DIFF,
+        function: DIFF_MODES.STRING,
       },
     });
     let config = differify.getConfig();
     expect(typeof config.compareArraysInOrder).toEqual('boolean');
     expect(config.compareArraysInOrder).toBeFalsy();
-    expect(config.mode.array).toEqual('DIFF');
-    expect(config.mode.object).toEqual('DIFF');
+    expect(config.mode.array).toEqual(DIFF_MODES.DIFF);
+    expect(config.mode.object).toEqual(DIFF_MODES.DIFF);
     expect(config.mode.function).toEqual('STRING');
   });
 
   test('if no property match, should return null', () => {
     differify.setConfig({
       mode: {
-        array: 'DIFF',
-        object: 'DIFF',
-        function: 'STRING',
+        array: DIFF_MODES.DIFF,
+        object: DIFF_MODES.DIFF,
+        function: DIFF_MODES.STRING,
       },
     });
     const diff = differify.compare(Object.create(null), getAObject());
@@ -147,9 +147,9 @@ describe('Testing differify lib: ', () => {
   test('empty objects, should return EQUAL', () => {
     differify.setConfig({
       mode: {
-        array: 'DIFF',
-        object: 'DIFF',
-        function: 'STRING',
+        array: DIFF_MODES.DIFF,
+        object: DIFF_MODES.DIFF,
+        function: DIFF_MODES.STRING,
       },
     });
     const diff = differify.compare({}, {});
@@ -162,9 +162,9 @@ describe('Testing differify lib: ', () => {
   test('empty array, should return an empty array', () => {
     differify.setConfig({
       mode: {
-        array: 'DIFF',
-        object: 'DIFF',
-        function: 'STRING',
+        array: DIFF_MODES.DIFF,
+        object: DIFF_MODES.DIFF,
+        function: DIFF_MODES.STRING,
       },
     });
     const diff = differify.compare([], []);
@@ -180,9 +180,9 @@ describe('Testing differify lib: ', () => {
   test('diff with no prototyped object', () => {
     differify.setConfig({
       mode: {
-        array: 'DIFF',
-        object: 'DIFF',
-        function: 'STRING',
+        array: DIFF_MODES.DIFF,
+        object: DIFF_MODES.DIFF,
+        function: DIFF_MODES.STRING,
       },
     });
 
@@ -228,9 +228,9 @@ describe('Testing differify lib: ', () => {
   test('checking Date diff', () => {
     differify.setConfig({
       mode: {
-        array: 'DIFF',
-        object: 'DIFF',
-        function: 'STRING',
+        array: DIFF_MODES.DIFF,
+        object: DIFF_MODES.DIFF,
+        function: DIFF_MODES.STRING,
       },
     });
     let a = new Date();
@@ -250,9 +250,9 @@ describe('Testing differify lib: ', () => {
   test('checking Native values diff', () => {
     differify.setConfig({
       mode: {
-        array: 'DIFF',
-        object: 'DIFF',
-        function: 'STRING',
+        array: DIFF_MODES.DIFF,
+        object: DIFF_MODES.DIFF,
+        function: DIFF_MODES.STRING,
       },
     });
 
@@ -283,8 +283,8 @@ describe('Testing differify lib: ', () => {
   test('should return the diff between two entities with different typeof result', () => {
     differify.setConfig({
       mode: {
-        array: 'DIFF',
-        object: 'DIFF',
+        array: DIFF_MODES.DIFF,
+        object: DIFF_MODES.DIFF,
       },
     });
 
@@ -301,8 +301,8 @@ describe('Testing differify lib: ', () => {
   test('should return null when the passed status is not a valid one or is not present', () => {
     differify.setConfig({
       mode: {
-        array: 'DIFF',
-        object: 'DIFF',
+        array: DIFF_MODES.DIFF,
+        object: DIFF_MODES.DIFF,
       },
     });
 
@@ -412,8 +412,8 @@ describe('Testing differify lib: ', () => {
   test('compare different types input but same prototype', () => {
     differify.setConfig({
       mode: {
-        array: 'DIFF',
-        object: 'DIFF',
+        array: DIFF_MODES.DIFF,
+        object: DIFF_MODES.DIFF,
       },
     });
 
@@ -440,7 +440,7 @@ describe('Testing differify lib: ', () => {
 
   test('Array comparission with ALL possible configurations', () => {
     // DIFF DIFF
-    differify.setConfig({ mode: { object: 'DIFF', array: 'DIFF' } });
+    differify.setConfig({ mode: { object: DIFF_MODES.DIFF, array: DIFF_MODES.DIFF } });
     const a = ['Hello', 'how', 'are', 'you'];
     const b = ['fine', 'and', 'you'];
 
@@ -478,7 +478,7 @@ describe('Testing differify lib: ', () => {
     expect(diff._[3].status === PROPERTY_STATUS.EQUAL).toBeTruthy();
 
     // REFERENCE DIFF
-    differify.setConfig({ mode: { object: 'DIFF', array: 'REFERENCE' } });
+    differify.setConfig({ mode: { object: DIFF_MODES.DIFF, array: DIFF_MODES.REFERENCE } });
     diff = differify.compare(a, b);
     expect(diff.status === PROPERTY_STATUS.MODIFIED).toBeTruthy();
     expect(diff.changes === 1).toBeTruthy();
@@ -495,7 +495,7 @@ describe('Testing differify lib: ', () => {
     expect(diff.changes === 0).toBeTruthy();
 
     // STRING DIFF
-    differify.setConfig({ mode: { object: 'DIFF', array: 'STRING' } });
+    differify.setConfig({ mode: { object: DIFF_MODES.DIFF, array: DIFF_MODES.STRING } });
     diff = differify.compare(a, b);
     expect(diff.status === PROPERTY_STATUS.MODIFIED).toBeTruthy();
     expect(diff.changes === 1).toBeTruthy();
@@ -557,7 +557,7 @@ describe('Testing differify lib: ', () => {
 
   test('Object comparission with ALL possible configurations', () => {
     // DIFF DIFF
-    differify.setConfig({ mode: { object: 'DIFF', array: 'DIFF' } });
+    differify.setConfig({ mode: { object: DIFF_MODES.DIFF, array: DIFF_MODES.DIFF } });
     let a = getAObject();
     let b = getBObject();
 
@@ -590,7 +590,7 @@ describe('Testing differify lib: ', () => {
     expect(diff._.date.status === PROPERTY_STATUS.EQUAL).toBeTruthy();
 
     // REFERENCE DIFF
-    differify.setConfig({ mode: { object: 'REFERENCE', array: 'REFERENCE' } });
+    differify.setConfig({ mode: { object: 'REFERENCE', array: DIFF_MODES.REFERENCE } });
     diff = differify.compare(getAObject(), getBObject());
     expect(diff.status === PROPERTY_STATUS.MODIFIED).toBeTruthy();
     expect(diff.changes === 1).toBeTruthy();
@@ -606,7 +606,7 @@ describe('Testing differify lib: ', () => {
     expect(diff.changes === 0).toBeTruthy();
 
     // STRING DIFF
-    differify.setConfig({ mode: { object: 'STRING', array: 'STRING' } });
+    differify.setConfig({ mode: { object: DIFF_MODES.STRING, array: DIFF_MODES.STRING } });
     diff = differify.compare(getAObject(), getBObject());
     expect(diff.status === PROPERTY_STATUS.MODIFIED).toBeTruthy();
     expect(diff.changes === 1).toBeTruthy();
@@ -623,7 +623,7 @@ describe('Testing differify lib: ', () => {
   });
 
   test('test output for ALL object modes', () => {
-    differify.setConfig({ mode: { object: 'DIFF', array: 'DIFF' } });
+    differify.setConfig({ mode: { object: DIFF_MODES.DIFF, array: DIFF_MODES.DIFF } });
     const a = getAObject();
     a.date = 1589657835225;
     const b = getBObject();
@@ -643,7 +643,7 @@ describe('Testing differify lib: ', () => {
     expect(diff.status).toEqual(PROPERTY_STATUS.MODIFIED);
     expect(diff.changes).toEqual(1);
 
-    differify.setConfig({ mode: { object: 'STRING' } });
+    differify.setConfig({ mode: { object: DIFF_MODES.STRING } });
 
     diff = differify.compare(a, b);
 
@@ -658,12 +658,12 @@ describe('Testing differify lib: ', () => {
     const a = [1, 2, 3, 4, 5];
     const b = [1, 2, 4, 6, 8, 10];
 
-    differify.setConfig({ mode: { array: 'DIFF' } });
+    differify.setConfig({ mode: { array: DIFF_MODES.DIFF } });
     expect(JSON.stringify(differify.compare(a, b))).toBe(
       '{"_":[{"original":1,"current":1,"status":"EQUAL","changes":0},{"original":2,"current":2,"status":"EQUAL","changes":0},{"original":3,"current":4,"status":"MODIFIED","changes":1},{"original":4,"current":6,"status":"MODIFIED","changes":1},{"original":5,"current":8,"status":"MODIFIED","changes":1},{"original":null,"current":10,"status":"ADDED","changes":1}],"status":"MODIFIED","changes":4}'
     );
 
-    differify.setConfig({ mode: { array: 'REFERENCE', object: 'REFERENCE' } });
+    differify.setConfig({ mode: { array: DIFF_MODES.REFERENCE, object: 'REFERENCE' } });
 
     let diff = differify.compare(a, b);
 
@@ -673,7 +673,7 @@ describe('Testing differify lib: ', () => {
     expect(diff.status).toEqual(PROPERTY_STATUS.MODIFIED);
     expect(diff.changes).toEqual(1);
 
-    differify.setConfig({ mode: { array: 'STRING', object: 'REFERENCE' } });
+    differify.setConfig({ mode: { array: DIFF_MODES.STRING, object: 'REFERENCE' } });
 
     diff = differify.compare(a, b);
 
@@ -706,7 +706,7 @@ describe('Testing differify lib: ', () => {
       },
       birthdate: 533444400000,
     };
-    differify.setConfig({ mode: { object: 'DIFF', array: 'DIFF' } });
+    differify.setConfig({ mode: { object: DIFF_MODES.DIFF, array: DIFF_MODES.DIFF } });
 
     let diff = differify.compare(A, B);
 
@@ -764,7 +764,7 @@ describe('Testing differify lib: ', () => {
 
     // STRING MODE
 
-    differify.setConfig({ mode: { object: 'STRING', array: 'STRING' } });
+    differify.setConfig({ mode: { object: DIFF_MODES.STRING, array: DIFF_MODES.STRING } });
 
     diff = differify.compare(A, B);
 
@@ -780,7 +780,7 @@ describe('Testing differify lib: ', () => {
     expect(merged.hobbies.b.length).toBe(1);
     expect(merged.hobbies.b[0].name).toBe('willys');
 
-    differify.setConfig({ mode: { object: 'REFERENCE', array: 'REFERENCE' } });
+    differify.setConfig({ mode: { object: 'REFERENCE', array: DIFF_MODES.REFERENCE } });
 
     diff = differify.compare(A, B);
 
@@ -820,7 +820,7 @@ describe('Testing differify lib: ', () => {
       birthdate: 440305200000,
     };
 
-    differify.setConfig({ mode: { object: 'DIFF', array: 'DIFF' } });
+    differify.setConfig({ mode: { object: DIFF_MODES.DIFF, array: DIFF_MODES.DIFF } });
     let diff = differify.compare(A, B);
 
     let merged = differify.applyLeftChanges(diff);
@@ -861,7 +861,7 @@ describe('Testing differify lib: ', () => {
     expect(merged[1]).toBe(2);
     expect(merged[2]).toBe(3);
 
-    differify.setConfig({ mode: { object: 'STRING', array: 'STRING' } });
+    differify.setConfig({ mode: { object: DIFF_MODES.STRING, array: DIFF_MODES.STRING } });
 
     diff = differify.compare([1, 2, 3], [4, 5]);
     merged = differify.applyLeftChanges(diff);
@@ -872,7 +872,7 @@ describe('Testing differify lib: ', () => {
     expect(merged[1]).toBe(2);
     expect(merged[2]).toBe(3);
 
-    differify.setConfig({ mode: { object: 'REFERENCE', array: 'REFERENCE' } });
+    differify.setConfig({ mode: { object: 'REFERENCE', array: DIFF_MODES.REFERENCE } });
 
     diff = differify.compare([1, 2, 3], [4, 5]);
     merged = differify.applyLeftChanges(diff);
@@ -900,7 +900,7 @@ describe('Testing differify lib: ', () => {
       birthdate: 440305200000,
     };
 
-    differify.setConfig({ mode: { object: 'DIFF', array: 'DIFF' } });
+    differify.setConfig({ mode: { object: DIFF_MODES.DIFF, array: DIFF_MODES.DIFF } });
     let diff = differify.compare(A, B);
 
     let merged = differify.applyLeftChanges(diff, true);
@@ -968,7 +968,7 @@ describe('Testing differify lib: ', () => {
   });
 
   test('should return falsy values when right changes are applied', () => {
-    differify.setConfig({ mode: { object: 'DIFF', array: 'DIFF' } });
+    differify.setConfig({ mode: { object: DIFF_MODES.DIFF, array: DIFF_MODES.DIFF } });
 
     const oldObj = { hasDocument: true };
     const newObj = { hasDocument: false };
@@ -1004,7 +1004,7 @@ describe('Testing differify lib: ', () => {
   });
 
   test('should return falsy values when left changes are applied', () => {
-    differify.setConfig({ mode: { object: 'DIFF', array: 'DIFF' } });
+    differify.setConfig({ mode: { object: DIFF_MODES.DIFF, array: DIFF_MODES.DIFF } });
 
     const oldObj = { hasDocument: false };
     const newObj = { hasDocument: true };
@@ -1040,7 +1040,7 @@ describe('Testing differify lib: ', () => {
   });
 
   test('should return a non null result when the config parameters are DIFF for objects and arrays', () => {
-    differify.setConfig({ mode: { object: 'DIFF', array: 'DIFF' } });
+    differify.setConfig({ mode: { object: DIFF_MODES.DIFF, array: DIFF_MODES.DIFF } });
     let diff = differify.compare(
       { a: 'a', b: 'b', c: 'c' },
       { a: 'b', b: 'a' }
@@ -1056,7 +1056,7 @@ describe('Testing differify lib: ', () => {
   });
 
   test('applyLeftChanges: config combinatios', () => {
-    differify.setConfig({ mode: { object: 'REFERENCE', array: 'DIFF' } });
+    differify.setConfig({ mode: { object: 'REFERENCE', array: DIFF_MODES.DIFF } });
     const a = { a: 'a', b: 'b', c: 'c' };
     const b = { a: 'b', b: 'a' };
     let diff = differify.compare(a, b);
@@ -1064,24 +1064,24 @@ describe('Testing differify lib: ', () => {
 
     expect(merged).toEqual(a);
 
-    differify.setConfig({ mode: { object: 'DIFF', array: 'STRING' } });
+    differify.setConfig({ mode: { object: DIFF_MODES.DIFF, array: DIFF_MODES.STRING } });
     diff = differify.compare(a, b);
     merged = differify.applyLeftChanges(diff);
     expect(merged).toEqual({ a: 'a', b: 'b', c: 'c' });
 
-    differify.setConfig({ mode: { object: 'STRING', array: 'STRING' } });
+    differify.setConfig({ mode: { object: DIFF_MODES.STRING, array: DIFF_MODES.STRING } });
     diff = differify.compare(a, b);
     merged = differify.applyLeftChanges(diff);
     expect(merged).toEqual({ a: 'a', b: 'b', c: 'c' });
 
-    differify.setConfig({ mode: { object: 'REFERENCE', array: 'REFERENCE' } });
+    differify.setConfig({ mode: { object: 'REFERENCE', array: DIFF_MODES.REFERENCE } });
     diff = differify.compare(a, b);
     merged = differify.applyLeftChanges(diff);
     expect(merged).toEqual({ a: 'a', b: 'b', c: 'c' });
   });
 
   test('should return null if wrong diff data is provided', () => {
-    differify.setConfig({ mode: { object: 'DIFF', array: 'DIFF' } });
+    differify.setConfig({ mode: { object: DIFF_MODES.DIFF, array: DIFF_MODES.DIFF } });
     let diff = [];
     let merged = differify.applyLeftChanges(diff);
     expect(merged).toBe(null);
@@ -1100,7 +1100,7 @@ describe('Testing differify lib: ', () => {
   });
 
   test('if no changes between two entities, the left or right apply method, should return the object when called', () => {
-    differify.setConfig({ mode: { object: 'DIFF', array: 'DIFF' } });
+    differify.setConfig({ mode: { object: DIFF_MODES.DIFF, array: DIFF_MODES.DIFF } });
     const A = {
       name: 'Person1',
       extras: {
@@ -1128,7 +1128,7 @@ describe('Testing differify lib: ', () => {
   });
 
   test('should return the props filtered by status', () => {
-    differify.setConfig({ mode: { object: 'DIFF', array: 'DIFF' } });
+    differify.setConfig({ mode: { object: DIFF_MODES.DIFF, array: DIFF_MODES.DIFF } });
     const A = {
       name: 'Person1',
       extras: {
@@ -1251,7 +1251,7 @@ describe('Testing differify lib: ', () => {
     expect(merged.friends[1].current).toBe('C');
     expect(merged.friends[1].original).toBe('C');
 
-    differify.setConfig({ mode: { object: 'REFERENCE', array: 'REFERENCE' } });
+    differify.setConfig({ mode: { object: 'REFERENCE', array: DIFF_MODES.REFERENCE } });
     diff = differify.compare(A, B);
     merged = differify.filterDiffByStatus(diff, PROPERTY_STATUS.MODIFIED);
     expect(merged).toEqual({
@@ -1262,14 +1262,14 @@ describe('Testing differify lib: ', () => {
       friends: ['A', 'D', 'C', 'F'],
     });
 
-    differify.setConfig({ mode: { object: 'STRING', array: 'STRING' } });
+    differify.setConfig({ mode: { object: DIFF_MODES.STRING, array: DIFF_MODES.STRING } });
     diff = differify.compare(A, B);
     merged = differify.filterDiffByStatus(diff, PROPERTY_STATUS.MODIFIED);
     expect(merged).toEqual(B);
   });
 
   test('if the input is an Array, must return an array with the elements filtered by status', () => {
-    differify.setConfig({ mode: { object: 'DIFF', array: 'DIFF' } });
+    differify.setConfig({ mode: { object: DIFF_MODES.DIFF, array: DIFF_MODES.DIFF } });
     const A = ['A', 'B', 'C'];
     const B = ['A', 'D', 'C', 'F'];
 
@@ -1310,7 +1310,7 @@ describe('Testing differify lib: ', () => {
   test('Testing Unordered array comparison', () => {
     differify.setConfig({
       compareArraysInOrder: false,
-      mode: { object: 'DIFF', array: 'DIFF' },
+      mode: { object: DIFF_MODES.DIFF, array: DIFF_MODES.DIFF },
     });
     const A = ['A', 'B', 'C'];
     const B = ['A', 'D', 'C', 'F'];
